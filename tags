@@ -1,0 +1,797 @@
+!_TAG_FILE_FORMAT	2	/extended format; --format=1 will not append ;" to lines/
+!_TAG_FILE_SORTED	1	/0=unsorted, 1=sorted, 2=foldcase/
+!_TAG_PROGRAM_AUTHOR	Darren Hiebert	/dhiebert@users.sourceforge.net/
+!_TAG_PROGRAM_NAME	Exuberant Ctags	//
+!_TAG_PROGRAM_URL	http://ctags.sourceforge.net	/official site/
+!_TAG_PROGRAM_VERSION	5.9~svn20110310	//
+0001_initial.py	branchoffices/migrations/0001_initial.py	1;"	kind:file	line:1
+0001_initial.py	kitchen/migrations/0001_initial.py	1;"	kind:file	line:1
+0001_initial.py	orders/migrations/0001_initial.py	1;"	kind:file	line:1
+0001_initial.py	products/migrations/0001_initial.py	1;"	kind:file	line:1
+0001_initial.py	sales/migrations/0001_initial.py	1;"	kind:file	line:1
+0001_initial.py	users/migrations/0001_initial.py	1;"	kind:file	line:1
+0002_auto_20170211_0320.py	orders/migrations/0002_auto_20170211_0320.py	1;"	kind:file	line:1
+0002_branchoffice_manager.py	branchoffices/migrations/0002_branchoffice_manager.py	1;"	kind:file	line:1
+0002_processedproduct_ticket.py	kitchen/migrations/0002_processedproduct_ticket.py	1;"	kind:file	line:1
+0002_ticket_seller.py	sales/migrations/0002_ticket_seller.py	1;"	kind:file	line:1
+0003_ticket_payment_type.py	sales/migrations/0003_ticket_payment_type.py	1;"	kind:file	line:1
+ALLOWED_HOSTS	cashflow/settings/dev.py	/^ALLOWED_HOSTS = ['*']$/;"	kind:variable	line:4
+ALLOWED_HOSTS	cashflow/settings/prod.py	/^ALLOWED_HOSTS = ['*']$/;"	kind:variable	line:5
+ASSEMBLED	kitchen/models.py	/^    ASSEMBLED = 'AS'$/;"	kind:variable	line:12
+ASSEMBLED	kitchen/models.py	/^    ASSEMBLED = 'AS'$/;"	kind:variable	line:50
+AUTH_PASSWORD_VALIDATORS	cashflow/settings/base.py	/^AUTH_PASSWORD_VALIDATORS = [$/;"	kind:variable	line:102
+AUTH_USER_MODEL	cashflow/settings/base.py	/^AUTH_USER_MODEL = 'users.User'$/;"	kind:variable	line:56
+AdminBranchOffice	branchoffices/admin.py	/^class AdminBranchOffice(admin.ModelAdmin):$/;"	kind:class	line:12
+AdminCartridge	products/admin.py	/^class AdminCartridge(admin.ModelAdmin):$/;"	kind:class	line:33
+AdminPackageCartridge	products/admin.py	/^class AdminPackageCartridge(admin.ModelAdmin):$/;"	kind:class	line:50
+AdminProcessedCartridge	kitchen/admin.py	/^class AdminProcessedCartridge(admin.ModelAdmin):$/;"	kind:class	line:7
+AdminProvider	branchoffices/admin.py	/^class AdminProvider(admin.ModelAdmin):$/;"	kind:class	line:18
+AdminSuppliesCategory	products/admin.py	/^class AdminSuppliesCategory(admin.ModelAdmin):$/;"	kind:class	line:10
+AdminSupply	products/admin.py	/^class AdminSupply(admin.ModelAdmin):$/;"	kind:class	line:20
+AdminSupplyLocation	products/admin.py	/^class AdminSupplyLocation(admin.ModelAdmin):$/;"	kind:class	line:15
+AdminWarehouse	kitchen/admin.py	/^class AdminWarehouse(admin.ModelAdmin):$/;"	kind:class	line:16
+ApiConfig	api/apps.py	/^class ApiConfig(AppConfig):$/;"	kind:class	line:4
+BASE_DIR	cashflow/settings/base.py	/^BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))$/;"	kind:variable	line:16
+BOX	products/models.py	/^    BOX = 'BO'$/;"	kind:variable	line:59
+BranchOffice	branchoffices/models.py	/^class BranchOffice(models.Model):$/;"	kind:class	line:9
+BranchofficesConfig	branchoffices/apps.py	/^class BranchofficesConfig(AppConfig):$/;"	kind:class	line:4
+CANCELED	orders/models.py	/^    CANCELED = 'CA'$/;"	kind:variable	line:10
+CANCELLED	orders/models.py	/^    CANCELLED = 'CA'$/;"	kind:variable	line:52
+CANCELLED	orders/models.py	/^    CANCELLED = 'CA'$/;"	kind:variable	line:83
+CASH	sales/models.py	/^    CASH = 'CA'$/;"	kind:variable	line:12
+CATEGORIES	products/models.py	/^    CATEGORIES = ($/;"	kind:variable	line:109
+COMPLEMENTS	products/models.py	/^    COMPLEMENTS = 'CO'$/;"	kind:variable	line:107
+CREDIT	sales/models.py	/^    CREDIT = 'CR'$/;"	kind:variable	line:13
+Cartridge	products/models.py	/^class Cartridge(models.Model):$/;"	kind:class	line:104
+CartridgeForm	products/forms.py	/^class CartridgeForm(forms.ModelForm):$/;"	kind:class	line:22
+CartridgeRecipe	products/models.py	/^class CartridgeRecipe(models.Model):$/;"	kind:class	line:138
+CartridgeRecipeInline	products/admin.py	/^class CartridgeRecipeInline(admin.TabularInline):$/;"	kind:class	line:27
+CartridgeSerializer	api/serializers.py	/^class CartridgeSerializer(serializers.ModelSerializer):$/;"	kind:class	line:24
+CashRegister	branchoffices/models.py	/^class CashRegister(models.Model):$/;"	kind:class	line:24
+CashRegisterInline	branchoffices/admin.py	/^class CashRegisterInline(admin.StackedInline):$/;"	kind:class	line:6
+CustomerOrder	orders/models.py	/^class CustomerOrder(models.Model):$/;"	kind:class	line:49
+CustomerOrderAdmin	orders/admin.py	/^class CustomerOrderAdmin(admin.ModelAdmin):$/;"	kind:class	line:23
+CustomerOrderDetail	orders/models.py	/^class CustomerOrderDetail(models.Model):$/;"	kind:class	line:80
+CustomerOrderDetailInline	orders/admin.py	/^class CustomerOrderDetailInline(admin.TabularInline):$/;"	kind:class	line:17
+CustomerOrderDetailSerializer	api/serializers.py	/^class CustomerOrderDetailSerializer(serializers.ModelSerializer):$/;"	kind:class	line:47
+CustomerOrderPinSerializer	api/serializers.py	/^class CustomerOrderPinSerializer(serializers.ModelSerializer):$/;"	kind:class	line:90
+CustomerOrderPinViewSet	api/views.py	/^class CustomerOrderPinViewSet(viewsets.ModelViewSet):$/;"	kind:class	line:23
+CustomerOrderScoreSerializer	api/serializers.py	/^class CustomerOrderScoreSerializer(serializers.ModelSerializer):$/;"	kind:class	line:84
+CustomerOrderScoreViewSet	api/views.py	/^class CustomerOrderScoreViewSet(viewsets.ModelViewSet):$/;"	kind:class	line:18
+CustomerOrderSerializer	api/serializers.py	/^class CustomerOrderSerializer(serializers.ModelSerializer):$/;"	kind:class	line:62
+CustomerOrderStatusSerializer	api/serializers.py	/^class CustomerOrderStatusSerializer(serializers.ModelSerializer):$/;"	kind:class	line:78
+CustomerOrderStatusViewSet	api/views.py	/^class CustomerOrderStatusViewSet(viewsets.ModelViewSet):$/;"	kind:class	line:13
+CustomerOrderViewSet	api/views.py	/^class CustomerOrderViewSet(viewsets.ModelViewSet):$/;"	kind:class	line:8
+CustomerProfile	users/models.py	/^class CustomerProfile(models.Model):$/;"	kind:class	line:28
+CustomerProfileAdmin	users/admin.py	/^class CustomerProfileAdmin(admin.ModelAdmin):$/;"	kind:class	line:15
+CustomerProfileForm	users/forms.py	/^class CustomerProfileForm(forms.ModelForm):$/;"	kind:class	line:14
+CustomerProfileSerializer	api/serializers.py	/^class CustomerProfileSerializer(serializers.ModelSerializer):$/;"	kind:class	line:15
+DATABASES	cashflow/settings/dev.py	/^DATABASES = {$/;"	kind:variable	line:6
+DATABASES	cashflow/settings/dev_postgres.py	/^DATABASES = {$/;"	kind:variable	line:3
+DATABASES	cashflow/settings/prod.py	/^DATABASES = {$/;"	kind:variable	line:9
+DAYS	products/models.py	/^    DAYS = 'DA'$/;"	kind:variable	line:48
+DEBUG	cashflow/settings/dev.py	/^DEBUG = True$/;"	kind:variable	line:3
+DEBUG	cashflow/settings/prod.py	/^DEBUG = False$/;"	kind:variable	line:3
+DJANGO_APPS	cashflow/settings/base.py	/^DJANGO_APPS = [$/;"	kind:variable	line:24
+DRY_ENVIRONMENT	products/models.py	/^    DRY_ENVIRONMENT = 'DR'$/;"	kind:variable	line:38
+DateTimeFieldWihTZ	api/serializers.py	/^class DateTimeFieldWihTZ(serializers.DateTimeField):$/;"	kind:class	line:56
+FCM_APIKEY	cashflow/settings/base.py	/^FCM_APIKEY = os.getenv('FCM_SERVER_KEY')$/;"	kind:variable	line:58
+FOOD_DISHES	products/models.py	/^    FOOD_DISHES = 'FD'$/;"	kind:variable	line:106
+FREEZING	products/models.py	/^    FREEZING = 'FR'$/;"	kind:variable	line:40
+GRAM	products/models.py	/^    GRAM = 'GR'$/;"	kind:variable	line:68
+GRAPH_MODELS	cashflow/settings/dev.py	/^GRAPH_MODELS = {$/;"	kind:variable	line:13
+HostMiddleware	core/middlewares.py	/^class HostMiddleware(MiddlewareMixin):$/;"	kind:class	line:5
+INSTALLED_APPS	cashflow/settings/base.py	/^INSTALLED_APPS = DJANGO_APPS + THIRD_APPS + USER_APPS$/;"	kind:variable	line:52
+IN_PROCESS	orders/models.py	/^    IN_PROCESS = 'IP'$/;"	kind:variable	line:11
+IN_PROCESS	orders/models.py	/^    IN_PROCESS = 'PR'$/;"	kind:variable	line:50
+IN_PROCESS	orders/models.py	/^    IN_PROCESS = 'PR'$/;"	kind:variable	line:81
+KitchenConfig	kitchen/apps.py	/^class KitchenConfig(AppConfig):$/;"	kind:class	line:4
+LANGUAGE_CODE	cashflow/settings/base.py	/^LANGUAGE_CODE = 'es-mx.UTF-8'$/;"	kind:variable	line:119
+LOGIN_REDIRECT_URL	cashflow/settings/base.py	/^LOGIN_REDIRECT_URL = '\/'$/;"	kind:variable	line:145
+LOGIN_URL	cashflow/settings/base.py	/^LOGIN_URL = '\/login\/'$/;"	kind:variable	line:143
+MEDIA_ROOT	cashflow/settings/base.py	/^MEDIA_ROOT = os.path.join(BASE_DIR, '..\/media')$/;"	kind:variable	line:141
+MEDIA_URL	cashflow/settings/base.py	/^MEDIA_URL = '\/media\/'$/;"	kind:variable	line:139
+METRICS	products/models.py	/^    METRICS = ($/;"	kind:variable	line:72
+MIDDLEWARE	cashflow/settings/base.py	/^MIDDLEWARE = [$/;"	kind:variable	line:60
+MILLILITER	products/models.py	/^    MILLILITER = 'MI'$/;"	kind:variable	line:69
+MONTHS	products/models.py	/^    MONTHS = 'MO'$/;"	kind:variable	line:49
+Meta	api/serializers.py	/^    class Meta:$/;"	kind:class	line:10
+Meta	api/serializers.py	/^    class Meta:$/;"	kind:class	line:19
+Meta	api/serializers.py	/^    class Meta:$/;"	kind:class	line:25
+Meta	api/serializers.py	/^    class Meta:$/;"	kind:class	line:33
+Meta	api/serializers.py	/^    class Meta:$/;"	kind:class	line:42
+Meta	api/serializers.py	/^    class Meta:$/;"	kind:class	line:51
+Meta	api/serializers.py	/^    class Meta:$/;"	kind:class	line:70
+Meta	api/serializers.py	/^    class Meta:$/;"	kind:class	line:79
+Meta	api/serializers.py	/^    class Meta:$/;"	kind:class	line:85
+Meta	api/serializers.py	/^    class Meta:$/;"	kind:class	line:91
+Meta	branchoffices/models.py	/^    class Meta:$/;"	kind:class	line:18
+Meta	branchoffices/models.py	/^    class Meta:$/;"	kind:class	line:49
+Meta	branchoffices/models.py	/^    class Meta:$/;"	kind:class	line:62
+Meta	kitchen/models.py	/^    class Meta:$/;"	kind:class	line:41
+Meta	kitchen/models.py	/^    class Meta:$/;"	kind:class	line:70
+Meta	orders/models.py	/^    class Meta:$/;"	kind:class	line:26
+Meta	orders/models.py	/^    class Meta:$/;"	kind:class	line:42
+Meta	orders/models.py	/^    class Meta:$/;"	kind:class	line:74
+Meta	orders/models.py	/^    class Meta:$/;"	kind:class	line:98
+Meta	products/forms.py	/^    class Meta:$/;"	kind:class	line:10
+Meta	products/forms.py	/^    class Meta:$/;"	kind:class	line:17
+Meta	products/forms.py	/^    class Meta:$/;"	kind:class	line:24
+Meta	products/models.py	/^    class Meta:$/;"	kind:class	line:132
+Meta	products/models.py	/^    class Meta:$/;"	kind:class	line:146
+Meta	products/models.py	/^    class Meta:$/;"	kind:class	line:17
+Meta	products/models.py	/^    class Meta:$/;"	kind:class	line:173
+Meta	products/models.py	/^    class Meta:$/;"	kind:class	line:187
+Meta	products/models.py	/^    class Meta:$/;"	kind:class	line:30
+Meta	products/models.py	/^    class Meta:$/;"	kind:class	line:98
+Meta	sales/models.py	/^    class Meta:$/;"	kind:class	line:60
+Meta	sales/models.py	/^    class Meta:$/;"	kind:class	line:78
+Meta	users/forms.py	/^    class Meta:$/;"	kind:class	line:15
+Meta	users/forms.py	/^    class Meta:$/;"	kind:class	line:9
+Meta	users/models.py	/^    class Meta(AbstractUser.Meta):$/;"	kind:class	line:24
+Meta	users/models.py	/^    class Meta:$/;"	kind:class	line:13
+Meta	users/models.py	/^    class Meta:$/;"	kind:class	line:63
+Migration	branchoffices/migrations/0001_initial.py	/^class Migration(migrations.Migration):$/;"	kind:class	line:10
+Migration	branchoffices/migrations/0002_branchoffice_manager.py	/^class Migration(migrations.Migration):$/;"	kind:class	line:10
+Migration	kitchen/migrations/0001_initial.py	/^class Migration(migrations.Migration):$/;"	kind:class	line:9
+Migration	kitchen/migrations/0002_processedproduct_ticket.py	/^class Migration(migrations.Migration):$/;"	kind:class	line:9
+Migration	orders/migrations/0001_initial.py	/^class Migration(migrations.Migration):$/;"	kind:class	line:10
+Migration	orders/migrations/0002_auto_20170211_0320.py	/^class Migration(migrations.Migration):$/;"	kind:class	line:10
+Migration	products/migrations/0001_initial.py	/^class Migration(migrations.Migration):$/;"	kind:class	line:10
+Migration	sales/migrations/0001_initial.py	/^class Migration(migrations.Migration):$/;"	kind:class	line:9
+Migration	sales/migrations/0002_ticket_seller.py	/^class Migration(migrations.Migration):$/;"	kind:class	line:10
+Migration	sales/migrations/0003_ticket_payment_type.py	/^class Migration(migrations.Migration):$/;"	kind:class	line:8
+Migration	users/migrations/0001_initial.py	/^class Migration(migrations.Migration):$/;"	kind:class	line:12
+OPTIMAL_DURATION	products/models.py	/^    OPTIMAL_DURATION = ($/;"	kind:variable	line:51
+OrdersConfig	orders/apps.py	/^class OrdersConfig(AppConfig):$/;"	kind:class	line:4
+PACKAGE	products/models.py	/^    PACKAGE = 'PA'$/;"	kind:variable	line:58
+PAGE_TITLE	cashflow/settings/base.py	/^PAGE_TITLE = 'DabbaNet'$/;"	kind:variable	line:18
+PAYMENT_TYPE	sales/models.py	/^    PAYMENT_TYPE = ($/;"	kind:variable	line:15
+PENDING	kitchen/models.py	/^    PENDING = 'PE'$/;"	kind:variable	line:11
+PIECE	products/models.py	/^    PIECE = 'PI'$/;"	kind:variable	line:60
+PIECE	products/models.py	/^    PIECE = 'PI'$/;"	kind:variable	line:70
+PRESENTATION_UNIT	products/models.py	/^    PRESENTATION_UNIT = ($/;"	kind:variable	line:61
+PROVIDER	kitchen/models.py	/^    PROVIDER = 'PR'$/;"	kind:variable	line:48
+PackageCartridge	products/models.py	/^class PackageCartridge(models.Model):$/;"	kind:class	line:152
+PackageCartridgeRecipe	products/models.py	/^class PackageCartridgeRecipe(models.Model):$/;"	kind:class	line:179
+PackageCartridgeRecipeInline	products/admin.py	/^class PackageCartridgeRecipeInline(admin.TabularInline):$/;"	kind:class	line:40
+PackageCartridgeRecipeSerializer	api/serializers.py	/^class PackageCartridgeRecipeSerializer(serializers.ModelSerializer):$/;"	kind:class	line:30
+PackageCartridgeSerializer	api/serializers.py	/^class PackageCartridgeSerializer(serializers.ModelSerializer):$/;"	kind:class	line:38
+ProcessedProduct	kitchen/models.py	/^class ProcessedProduct(models.Model):$/;"	kind:class	line:9
+ProductsConfig	products/apps.py	/^class ProductsConfig(AppConfig):$/;"	kind:class	line:4
+RECEIVED	orders/models.py	/^    RECEIVED = 'RE'$/;"	kind:variable	line:12
+REFRIGERATION	products/models.py	/^    REFRIGERATION = 'RE'$/;"	kind:variable	line:39
+ROOT_URLCONF	cashflow/settings/base.py	/^ROOT_URLCONF = 'cashflow.urls'$/;"	kind:variable	line:71
+Rol	users/models.py	/^class Rol(models.Model):$/;"	kind:class	line:10
+RolAdmin	users/admin.py	/^class RolAdmin(admin.ModelAdmin):$/;"	kind:class	line:10
+SECRET_KEY	cashflow/settings/base.py	/^SECRET_KEY = os.getenv('DABBANET_SECRET_KEY')$/;"	kind:variable	line:21
+SITE_ID	cashflow/settings/base.py	/^SITE_ID = 1$/;"	kind:variable	line:54
+SOLD	kitchen/models.py	/^    SOLD = 'SO'$/;"	kind:variable	line:51
+SOLD	orders/models.py	/^    SOLD = 'SE'$/;"	kind:variable	line:82
+SOLD	orders/models.py	/^    SOLD = 'SO'$/;"	kind:variable	line:51
+STATICFILES_DIRS	cashflow/settings/base.py	/^STATICFILES_DIRS = [$/;"	kind:variable	line:131
+STATIC_ROOT	cashflow/settings/base.py	/^STATIC_ROOT = os.path.join(BASE_DIR, '..\/staticfiles')$/;"	kind:variable	line:137
+STATIC_URL	cashflow/settings/base.py	/^STATIC_URL = '\/static\/'$/;"	kind:variable	line:135
+STATUS	kitchen/models.py	/^    STATUS = ($/;"	kind:variable	line:14
+STATUS	kitchen/models.py	/^    STATUS = ($/;"	kind:variable	line:52
+STATUS	orders/models.py	/^    STATUS = ($/;"	kind:variable	line:13
+STATUS	orders/models.py	/^    STATUS = ($/;"	kind:variable	line:54
+STATUS	orders/models.py	/^    STATUS = ($/;"	kind:variable	line:85
+STOCK	kitchen/models.py	/^    STOCK = 'ST'$/;"	kind:variable	line:49
+STORAGE_REQUIREMENTS	products/models.py	/^    STORAGE_REQUIREMENTS = ($/;"	kind:variable	line:41
+SalesConfig	sales/apps.py	/^class SalesConfig(AppConfig):$/;"	kind:class	line:4
+SimpleClass	tests/test_views.py	/^class SimpleClass(TestCase):$/;"	kind:class	line:8
+Supplier	branchoffices/models.py	/^class Supplier(models.Model):$/;"	kind:class	line:55
+SupplierOrder	orders/models.py	/^class SupplierOrder(models.Model):$/;"	kind:class	line:9
+SupplierOrderAdmin	orders/admin.py	/^class SupplierOrderAdmin(admin.ModelAdmin):$/;"	kind:class	line:12
+SupplierOrderDetail	orders/models.py	/^class SupplierOrderDetail(models.Model):$/;"	kind:class	line:32
+SupplierOrderDetailInline	orders/admin.py	/^class SupplierOrderDetailInline(admin.TabularInline):$/;"	kind:class	line:6
+SuppliesCategory	products/models.py	/^class SuppliesCategory(models.Model):$/;"	kind:class	line:10
+SuppliesCategoryForm	products/forms.py	/^class SuppliesCategoryForm(forms.ModelForm):$/;"	kind:class	line:15
+Supply	products/models.py	/^class Supply(models.Model):$/;"	kind:class	line:36
+SupplyForm	products/forms.py	/^class SupplyForm(forms.ModelForm):$/;"	kind:class	line:8
+SupplyLocation	products/models.py	/^class SupplyLocation(models.Model):$/;"	kind:class	line:23
+TEMPLATES	cashflow/settings/base.py	/^TEMPLATES = [$/;"	kind:variable	line:73
+THIRD_APPS	cashflow/settings/base.py	/^THIRD_APPS = [$/;"	kind:variable	line:36
+TIME_ZONE	cashflow/settings/base.py	/^TIME_ZONE = 'America\/Mexico_City'$/;"	kind:variable	line:121
+Ticket	sales/models.py	/^class Ticket(models.Model):$/;"	kind:class	line:10
+TicketAdmin	sales/admin.py	/^class TicketAdmin(admin.ModelAdmin):$/;"	kind:class	line:14
+TicketDetail	sales/models.py	/^class TicketDetail(models.Model):$/;"	kind:class	line:66
+TicketDetailAdmin	sales/admin.py	/^class TicketDetailAdmin(admin.ModelAdmin):$/;"	kind:class	line:24
+TicketDetailInline	sales/admin.py	/^class TicketDetailInline(admin.TabularInline):$/;"	kind:class	line:8
+USER_APPS	cashflow/settings/base.py	/^USER_APPS = [$/;"	kind:variable	line:42
+USE_I18N	cashflow/settings/base.py	/^USE_I18N = True$/;"	kind:variable	line:123
+USE_L10N	cashflow/settings/base.py	/^USE_L10N = True$/;"	kind:variable	line:125
+USE_TZ	cashflow/settings/base.py	/^USE_TZ = True$/;"	kind:variable	line:127
+User	users/models.py	/^class User(AbstractUser):$/;"	kind:class	line:21
+UserForm	users/forms.py	/^class UserForm(forms.ModelForm):$/;"	kind:class	line:6
+UserProfileAdmin	users/admin.py	/^class UserProfileAdmin(admin.ModelAdmin):$/;"	kind:class	line:6
+UserProfileSerializer	api/serializers.py	/^class UserProfileSerializer(serializers.ModelSerializer):$/;"	kind:class	line:9
+UsersConfig	users/apps.py	/^class UsersConfig(AppConfig):$/;"	kind:class	line:4
+WSGI_APPLICATION	cashflow/settings/base.py	/^WSGI_APPLICATION = 'cashflow.wsgi.application'$/;"	kind:variable	line:99
+Warehouse	kitchen/models.py	/^class Warehouse(models.Model):$/;"	kind:class	line:47
+YEARS	products/models.py	/^    YEARS = 'YE'$/;"	kind:variable	line:50
+__init__.py	api/__init__.py	1;"	kind:file	line:1
+__init__.py	api/migrations/__init__.py	1;"	kind:file	line:1
+__init__.py	branchoffices/__init__.py	1;"	kind:file	line:1
+__init__.py	branchoffices/migrations/__init__.py	1;"	kind:file	line:1
+__init__.py	cashflow/__init__.py	1;"	kind:file	line:1
+__init__.py	cashflow/settings/__init__.py	1;"	kind:file	line:1
+__init__.py	kitchen/__init__.py	1;"	kind:file	line:1
+__init__.py	kitchen/migrations/__init__.py	1;"	kind:file	line:1
+__init__.py	orders/__init__.py	1;"	kind:file	line:1
+__init__.py	orders/migrations/__init__.py	1;"	kind:file	line:1
+__init__.py	products/__init__.py	1;"	kind:file	line:1
+__init__.py	products/migrations/__init__.py	1;"	kind:file	line:1
+__init__.py	sales/__init__.py	1;"	kind:file	line:1
+__init__.py	sales/migrations/__init__.py	1;"	kind:file	line:1
+__init__.py	tests/__init__.py	1;"	kind:file	line:1
+__init__.py	users/__init__.py	1;"	kind:file	line:1
+__init__.py	users/migrations/__init__.py	1;"	kind:file	line:1
+__str__	branchoffices/models.py	/^    def __str__(self):$/;"	kind:member	line:15
+__str__	branchoffices/models.py	/^    def __str__(self):$/;"	kind:member	line:46
+__str__	branchoffices/models.py	/^    def __str__(self):$/;"	kind:member	line:59
+__str__	kitchen/models.py	/^    def __str__(self):$/;"	kind:member	line:24
+__str__	kitchen/models.py	/^    def __str__(self):$/;"	kind:member	line:67
+__str__	orders/models.py	/^    def __str__(self):$/;"	kind:member	line:23
+__str__	orders/models.py	/^    def __str__(self):$/;"	kind:member	line:39
+__str__	orders/models.py	/^    def __str__(self):$/;"	kind:member	line:71
+__str__	orders/models.py	/^    def __str__(self):$/;"	kind:member	line:95
+__str__	products/models.py	/^    def __str__(self):$/;"	kind:member	line:120
+__str__	products/models.py	/^    def __str__(self):$/;"	kind:member	line:14
+__str__	products/models.py	/^    def __str__(self):$/;"	kind:member	line:143
+__str__	products/models.py	/^    def __str__(self):$/;"	kind:member	line:157
+__str__	products/models.py	/^    def __str__(self):$/;"	kind:member	line:184
+__str__	products/models.py	/^    def __str__(self):$/;"	kind:member	line:27
+__str__	products/models.py	/^    def __str__(self):$/;"	kind:member	line:95
+__str__	sales/models.py	/^    def __str__(self):$/;"	kind:member	line:28
+__str__	sales/models.py	/^    def __str__(self):$/;"	kind:member	line:75
+__str__	users/models.py	/^    def __str__(self):$/;"	kind:member	line:17
+actions	sales/admin.py	/^    actions = (export_as_excel,)$/;"	kind:variable	line:20
+actions	sales/admin.py	/^    actions = (export_as_excel,)$/;"	kind:variable	line:29
+actions.py	actions.py	1;"	kind:file	line:1
+address	branchoffices/models.py	/^    address = models.CharField(max_length=255, default='')$/;"	kind:variable	line:11
+address	users/models.py	/^    address = models.CharField($/;"	kind:variable	line:53
+admin.py	api/admin.py	1;"	kind:file	line:1
+admin.py	branchoffices/admin.py	1;"	kind:file	line:1
+admin.py	kitchen/admin.py	1;"	kind:file	line:1
+admin.py	orders/admin.py	1;"	kind:file	line:1
+admin.py	products/admin.py	1;"	kind:file	line:1
+admin.py	sales/admin.py	1;"	kind:file	line:1
+admin.py	users/admin.py	1;"	kind:file	line:1
+app_name	branchoffices/urls.py	/^app_name = 'branch_offices'$/;"	kind:variable	line:5
+app_name	kitchen/urls.py	/^app_name = 'kitchen'$/;"	kind:variable	line:5
+app_name	orders/urls.py	/^app_name = 'orders'$/;"	kind:variable	line:5
+app_name	products/urls.py	/^app_name = 'products'$/;"	kind:variable	line:6
+app_name	sales/urls.py	/^app_name = 'sales'$/;"	kind:variable	line:6
+app_name	users/urls.py	/^app_name = 'users'$/;"	kind:variable	line:6
+application	cashflow/wsgi.py	/^application = get_wsgi_application()$/;"	kind:variable	line:16
+apps.py	api/apps.py	1;"	kind:file	line:1
+apps.py	branchoffices/apps.py	1;"	kind:file	line:1
+apps.py	kitchen/apps.py	1;"	kind:file	line:1
+apps.py	orders/apps.py	1;"	kind:file	line:1
+apps.py	products/apps.py	1;"	kind:file	line:1
+apps.py	sales/apps.py	1;"	kind:file	line:1
+apps.py	users/apps.py	1;"	kind:file	line:1
+are_equal_lists	sales/views.py	/^            def are_equal_lists(list_1, list_2):$/;"	kind:function	line:194
+assembly	kitchen/views.py	/^def assembly(request):$/;"	kind:function	line:108
+assigned_dealer	orders/models.py	/^    assigned_dealer = models.ForeignKey(UserProfile, default=1, on_delete=models.CASCADE)$/;"	kind:variable	line:21
+barcode	products/models.py	/^    barcode = models.PositiveIntegerField($/;"	kind:variable	line:80
+base.py	cashflow/settings/base.py	1;"	kind:file	line:1
+branch_office	branchoffices/models.py	/^    branch_office = models.ForeignKey(BranchOffice, default=1, on_delete=models.CASCADE)$/;"	kind:variable	line:30
+branch_office	products/models.py	/^    branch_office = models.ForeignKey(BranchOffice, default=1, on_delete=models.CASCADE)$/;"	kind:variable	line:25
+branch_offices	branchoffices/views.py	/^def branch_offices(request):$/;"	kind:function	line:7
+cartridge	api/serializers.py	/^    cartridge = CartridgeSerializer(read_only=True)$/;"	kind:variable	line:31
+cartridge	api/serializers.py	/^    cartridge = CartridgeSerializer(read_only=True, )$/;"	kind:variable	line:48
+cartridge	orders/models.py	/^    cartridge = models.ForeignKey(Cartridge, on_delete=models.CASCADE, blank=True, null=True)$/;"	kind:variable	line:91
+cartridge	products/models.py	/^    cartridge = models.ForeignKey(Cartridge, default=1, on_delete=models.CASCADE)$/;"	kind:variable	line:139
+cartridge	products/models.py	/^    cartridge = models.ForeignKey(Cartridge, default=1, on_delete=models.CASCADE)$/;"	kind:variable	line:181
+cartridge	sales/models.py	/^    cartridge = models.ForeignKey($/;"	kind:variable	line:68
+cartridge_detail	products/views.py	/^def cartridge_detail(request, pk):$/;"	kind:function	line:175
+cartridges	products/views.py	/^def cartridges(request):$/;"	kind:function	line:141
+cash_register	sales/models.py	/^    cash_register = models.ForeignKey($/;"	kind:variable	line:23
+categories	products/views.py	/^def categories(request):$/;"	kind:function	line:92
+categories_supplies	products/views.py	/^def categories_supplies(request, categ):$/;"	kind:function	line:126
+category	products/models.py	/^    category = models.CharField(choices=CATEGORIES, default=FOOD_DISHES, max_length=2)$/;"	kind:variable	line:116
+category	products/models.py	/^    category = models.ForeignKey(SuppliesCategory, default=1, on_delete=models.CASCADE)$/;"	kind:variable	line:79
+code	branchoffices/models.py	/^    code = models.CharField($/;"	kind:variable	line:25
+cold_kitchen	kitchen/views.py	/^def cold_kitchen(request):$/;"	kind:function	line:12
+cost	kitchen/models.py	/^    cost = models.FloatField(default=0)$/;"	kind:variable	line:65
+cost	orders/models.py	/^    cost = models.DecimalField(default=0, max_digits=12, decimal_places=2)$/;"	kind:variable	line:36
+create_first_cash_register	branchoffices/models.py	/^    def create_first_cash_register(sender, instance, **kwargs):$/;"	kind:member	line:34
+create_processed_product	kitchen/models.py	/^    def create_processed_product(sender, instance, **kwargs):$/;"	kind:member	line:28
+created_at	api/serializers.py	/^    created_at = DateTimeFieldWihTZ()$/;"	kind:variable	line:68
+created_at	kitchen/models.py	/^    created_at = models.DateField(editable=False, auto_now_add=True)$/;"	kind:variable	line:61
+created_at	kitchen/models.py	/^    created_at = models.DateTimeField(auto_now_add=True)$/;"	kind:variable	line:19
+created_at	orders/models.py	/^    created_at = models.DateTimeField(auto_now_add=True, editable=False)$/;"	kind:variable	line:60
+created_at	orders/models.py	/^    created_at = models.DateTimeField(editable=False, auto_now_add=True)$/;"	kind:variable	line:19
+created_at	products/models.py	/^    created_at = models.DateTimeField(auto_now=True)$/;"	kind:variable	line:117
+created_at	products/models.py	/^    created_at = models.DateTimeField(editable=False, auto_now=True)$/;"	kind:variable	line:92
+created_at	sales/admin.py	/^    def created_at(self):$/;"	kind:member	line:31
+created_at	sales/models.py	/^    created_at = models.DateTimeField(editable=True)$/;"	kind:variable	line:20
+customer_order	orders/models.py	/^    customer_order = models.ForeignKey(CustomerOrder, default=1, on_delete=models.CASCADE)$/;"	kind:variable	line:90
+customer_order_detail	api/urls.py	/^customer_order_detail = views.CustomerOrderViewSet.as_view({$/;"	kind:variable	line:9
+customer_order_detail_score	api/urls.py	/^customer_order_detail_score = views.CustomerOrderScoreViewSet.as_view({$/;"	kind:variable	line:19
+customer_order_detail_status	api/urls.py	/^customer_order_detail_status = views.CustomerOrderStatusViewSet.as_view({$/;"	kind:variable	line:14
+customer_order_details	api/serializers.py	/^    customer_order_details = CustomerOrderDetailSerializer(many=True, read_only=True, source='customerorderdetail_set')$/;"	kind:variable	line:63
+customer_order_pin	api/urls.py	/^customer_order_pin = views.CustomerOrderPinViewSet.as_view({$/;"	kind:variable	line:24
+customer_orders	api/urls.py	/^customer_orders = views.CustomerOrderViewSet.as_view({$/;"	kind:variable	line:4
+customer_user	api/serializers.py	/^    customer_user = UserProfileSerializer(read_only=True, )$/;"	kind:variable	line:64
+customer_user	orders/models.py	/^    customer_user = models.ForeignKey(UserProfile, default=1)$/;"	kind:variable	line:59
+customer_user_id	api/serializers.py	/^    customer_user_id = serializers.PrimaryKeyRelatedField(write_only=True, queryset=UserProfile.objects.all(),$/;"	kind:variable	line:65
+customers_list	users/views.py	/^def customers_list(request):$/;"	kind:function	line:140
+date_hierarchy	sales/admin.py	/^    date_hierarchy = 'created_at'$/;"	kind:variable	line:18
+default	branchoffices/models.py	/^        default='Cash_'$/;"	kind:variable	line:28
+delivery_date	api/serializers.py	/^    delivery_date = DateTimeFieldWihTZ()$/;"	kind:variable	line:67
+delivery_date	orders/models.py	/^    delivery_date = models.DateTimeField(auto_created=True, editable=True)$/;"	kind:variable	line:61
+dependencies	branchoffices/migrations/0001_initial.py	/^    dependencies = [$/;"	kind:variable	line:14
+dependencies	branchoffices/migrations/0002_branchoffice_manager.py	/^    dependencies = [$/;"	kind:variable	line:14
+dependencies	kitchen/migrations/0001_initial.py	/^    dependencies = [$/;"	kind:variable	line:13
+dependencies	kitchen/migrations/0002_processedproduct_ticket.py	/^    dependencies = [$/;"	kind:variable	line:13
+dependencies	orders/migrations/0001_initial.py	/^    dependencies = [$/;"	kind:variable	line:14
+dependencies	orders/migrations/0002_auto_20170211_0320.py	/^    dependencies = [$/;"	kind:variable	line:14
+dependencies	products/migrations/0001_initial.py	/^    dependencies = [$/;"	kind:variable	line:14
+dependencies	sales/migrations/0001_initial.py	/^    dependencies = [$/;"	kind:variable	line:13
+dependencies	sales/migrations/0002_ticket_seller.py	/^    dependencies = [$/;"	kind:variable	line:14
+dependencies	sales/migrations/0003_ticket_payment_type.py	/^    dependencies = [$/;"	kind:variable	line:10
+dependencies	users/migrations/0001_initial.py	/^    dependencies = [$/;"	kind:variable	line:16
+dev.py	cashflow/settings/dev.py	1;"	kind:file	line:1
+dev_postgres.py	cashflow/settings/dev_postgres.py	1;"	kind:file	line:1
+email	users/models.py	/^    email = models.EmailField($/;"	kind:variable	line:47
+end_date	sales/views.py	/^        def end_date():$/;"	kind:function	line:71
+error_messages	users/models.py	/^        error_messages={$/;"	kind:variable	line:35
+error_messages	users/models.py	/^        error_messages={$/;"	kind:variable	line:43
+error_messages	users/models.py	/^        error_messages={$/;"	kind:variable	line:49
+error_messages	users/models.py	/^        error_messages={$/;"	kind:variable	line:55
+expiry_date	kitchen/models.py	/^    expiry_date = models.DateField(editable=True, auto_now_add=True)$/;"	kind:variable	line:62
+export_as_excel	actions.py	/^def export_as_excel(modeladmin, request, queryset):$/;"	kind:function	line:12
+extra	branchoffices/admin.py	/^    extra = 0$/;"	kind:variable	line:8
+extra	orders/admin.py	/^    extra = 1$/;"	kind:variable	line:19
+extra	orders/admin.py	/^    extra = 1$/;"	kind:variable	line:8
+extra	products/admin.py	/^    extra = 0$/;"	kind:variable	line:42
+extra	products/admin.py	/^    extra = 1$/;"	kind:variable	line:29
+extra	sales/admin.py	/^    extra = 1$/;"	kind:variable	line:10
+field	branchoffices/migrations/0002_branchoffice_manager.py	/^            field=models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to=settings.AUTH_USER_MODEL),$/;"	kind:variable	line:23
+field	kitchen/migrations/0002_processedproduct_ticket.py	/^            field=models.OneToOneField(on_delete=django.db.models.deletion.CASCADE, to='sales.Ticket'),$/;"	kind:variable	line:22
+field	orders/migrations/0002_auto_20170211_0320.py	/^            field=models.ForeignKey(blank=True, null=True, on_delete=django.db.models.deletion.CASCADE, to='products.Cartridge'),$/;"	kind:variable	line:29
+field	orders/migrations/0002_auto_20170211_0320.py	/^            field=models.ForeignKey(blank=True, null=True, on_delete=django.db.models.deletion.CASCADE, to='products.PackageCartridge'),$/;"	kind:variable	line:39
+field	orders/migrations/0002_auto_20170211_0320.py	/^            field=models.ForeignKey(default=1, on_delete=django.db.models.deletion.CASCADE, to='orders.CustomerOrder'),$/;"	kind:variable	line:34
+field	orders/migrations/0002_auto_20170211_0320.py	/^            field=models.ForeignKey(default=1, on_delete=django.db.models.deletion.CASCADE, to=settings.AUTH_USER_MODEL),$/;"	kind:variable	line:24
+field	orders/migrations/0002_auto_20170211_0320.py	/^            field=models.ForeignKey(default=1, on_delete=django.db.models.deletion.CASCADE, to=settings.AUTH_USER_MODEL),$/;"	kind:variable	line:44
+field	products/migrations/0001_initial.py	/^            field=models.ForeignKey(default=1, on_delete=django.db.models.deletion.CASCADE, to='branchoffices.Supplier'),$/;"	kind:variable	line:133
+field	products/migrations/0001_initial.py	/^            field=models.ForeignKey(default=1, on_delete=django.db.models.deletion.CASCADE, to='products.Supply'),$/;"	kind:variable	line:138
+field	products/migrations/0001_initial.py	/^            field=models.ForeignKey(default=1, on_delete=django.db.models.deletion.CASCADE, to='products.SupplyLocation'),$/;"	kind:variable	line:128
+field	sales/migrations/0002_ticket_seller.py	/^            field=models.ForeignKey(default=1, on_delete=django.db.models.deletion.CASCADE, to=settings.AUTH_USER_MODEL),$/;"	kind:variable	line:23
+field	sales/migrations/0003_ticket_payment_type.py	/^            field=models.CharField(choices=[('CA', 'Efectivo'), ('CR', 'Crédito')], default='CA', max_length=2),$/;"	kind:variable	line:18
+field	users/migrations/0001_initial.py	/^            field=models.ForeignKey(blank=True, null=True, on_delete=django.db.models.deletion.CASCADE, to='users.Rol'),$/;"	kind:variable	line:79
+fields	api/serializers.py	/^        fields = ($/;"	kind:variable	line:72
+fields	api/serializers.py	/^        fields = ('id', 'cartridge', 'package_cartridge', 'quantity',)$/;"	kind:variable	line:53
+fields	api/serializers.py	/^        fields = ('id', 'cartridge', 'quantity',)$/;"	kind:variable	line:35
+fields	api/serializers.py	/^        fields = ('id', 'name', 'price', 'category', 'image')$/;"	kind:variable	line:27
+fields	api/serializers.py	/^        fields = ('id', 'name', 'price', 'package_cartridge_recipe',)$/;"	kind:variable	line:44
+fields	api/serializers.py	/^        fields = ('id', 'username', 'first_name', 'last_name', 'email',)$/;"	kind:variable	line:12
+fields	api/serializers.py	/^        fields = ('pin',)/;"	kind:variable	line:93
+fields	api/serializers.py	/^        fields = ('score',)$/;"	kind:variable	line:87
+fields	api/serializers.py	/^        fields = ('status',)$/;"	kind:variable	line:81
+fields	api/serializers.py	/^        fields = ('user', 'user_id', 'phone_number',)$/;"	kind:variable	line:21
+fields	branchoffices/migrations/0001_initial.py	/^            fields=[$/;"	kind:variable	line:20
+fields	branchoffices/migrations/0001_initial.py	/^            fields=[$/;"	kind:variable	line:34
+fields	branchoffices/migrations/0001_initial.py	/^            fields=[$/;"	kind:variable	line:48
+fields	kitchen/migrations/0001_initial.py	/^            fields=[$/;"	kind:variable	line:20
+fields	kitchen/migrations/0001_initial.py	/^            fields=[$/;"	kind:variable	line:34
+fields	orders/migrations/0001_initial.py	/^            fields=[$/;"	kind:variable	line:22
+fields	orders/migrations/0001_initial.py	/^            fields=[$/;"	kind:variable	line:41
+fields	orders/migrations/0001_initial.py	/^            fields=[$/;"	kind:variable	line:53
+fields	orders/migrations/0001_initial.py	/^            fields=[$/;"	kind:variable	line:66
+fields	products/forms.py	/^        fields = '__all__'$/;"	kind:variable	line:12
+fields	products/forms.py	/^        fields = '__all__'$/;"	kind:variable	line:19
+fields	products/forms.py	/^        fields = '__all__'$/;"	kind:variable	line:26
+fields	products/migrations/0001_initial.py	/^            fields=[$/;"	kind:variable	line:114
+fields	products/migrations/0001_initial.py	/^            fields=[$/;"	kind:variable	line:21
+fields	products/migrations/0001_initial.py	/^            fields=[$/;"	kind:variable	line:37
+fields	products/migrations/0001_initial.py	/^            fields=[$/;"	kind:variable	line:50
+fields	products/migrations/0001_initial.py	/^            fields=[$/;"	kind:variable	line:64
+fields	products/migrations/0001_initial.py	/^            fields=[$/;"	kind:variable	line:78
+fields	products/migrations/0001_initial.py	/^            fields=[$/;"	kind:variable	line:91
+fields	sales/migrations/0001_initial.py	/^            fields=[$/;"	kind:variable	line:21
+fields	sales/migrations/0001_initial.py	/^            fields=[$/;"	kind:variable	line:34
+fields	users/forms.py	/^        fields = ['user', 'email', 'phone_number', 'longitude', 'latitude', 'address', 'first_dabba']$/;"	kind:variable	line:17
+fields	users/forms.py	/^        fields = ['username', 'email', 'password', 'is_active']$/;"	kind:variable	line:11
+fields	users/migrations/0001_initial.py	/^            fields=[$/;"	kind:variable	line:23
+fields	users/migrations/0001_initial.py	/^            fields=[$/;"	kind:variable	line:50
+fields	users/migrations/0001_initial.py	/^            fields=[$/;"	kind:variable	line:67
+first_dabba	users/models.py	/^    first_dabba = models.BooleanField(default=False)$/;"	kind:variable	line:61
+formfield_for_foreignkey	products/admin.py	/^    def formfield_for_foreignkey(self, db_field, request, **kwargs):$/;"	kind:member	line:44
+forms.py	orders/forms.py	1;"	kind:file	line:1
+forms.py	products/forms.py	1;"	kind:file	line:1
+forms.py	sales/forms.py	1;"	kind:file	line:1
+forms.py	users/forms.py	1;"	kind:file	line:1
+get_image	products/models.py	/^    def get_image(self):$/;"	kind:member	line:123
+get_name_day	sales/views.py	/^    def get_name_day():$/;"	kind:function	line:147
+get_name_day	sales/views.py	/^    def get_name_day():$/;"	kind:function	line:37
+get_number_day	sales/views.py	/^    def get_number_day():$/;"	kind:function	line:51
+get_processed_products	kitchen/views.py	/^    def get_processed_products():$/;"	kind:function	line:16
+get_processed_products	kitchen/views.py	/^    def get_processed_products():$/;"	kind:function	line:64
+get_sales_day	sales/views.py	/^    def get_sales_day():$/;"	kind:function	line:92
+get_sales_day	sales/views.py	/^    def get_sales_day(filter_date):$/;"	kind:function	line:161
+get_sales_day_view	sales/views.py	/^def get_sales_day_view(request):$/;"	kind:function	line:146
+get_sales_week	sales/views.py	/^    def get_sales_week():$/;"	kind:function	line:60
+get_tickets	sales/views.py	/^    def get_tickets():$/;"	kind:function	line:96
+get_week_number	sales/views.py	/^    def get_week_number():$/;"	kind:function	line:57
+help_text	branchoffices/models.py	/^        help_text='Asigne un nuevo nombre a la caja registradora',$/;"	kind:variable	line:26
+help_text	products/models.py	/^        help_text='(Código de barras de 13 dígitos)',$/;"	kind:variable	line:81
+hot_kitchen	kitchen/views.py	/^def hot_kitchen(request):$/;"	kind:function	line:60
+image	branchoffices/models.py	/^    image = models.ImageField(blank=False, upload_to='media\/suppliers')$/;"	kind:variable	line:57
+image	products/models.py	/^    image = models.ImageField(blank=False, upload_to='cartridges')$/;"	kind:variable	line:118
+image	products/models.py	/^    image = models.ImageField(blank=False, upload_to='supplies')$/;"	kind:variable	line:93
+image	products/models.py	/^    image = models.ImageField(blank=False, upload_to='supplies-categories')$/;"	kind:variable	line:12
+index	users/views.py	/^def index(request):$/;"	kind:function	line:44
+initial	branchoffices/migrations/0001_initial.py	/^    initial = True$/;"	kind:variable	line:12
+initial	branchoffices/migrations/0002_branchoffice_manager.py	/^    initial = True$/;"	kind:variable	line:12
+initial	kitchen/migrations/0001_initial.py	/^    initial = True$/;"	kind:variable	line:11
+initial	kitchen/migrations/0002_processedproduct_ticket.py	/^    initial = True$/;"	kind:variable	line:11
+initial	orders/migrations/0001_initial.py	/^    initial = True$/;"	kind:variable	line:12
+initial	orders/migrations/0002_auto_20170211_0320.py	/^    initial = True$/;"	kind:variable	line:12
+initial	products/migrations/0001_initial.py	/^    initial = True$/;"	kind:variable	line:12
+initial	sales/migrations/0001_initial.py	/^    initial = True$/;"	kind:variable	line:11
+initial	sales/migrations/0002_ticket_seller.py	/^    initial = True$/;"	kind:variable	line:12
+initial	users/migrations/0001_initial.py	/^    initial = True$/;"	kind:variable	line:14
+inlines	branchoffices/admin.py	/^    inlines = [CashRegisterInline, ]$/;"	kind:variable	line:14
+inlines	orders/admin.py	/^    inlines = [CustomerOrderDetailInline, ]$/;"	kind:variable	line:25
+inlines	orders/admin.py	/^    inlines = [SupplierOrderDetailInline, ]$/;"	kind:variable	line:14
+inlines	products/admin.py	/^    inlines = [CartridgeRecipeInline, ]$/;"	kind:variable	line:37
+inlines	products/admin.py	/^    inlines = [PackageCartridgeRecipeInline]$/;"	kind:variable	line:53
+inlines	sales/admin.py	/^    inlines = [TicketDetailInline, ]$/;"	kind:variable	line:19
+is_activate	branchoffices/models.py	/^    is_activate = models.BooleanField(default=False)$/;"	kind:variable	line:13
+is_active	branchoffices/models.py	/^    is_active = models.BooleanField(default=False)$/;"	kind:variable	line:31
+items_list_to_int	sales/views.py	/^            def items_list_to_int(list_to_cast):$/;"	kind:function	line:184
+latitude	orders/models.py	/^    latitude = models.FloatField(default=0)$/;"	kind:variable	line:63
+latitude	users/models.py	/^    latitude = models.CharField(default=0.0, max_length=30, blank=True)$/;"	kind:variable	line:60
+list_display	branchoffices/admin.py	/^    list_display = ('name', 'image',)$/;"	kind:variable	line:19
+list_display	branchoffices/admin.py	/^    list_display = ('name', 'manager', 'address',)$/;"	kind:variable	line:13
+list_display	kitchen/admin.py	/^    list_display = ('id', 'created_at', 'status', 'ticket')$/;"	kind:variable	line:8
+list_display	kitchen/admin.py	/^    list_display = ('supply', 'status', 'quantity', 'waste', 'cost')$/;"	kind:variable	line:17
+list_display	orders/admin.py	/^    list_display = ('created_at', 'status', 'assigned_dealer',)$/;"	kind:variable	line:13
+list_display	orders/admin.py	/^    list_display = ('customer_user', 'created_at', 'delivery_date', 'price', 'status')$/;"	kind:variable	line:24
+list_display	products/admin.py	/^    list_display = ('id', 'name', 'category', 'supplier', 'presentation_unit', 'presentation_cost', 'measurement_unit',$/;"	kind:variable	line:21
+list_display	products/admin.py	/^    list_display = ('id', 'name', 'price', 'category', 'created_at', 'get_image', 'image')$/;"	kind:variable	line:34
+list_display	products/admin.py	/^    list_display = ('id', 'name', 'price', 'package_active', 'package_recipe')$/;"	kind:variable	line:51
+list_display	products/admin.py	/^    list_display = ('location', 'branch_office',)$/;"	kind:variable	line:16
+list_display	products/admin.py	/^    list_display = ('name', 'image',)$/;"	kind:variable	line:11
+list_display	sales/admin.py	/^    list_display = ('id', 'created_at', 'seller', 'ticket_details', 'payment_type', 'total',)$/;"	kind:variable	line:15
+list_display	sales/admin.py	/^    list_display = ('id', 'ticket', 'created_at', 'cartridge', 'package_cartridge', 'quantity', 'price',)$/;"	kind:variable	line:25
+list_display	users/admin.py	/^    list_display = ('user', 'address', 'latitude', 'longitude', 'first_dabba')$/;"	kind:variable	line:16
+list_display_links	kitchen/admin.py	/^    list_display_links = ('id', 'created_at')$/;"	kind:variable	line:9
+list_display_links	products/admin.py	/^    list_display_links = ('id', 'name')$/;"	kind:variable	line:23
+list_display_links	products/admin.py	/^    list_display_links = ('id', 'name')$/;"	kind:variable	line:35
+list_display_links	products/admin.py	/^    list_display_links = ('id', 'name')$/;"	kind:variable	line:52
+list_display_links	sales/admin.py	/^    list_display_links = ('id', 'created_at',)$/;"	kind:variable	line:17
+list_display_links	sales/admin.py	/^    list_display_links = ('id', 'ticket', )$/;"	kind:variable	line:26
+list_editable	products/admin.py	/^    list_editable = ('image',)$/;"	kind:variable	line:36
+list_filter	sales/admin.py	/^    list_filter = ('seller', 'created_at', 'payment_type',)$/;"	kind:variable	line:16
+list_filter	sales/admin.py	/^    list_filter = ('ticket',)$/;"	kind:variable	line:27
+location	products/models.py	/^    location = models.CharField(max_length=90, default='')$/;"	kind:variable	line:24
+location	products/models.py	/^    location = models.ForeignKey(SupplyLocation, default=1, on_delete=models.CASCADE)$/;"	kind:variable	line:91
+login	users/views.py	/^def login(request):$/;"	kind:function	line:49
+logout	users/views.py	/^def logout(request):$/;"	kind:function	line:94
+longitude	orders/models.py	/^    longitude = models.FloatField(default=0)$/;"	kind:variable	line:64
+longitude	users/models.py	/^    longitude = models.CharField(default='0.0', max_length=30, blank=True)$/;"	kind:variable	line:59
+manage.py	manage.py	1;"	kind:file	line:1
+manager	branchoffices/models.py	/^    manager = models.ForeignKey(UserProfile, on_delete=models.CASCADE)$/;"	kind:variable	line:12
+managers	users/migrations/0001_initial.py	/^            managers=[$/;"	kind:variable	line:44
+max_length	branchoffices/models.py	/^        max_length=9,$/;"	kind:variable	line:27
+max_length	users/models.py	/^        max_length=13,$/;"	kind:variable	line:41
+max_length	users/models.py	/^        max_length=150,$/;"	kind:variable	line:32
+max_length	users/models.py	/^        max_length=255,$/;"	kind:variable	line:54
+measurement_quantity	products/models.py	/^    measurement_quantity = models.FloatField(default=0)$/;"	kind:variable	line:87
+measurement_unit	products/models.py	/^    measurement_unit = models.CharField(max_length=10, choices=METRICS, default=PACKAGE)$/;"	kind:variable	line:88
+middlewares.py	core/middlewares.py	1;"	kind:file	line:1
+model	api/serializers.py	/^        model = Cartridge$/;"	kind:variable	line:26
+model	api/serializers.py	/^        model = CustomerOrder$/;"	kind:variable	line:71
+model	api/serializers.py	/^        model = CustomerOrder$/;"	kind:variable	line:80
+model	api/serializers.py	/^        model = CustomerOrder$/;"	kind:variable	line:86
+model	api/serializers.py	/^        model = CustomerOrder$/;"	kind:variable	line:92
+model	api/serializers.py	/^        model = CustomerOrderDetail$/;"	kind:variable	line:52
+model	api/serializers.py	/^        model = PackageCartridge$/;"	kind:variable	line:43
+model	api/serializers.py	/^        model = PackageCartridgeRecipe$/;"	kind:variable	line:34
+model	api/serializers.py	/^        model = UserProfile$/;"	kind:variable	line:11
+model	api/serializers.py	/^        model = UserProfile$/;"	kind:variable	line:20
+model	branchoffices/admin.py	/^    model = CashRegister$/;"	kind:variable	line:7
+model	orders/admin.py	/^    model = CustomerOrderDetail$/;"	kind:variable	line:18
+model	orders/admin.py	/^    model = SupplierOrderDetail$/;"	kind:variable	line:7
+model	products/admin.py	/^    model = CartridgeRecipe$/;"	kind:variable	line:28
+model	products/admin.py	/^    model = PackageCartridgeRecipe$/;"	kind:variable	line:41
+model	products/forms.py	/^        model = Cartridge$/;"	kind:variable	line:25
+model	products/forms.py	/^        model = SuppliesCategory$/;"	kind:variable	line:18
+model	products/forms.py	/^        model = Supply$/;"	kind:variable	line:11
+model	sales/admin.py	/^    model = TicketDetail$/;"	kind:variable	line:9
+model	users/forms.py	/^        model = CustomerProfile$/;"	kind:variable	line:16
+model	users/forms.py	/^        model = UserProfile$/;"	kind:variable	line:10
+model_name	branchoffices/migrations/0002_branchoffice_manager.py	/^            model_name='branchoffice',$/;"	kind:variable	line:21
+model_name	kitchen/migrations/0002_processedproduct_ticket.py	/^            model_name='processedproduct',$/;"	kind:variable	line:20
+model_name	orders/migrations/0002_auto_20170211_0320.py	/^            model_name='customerorder',$/;"	kind:variable	line:42
+model_name	orders/migrations/0002_auto_20170211_0320.py	/^            model_name='customerorderdetail',$/;"	kind:variable	line:27
+model_name	orders/migrations/0002_auto_20170211_0320.py	/^            model_name='customerorderdetail',$/;"	kind:variable	line:32
+model_name	orders/migrations/0002_auto_20170211_0320.py	/^            model_name='customerorderdetail',$/;"	kind:variable	line:37
+model_name	orders/migrations/0002_auto_20170211_0320.py	/^            model_name='supplierorder',$/;"	kind:variable	line:22
+model_name	products/migrations/0001_initial.py	/^            model_name='cartridgerecipe',$/;"	kind:variable	line:136
+model_name	products/migrations/0001_initial.py	/^            model_name='supply',$/;"	kind:variable	line:126
+model_name	products/migrations/0001_initial.py	/^            model_name='supply',$/;"	kind:variable	line:131
+model_name	sales/migrations/0002_ticket_seller.py	/^            model_name='ticket',$/;"	kind:variable	line:21
+model_name	sales/migrations/0003_ticket_payment_type.py	/^            model_name='ticket',$/;"	kind:variable	line:16
+model_name	users/migrations/0001_initial.py	/^            model_name='user',$/;"	kind:variable	line:77
+models.py	api/models.py	1;"	kind:file	line:1
+models.py	branchoffices/models.py	1;"	kind:file	line:1
+models.py	kitchen/models.py	1;"	kind:file	line:1
+models.py	orders/models.py	1;"	kind:file	line:1
+models.py	products/models.py	1;"	kind:file	line:1
+models.py	sales/models.py	1;"	kind:file	line:1
+models.py	users/models.py	1;"	kind:file	line:1
+naive_to_datetime	sales/views.py	/^    def naive_to_datetime(nd):$/;"	kind:function	line:23
+name	api/apps.py	/^    name = 'api'$/;"	kind:variable	line:5
+name	api/urls.py	/^        name='customer_order_detail_score'),$/;"	kind:variable	line:35
+name	api/urls.py	/^        name='customer_order_detail_status'),$/;"	kind:variable	line:33
+name	api/urls.py	/^        name='customer_order_pin'),$/;"	kind:variable	line:37
+name	branchoffices/apps.py	/^    name = 'branchoffices'$/;"	kind:variable	line:5
+name	branchoffices/migrations/0001_initial.py	/^            name='BranchOffice',$/;"	kind:variable	line:19
+name	branchoffices/migrations/0001_initial.py	/^            name='CashRegister',$/;"	kind:variable	line:33
+name	branchoffices/migrations/0001_initial.py	/^            name='Supplier',$/;"	kind:variable	line:47
+name	branchoffices/migrations/0002_branchoffice_manager.py	/^            name='manager',$/;"	kind:variable	line:22
+name	branchoffices/models.py	/^    name = models.CharField(max_length=90, default='')$/;"	kind:variable	line:10
+name	branchoffices/models.py	/^    name = models.CharField(validators=[MinLengthValidator(4)], max_length=255, unique=True)$/;"	kind:variable	line:56
+name	kitchen/apps.py	/^    name = 'kitchen'$/;"	kind:variable	line:5
+name	kitchen/migrations/0001_initial.py	/^            name='ProcessedProduct',$/;"	kind:variable	line:19
+name	kitchen/migrations/0001_initial.py	/^            name='Warehouse',$/;"	kind:variable	line:33
+name	kitchen/migrations/0002_processedproduct_ticket.py	/^            name='ticket',$/;"	kind:variable	line:21
+name	orders/apps.py	/^    name = 'orders'$/;"	kind:variable	line:5
+name	orders/migrations/0001_initial.py	/^            name='CustomerOrder',$/;"	kind:variable	line:21
+name	orders/migrations/0001_initial.py	/^            name='CustomerOrderDetail',$/;"	kind:variable	line:40
+name	orders/migrations/0001_initial.py	/^            name='SupplierOrder',$/;"	kind:variable	line:52
+name	orders/migrations/0001_initial.py	/^            name='SupplierOrderDetail',$/;"	kind:variable	line:65
+name	orders/migrations/0002_auto_20170211_0320.py	/^            name='assigned_dealer',$/;"	kind:variable	line:23
+name	orders/migrations/0002_auto_20170211_0320.py	/^            name='cartridge',$/;"	kind:variable	line:28
+name	orders/migrations/0002_auto_20170211_0320.py	/^            name='customer_order',$/;"	kind:variable	line:33
+name	orders/migrations/0002_auto_20170211_0320.py	/^            name='customer_user',$/;"	kind:variable	line:43
+name	orders/migrations/0002_auto_20170211_0320.py	/^            name='package_cartridge',$/;"	kind:variable	line:38
+name	products/apps.py	/^    name = 'products'$/;"	kind:variable	line:5
+name	products/migrations/0001_initial.py	/^            name='Cartridge',$/;"	kind:variable	line:20
+name	products/migrations/0001_initial.py	/^            name='CartridgeRecipe',$/;"	kind:variable	line:36
+name	products/migrations/0001_initial.py	/^            name='PackageCartridge',$/;"	kind:variable	line:49
+name	products/migrations/0001_initial.py	/^            name='PackageCartridgeRecipe',$/;"	kind:variable	line:63
+name	products/migrations/0001_initial.py	/^            name='SuppliesCategory',$/;"	kind:variable	line:77
+name	products/migrations/0001_initial.py	/^            name='Supply',$/;"	kind:variable	line:90
+name	products/migrations/0001_initial.py	/^            name='SupplyLocation',$/;"	kind:variable	line:113
+name	products/migrations/0001_initial.py	/^            name='location',$/;"	kind:variable	line:127
+name	products/migrations/0001_initial.py	/^            name='supplier',$/;"	kind:variable	line:132
+name	products/migrations/0001_initial.py	/^            name='supply',$/;"	kind:variable	line:137
+name	products/models.py	/^    name = models.CharField(max_length=128, default='')$/;"	kind:variable	line:114
+name	products/models.py	/^    name = models.CharField(max_length=90)$/;"	kind:variable	line:153
+name	products/models.py	/^    name = models.CharField(validators=[MinLengthValidator(2)], max_length=125, unique=True)$/;"	kind:variable	line:78
+name	products/models.py	/^    name = models.CharField(validators=[MinLengthValidator(4)], max_length=125, unique=True)$/;"	kind:variable	line:11
+name	sales/apps.py	/^    name = 'sales'$/;"	kind:variable	line:5
+name	sales/migrations/0001_initial.py	/^            name='Ticket',$/;"	kind:variable	line:20
+name	sales/migrations/0001_initial.py	/^            name='TicketDetail',$/;"	kind:variable	line:33
+name	sales/migrations/0002_ticket_seller.py	/^            name='seller',$/;"	kind:variable	line:22
+name	sales/migrations/0003_ticket_payment_type.py	/^            name='payment_type',$/;"	kind:variable	line:17
+name	users/apps.py	/^    name = 'users'$/;"	kind:variable	line:5
+name	users/migrations/0001_initial.py	/^            name='CustomerProfile',$/;"	kind:variable	line:49
+name	users/migrations/0001_initial.py	/^            name='Rol',$/;"	kind:variable	line:66
+name	users/migrations/0001_initial.py	/^            name='User',$/;"	kind:variable	line:22
+name	users/migrations/0001_initial.py	/^            name='user_rol',$/;"	kind:variable	line:78
+new_cartridge	products/views.py	/^def new_cartridge(request):$/;"	kind:function	line:154
+new_category	products/views.py	/^def new_category(request):$/;"	kind:function	line:105
+new_customer	users/views.py	/^def new_customer(request):$/;"	kind:function	line:100
+new_sale	sales/views.py	/^def new_sale(request):$/;"	kind:function	line:170
+new_supply	products/views.py	/^def new_supply(request):$/;"	kind:function	line:53
+operations	branchoffices/migrations/0001_initial.py	/^    operations = [$/;"	kind:variable	line:17
+operations	branchoffices/migrations/0002_branchoffice_manager.py	/^    operations = [$/;"	kind:variable	line:19
+operations	kitchen/migrations/0001_initial.py	/^    operations = [$/;"	kind:variable	line:17
+operations	kitchen/migrations/0002_processedproduct_ticket.py	/^    operations = [$/;"	kind:variable	line:18
+operations	orders/migrations/0001_initial.py	/^    operations = [$/;"	kind:variable	line:19
+operations	orders/migrations/0002_auto_20170211_0320.py	/^    operations = [$/;"	kind:variable	line:20
+operations	products/migrations/0001_initial.py	/^    operations = [$/;"	kind:variable	line:18
+operations	sales/migrations/0001_initial.py	/^    operations = [$/;"	kind:variable	line:18
+operations	sales/migrations/0002_ticket_seller.py	/^    operations = [$/;"	kind:variable	line:19
+operations	sales/migrations/0003_ticket_payment_type.py	/^    operations = [$/;"	kind:variable	line:14
+operations	users/migrations/0001_initial.py	/^    operations = [$/;"	kind:variable	line:20
+optimal_duration	products/models.py	/^    optimal_duration = models.IntegerField(default=0)$/;"	kind:variable	line:89
+optimal_duration_unit	products/models.py	/^    optimal_duration_unit = models.CharField(choices=OPTIMAL_DURATION, max_length=2, default=DAYS)$/;"	kind:variable	line:90
+options	branchoffices/migrations/0001_initial.py	/^            options={$/;"	kind:variable	line:26
+options	branchoffices/migrations/0001_initial.py	/^            options={$/;"	kind:variable	line:40
+options	branchoffices/migrations/0001_initial.py	/^            options={$/;"	kind:variable	line:53
+options	kitchen/migrations/0001_initial.py	/^            options={$/;"	kind:variable	line:26
+options	kitchen/migrations/0001_initial.py	/^            options={$/;"	kind:variable	line:44
+options	orders/migrations/0001_initial.py	/^            options={$/;"	kind:variable	line:33
+options	orders/migrations/0001_initial.py	/^            options={$/;"	kind:variable	line:45
+options	orders/migrations/0001_initial.py	/^            options={$/;"	kind:variable	line:58
+options	orders/migrations/0001_initial.py	/^            options={$/;"	kind:variable	line:74
+options	products/migrations/0001_initial.py	/^            options={$/;"	kind:variable	line:106
+options	products/migrations/0001_initial.py	/^            options={$/;"	kind:variable	line:119
+options	products/migrations/0001_initial.py	/^            options={$/;"	kind:variable	line:29
+options	products/migrations/0001_initial.py	/^            options={$/;"	kind:variable	line:42
+options	products/migrations/0001_initial.py	/^            options={$/;"	kind:variable	line:56
+options	products/migrations/0001_initial.py	/^            options={$/;"	kind:variable	line:70
+options	products/migrations/0001_initial.py	/^            options={$/;"	kind:variable	line:83
+options	sales/migrations/0001_initial.py	/^            options={$/;"	kind:variable	line:26
+options	sales/migrations/0001_initial.py	/^            options={$/;"	kind:variable	line:42
+options	users/migrations/0001_initial.py	/^            options={$/;"	kind:variable	line:38
+options	users/migrations/0001_initial.py	/^            options={$/;"	kind:variable	line:60
+options	users/migrations/0001_initial.py	/^            options={$/;"	kind:variable	line:71
+order	orders/models.py	/^    order = models.ForeignKey(SupplierOrder, default=1, on_delete=models.CASCADE)$/;"	kind:variable	line:33
+ordering	branchoffices/models.py	/^        ordering = ('id',)$/;"	kind:variable	line:19
+ordering	branchoffices/models.py	/^        ordering = ('id',)$/;"	kind:variable	line:50
+ordering	branchoffices/models.py	/^        ordering = ('id',)$/;"	kind:variable	line:63
+ordering	kitchen/admin.py	/^    ordering = ('-created_at',)$/;"	kind:variable	line:12
+ordering	kitchen/models.py	/^        ordering = ('id',)$/;"	kind:variable	line:42
+ordering	kitchen/models.py	/^        ordering = ('id',)$/;"	kind:variable	line:71
+ordering	orders/models.py	/^        ordering = ('id',)$/;"	kind:variable	line:27
+ordering	orders/models.py	/^        ordering = ('id',)$/;"	kind:variable	line:43
+ordering	orders/models.py	/^        ordering = ('id',)$/;"	kind:variable	line:75
+ordering	orders/models.py	/^        ordering = ('id',)$/;"	kind:variable	line:99
+ordering	products/admin.py	/^    ordering = ['name']$/;"	kind:variable	line:24
+ordering	products/models.py	/^        ordering = ('id',)$/;"	kind:variable	line:133
+ordering	products/models.py	/^        ordering = ('id',)$/;"	kind:variable	line:147
+ordering	products/models.py	/^        ordering = ('id',)$/;"	kind:variable	line:18
+ordering	products/models.py	/^        ordering = ('id',)$/;"	kind:variable	line:188
+ordering	products/models.py	/^        ordering = ('id',)$/;"	kind:variable	line:31
+ordering	products/models.py	/^        ordering = ('id',)$/;"	kind:variable	line:99
+ordering	products/models.py	/^        ordering = ('name',)$/;"	kind:variable	line:174
+ordering	sales/models.py	/^        ordering = ('-created_at',)$/;"	kind:variable	line:61
+ordering	sales/models.py	/^        ordering = ('id',)$/;"	kind:variable	line:79
+ordering	users/admin.py	/^    ordering = ('first_dabba',)$/;"	kind:variable	line:17
+package_active	products/models.py	/^    package_active = models.BooleanField(default=False)$/;"	kind:variable	line:155
+package_cartridge	api/serializers.py	/^    package_cartridge = PackageCartridgeSerializer(read_only=True, )$/;"	kind:variable	line:49
+package_cartridge	orders/models.py	/^    package_cartridge = models.ForeignKey(PackageCartridge, on_delete=models.CASCADE, blank=True, null=True)$/;"	kind:variable	line:92
+package_cartridge	products/models.py	/^    package_cartridge = models.ForeignKey(PackageCartridge, default=1, on_delete=models.CASCADE)$/;"	kind:variable	line:180
+package_cartridge	sales/models.py	/^    package_cartridge = models.ForeignKey($/;"	kind:variable	line:70
+package_cartridge_recipe	api/serializers.py	/^    package_cartridge_recipe = PackageCartridgeRecipeSerializer(many=True, read_only=True,$/;"	kind:variable	line:39
+package_recipe	products/models.py	/^    def package_recipe(self):$/;"	kind:member	line:160
+password	users/forms.py	/^    password = forms.CharField(widget=forms.PasswordInput)$/;"	kind:variable	line:7
+payment_type	sales/models.py	/^    payment_type = models.CharField($/;"	kind:variable	line:25
+phone_number	users/models.py	/^    phone_number = models.CharField($/;"	kind:variable	line:40
+pin	orders/models.py	/^    pin = models.CharField(default='1234', max_length=254, blank=False)$/;"	kind:variable	line:69
+prepared_at	kitchen/models.py	/^    prepared_at = models.DateTimeField(editable=True, null=True, blank=True)$/;"	kind:variable	line:20
+presentation_cost	products/models.py	/^    presentation_cost = models.FloatField(default=0)$/;"	kind:variable	line:86
+presentation_unit	products/models.py	/^    presentation_unit = models.CharField(max_length=10, choices=PRESENTATION_UNIT, default=PACKAGE)$/;"	kind:variable	line:85
+price	orders/models.py	/^    price = models.DecimalField(default=0, max_digits=12, decimal_places=2)$/;"	kind:variable	line:65
+price	products/models.py	/^    price = models.DecimalField(decimal_places=2, default=0, max_digits=12)$/;"	kind:variable	line:115
+price	products/models.py	/^    price = models.DecimalField(default=0, max_digits=12, decimal_places=2)$/;"	kind:variable	line:154
+price	sales/models.py	/^    price = models.DecimalField(default=0, max_digits=12, decimal_places=2)$/;"	kind:variable	line:73
+process_request	core/middlewares.py	/^    def process_request(request):$/;"	kind:member	line:7
+prod.py	cashflow/settings/prod.py	1;"	kind:file	line:1
+quantity	kitchen/models.py	/^    quantity = models.FloatField(default=0)$/;"	kind:variable	line:63
+quantity	orders/models.py	/^    quantity = models.IntegerField()$/;"	kind:variable	line:93
+quantity	orders/models.py	/^    quantity = models.PositiveIntegerField(default=1)$/;"	kind:variable	line:35
+quantity	products/models.py	/^    quantity = models.IntegerField()$/;"	kind:variable	line:141
+quantity	products/models.py	/^    quantity = models.IntegerField()$/;"	kind:variable	line:182
+quantity	sales/models.py	/^    quantity = models.IntegerField(default=0)$/;"	kind:variable	line:72
+queryset	api/views.py	/^    queryset = CustomerOrder.objects.all()$/;"	kind:variable	line:14
+queryset	api/views.py	/^    queryset = CustomerOrder.objects.all()$/;"	kind:variable	line:19
+queryset	api/views.py	/^    queryset = CustomerOrder.objects.all()$/;"	kind:variable	line:24
+queryset	api/views.py	/^    queryset = CustomerOrder.objects.all()$/;"	kind:variable	line:9
+raw_id_fields	kitchen/admin.py	/^    raw_id_fields = ('ticket',)$/;"	kind:variable	line:10
+rol	users/models.py	/^    rol = models.CharField(max_length=90, default='')$/;"	kind:variable	line:11
+sales	sales/views.py	/^def sales(request):$/;"	kind:function	line:21
+save	sales/models.py	/^    def save(self, *args, **kwargs):$/;"	kind:member	line:31
+score	orders/models.py	/^    score = models.PositiveIntegerField($/;"	kind:variable	line:66
+search_fields	kitchen/admin.py	/^    search_fields = ('id', 'ticket__id',)$/;"	kind:variable	line:11
+search_fields	sales/admin.py	/^    search_fields = ('ticket__created_at',)$/;"	kind:variable	line:28
+seller	sales/models.py	/^    seller = models.ForeignKey($/;"	kind:variable	line:21
+serializer_class	api/views.py	/^    serializer_class = CustomerOrderPinSerializer/;"	kind:variable	line:25
+serializer_class	api/views.py	/^    serializer_class = CustomerOrderScoreSerializer$/;"	kind:variable	line:20
+serializer_class	api/views.py	/^    serializer_class = CustomerOrderSerializer$/;"	kind:variable	line:10
+serializer_class	api/views.py	/^    serializer_class = CustomerOrderStatusSerializer$/;"	kind:variable	line:15
+serializers.py	api/serializers.py	1;"	kind:file	line:1
+setUp	tests/test_views.py	/^    def setUp(self):$/;"	kind:member	line:9
+source	api/serializers.py	/^                                                                source='packagecartridgerecipe_set')$/;"	kind:variable	line:40
+source	api/serializers.py	/^                                                          source='customer_user')$/;"	kind:variable	line:66
+start_date	sales/views.py	/^        def start_date():$/;"	kind:function	line:67
+status	kitchen/models.py	/^    status = models.CharField(choices=STATUS, default=PROVIDER, max_length=15)$/;"	kind:variable	line:60
+status	kitchen/models.py	/^    status = models.CharField(max_length=10, choices=STATUS, default=ASSEMBLED)$/;"	kind:variable	line:21
+status	orders/models.py	/^    status = models.CharField(choices=STATUS, default=IN_PROCESS, max_length=2)$/;"	kind:variable	line:20
+status	orders/models.py	/^    status = models.CharField(max_length=10, choices=STATUS, default=IN_PROCESS)$/;"	kind:variable	line:62
+storage_required	products/models.py	/^    storage_required = models.CharField(choices=STORAGE_REQUIREMENTS, default=DRY_ENVIRONMENT, max_length=2)$/;"	kind:variable	line:84
+supplier	orders/models.py	/^    supplier = models.ForeignKey(Supplier, default=1, on_delete=models.CASCADE)$/;"	kind:variable	line:37
+supplier	products/models.py	/^    supplier = models.ForeignKey(Supplier, default=1, on_delete=models.CASCADE)$/;"	kind:variable	line:83
+suppliers	products/views.py	/^def suppliers(request):$/;"	kind:function	line:26
+supplies	products/views.py	/^def supplies(request):$/;"	kind:function	line:40
+supply	kitchen/models.py	/^    supply = models.ForeignKey(Supply, default=1, on_delete=models.CASCADE)$/;"	kind:variable	line:59
+supply	orders/models.py	/^    supply = models.ForeignKey(Supply, default=1, on_delete=models.CASCADE)$/;"	kind:variable	line:34
+supply	products/models.py	/^    supply = models.ForeignKey(Supply, default=1, on_delete=models.CASCADE)$/;"	kind:variable	line:140
+supply_detail	products/views.py	/^def supply_detail(request, pk):$/;"	kind:function	line:78
+swappable	users/models.py	/^        swappable = 'AUTH_USER_MODEL'$/;"	kind:variable	line:25
+test	products/views.py	/^def test(request):$/;"	kind:function	line:15
+test	sales/views.py	/^def test(request):$/;"	kind:function	line:324
+test	users/views.py	/^def test(request):$/;"	kind:function	line:20
+test_views.py	tests/test_views.py	1;"	kind:file	line:1
+test_views_authenticated	tests/test_views.py	/^    def test_views_authenticated(self):$/;"	kind:member	line:25
+test_views_not_authenticated	tests/test_views.py	/^    def test_views_not_authenticated(self):$/;"	kind:member	line:12
+tests.py	api/tests.py	1;"	kind:file	line:1
+tests.py	branchoffices/tests.py	1;"	kind:file	line:1
+tests.py	kitchen/tests.py	1;"	kind:file	line:1
+tests.py	orders/tests.py	1;"	kind:file	line:1
+tests.py	products/tests.py	1;"	kind:file	line:1
+tests.py	sales/tests.py	1;"	kind:file	line:1
+tests.py	users/tests.py	1;"	kind:file	line:1
+thanks	users/views.py	/^def thanks(request):$/;"	kind:function	line:118
+ticket	kitchen/models.py	/^    ticket = models.OneToOneField(Ticket, on_delete=models.CASCADE)$/;"	kind:variable	line:22
+ticket	sales/models.py	/^    ticket = models.ForeignKey(Ticket, on_delete=models.CASCADE)$/;"	kind:variable	line:67
+ticket_details	sales/models.py	/^    def ticket_details(self):$/;"	kind:member	line:44
+to_representation	api/serializers.py	/^    def to_representation(self, value):$/;"	kind:member	line:57
+total	sales/models.py	/^    def total(self):$/;"	kind:member	line:37
+unique	users/models.py	/^        unique=True,$/;"	kind:variable	line:33
+unique	users/models.py	/^        unique=True,$/;"	kind:variable	line:42
+unique	users/models.py	/^        unique=True,$/;"	kind:variable	line:48
+urlpatterns	api/urls.py	/^urlpatterns = [$/;"	kind:variable	line:29
+urlpatterns	branchoffices/urls.py	/^urlpatterns = [$/;"	kind:variable	line:7
+urlpatterns	cashflow/urls.py	/^urlpatterns = [$/;"	kind:variable	line:6
+urlpatterns	kitchen/urls.py	/^urlpatterns = [$/;"	kind:variable	line:7
+urlpatterns	orders/urls.py	/^urlpatterns = [$/;"	kind:variable	line:7
+urlpatterns	products/urls.py	/^urlpatterns = [$/;"	kind:variable	line:8
+urlpatterns	sales/urls.py	/^urlpatterns = [$/;"	kind:variable	line:8
+urlpatterns	users/urls.py	/^urlpatterns = [$/;"	kind:variable	line:8
+urls.py	api/urls.py	1;"	kind:file	line:1
+urls.py	branchoffices/urls.py	1;"	kind:file	line:1
+urls.py	cashflow/urls.py	1;"	kind:file	line:1
+urls.py	kitchen/urls.py	1;"	kind:file	line:1
+urls.py	orders/urls.py	1;"	kind:file	line:1
+urls.py	products/urls.py	1;"	kind:file	line:1
+urls.py	sales/urls.py	1;"	kind:file	line:1
+urls.py	users/urls.py	1;"	kind:file	line:1
+user	api/serializers.py	/^    user = UserProfileSerializer(read_only=True)$/;"	kind:variable	line:16
+user	users/models.py	/^    user = models.CharField($/;"	kind:variable	line:31
+user_id	api/serializers.py	/^    user_id = serializers.PrimaryKeyRelatedField(write_only=True, queryset=UserProfile.objects.all(), source='user')$/;"	kind:variable	line:17
+user_rol	users/models.py	/^    user_rol = models.ForeignKey(Rol, blank=True, null=True)$/;"	kind:variable	line:22
+username_validator	users/models.py	/^    username_validator = UnicodeUsernameValidator() if six.PY3 else ASCIIUsernameValidator()$/;"	kind:variable	line:29
+validators	orders/models.py	/^        validators=[MaxValueValidator(5), MinValueValidator(1)],$/;"	kind:variable	line:67
+validators	products/models.py	/^        validators=[MaxValueValidator(9999999999999)], blank=True, null=True)$/;"	kind:variable	line:82
+validators	users/models.py	/^        validators=[username_validator],$/;"	kind:variable	line:34
+verbose_name	branchoffices/models.py	/^        verbose_name = 'Proveedor'$/;"	kind:variable	line:64
+verbose_name	branchoffices/models.py	/^        verbose_name = 'Punto de Venta'$/;"	kind:variable	line:51
+verbose_name	branchoffices/models.py	/^        verbose_name = 'Sucursal'$/;"	kind:variable	line:20
+verbose_name	kitchen/models.py	/^        verbose_name = 'Insumo en Almacén'$/;"	kind:variable	line:72
+verbose_name	kitchen/models.py	/^        verbose_name = 'Productos'$/;"	kind:variable	line:43
+verbose_name	orders/models.py	/^        verbose_name = 'Detalles del Pedido a Proveedor'$/;"	kind:variable	line:44
+verbose_name	orders/models.py	/^        verbose_name = 'Detalles del Pedido del Cliente'$/;"	kind:variable	line:100
+verbose_name	orders/models.py	/^        verbose_name = 'Pedido al Proveedor'$/;"	kind:variable	line:28
+verbose_name	orders/models.py	/^        verbose_name = 'Pedido del Cliente'$/;"	kind:variable	line:76
+verbose_name	products/models.py	/^        verbose_name = 'Cartucho'$/;"	kind:variable	line:134
+verbose_name	products/models.py	/^        verbose_name = 'Categoría'$/;"	kind:variable	line:19
+verbose_name	products/models.py	/^        verbose_name = 'Dabba'$/;"	kind:variable	line:175
+verbose_name	products/models.py	/^        verbose_name = 'Insumo'$/;"	kind:variable	line:100
+verbose_name	products/models.py	/^        verbose_name = 'Receta del Cartucho'$/;"	kind:variable	line:148
+verbose_name	products/models.py	/^        verbose_name = 'Receta del Dabba'$/;"	kind:variable	line:189
+verbose_name	products/models.py	/^        verbose_name = 'Ubicación del Insumo'$/;"	kind:variable	line:32
+verbose_name	sales/models.py	/^        verbose_name = 'Ticket '$/;"	kind:variable	line:62
+verbose_name	sales/models.py	/^        verbose_name = 'Ticket Details'$/;"	kind:variable	line:80
+verbose_name	users/models.py	/^        verbose_name = 'Perfil de Usuario'$/;"	kind:variable	line:64
+verbose_name	users/models.py	/^        verbose_name = 'Rol'$/;"	kind:variable	line:14
+verbose_name_plural	branchoffices/models.py	/^        verbose_name_plural = 'Proveedores'/;"	kind:variable	line:65
+verbose_name_plural	branchoffices/models.py	/^        verbose_name_plural = 'Puntos de Venta'$/;"	kind:variable	line:52
+verbose_name_plural	branchoffices/models.py	/^        verbose_name_plural = 'Sucursales'$/;"	kind:variable	line:21
+verbose_name_plural	kitchen/models.py	/^        verbose_name_plural = 'Insumos en el Almacén'$/;"	kind:variable	line:73
+verbose_name_plural	kitchen/models.py	/^        verbose_name_plural = 'Productos Procesados'$/;"	kind:variable	line:44
+verbose_name_plural	orders/models.py	/^        verbose_name_plural = 'Detalles de Pedidos a Proveedores'$/;"	kind:variable	line:45
+verbose_name_plural	orders/models.py	/^        verbose_name_plural = 'Detalles de los Pedidos de Clientes'/;"	kind:variable	line:101
+verbose_name_plural	orders/models.py	/^        verbose_name_plural = 'Pedidos a Proveedores'$/;"	kind:variable	line:29
+verbose_name_plural	orders/models.py	/^        verbose_name_plural = 'Pedidos de los Clientes'$/;"	kind:variable	line:77
+verbose_name_plural	products/models.py	/^        verbose_name_plural = 'Cartuchos'$/;"	kind:variable	line:135
+verbose_name_plural	products/models.py	/^        verbose_name_plural = 'Categorías'$/;"	kind:variable	line:20
+verbose_name_plural	products/models.py	/^        verbose_name_plural = 'Dabbas'$/;"	kind:variable	line:176
+verbose_name_plural	products/models.py	/^        verbose_name_plural = 'Insumos'$/;"	kind:variable	line:101
+verbose_name_plural	products/models.py	/^        verbose_name_plural = 'Recetas de Cartuchos'$/;"	kind:variable	line:149
+verbose_name_plural	products/models.py	/^        verbose_name_plural = 'Recetas de Dabbas'$/;"	kind:variable	line:190
+verbose_name_plural	products/models.py	/^        verbose_name_plural = 'Ubicación de los Insumos'$/;"	kind:variable	line:33
+verbose_name_plural	sales/models.py	/^        verbose_name_plural = 'Tickets Details'$/;"	kind:variable	line:81
+verbose_name_plural	sales/models.py	/^        verbose_name_plural = 'Tickets'$/;"	kind:variable	line:63
+verbose_name_plural	users/models.py	/^        verbose_name_plural = 'Perfiles de Usuarios'$/;"	kind:variable	line:65
+verbose_name_plural	users/models.py	/^        verbose_name_plural = 'Roles'$/;"	kind:variable	line:15
+views.py	api/views.py	1;"	kind:file	line:1
+views.py	branchoffices/views.py	1;"	kind:file	line:1
+views.py	kitchen/views.py	1;"	kind:file	line:1
+views.py	orders/views.py	1;"	kind:file	line:1
+views.py	products/views.py	1;"	kind:file	line:1
+views.py	sales/views.py	1;"	kind:file	line:1
+views.py	users/views.py	1;"	kind:file	line:1
+waste	kitchen/models.py	/^    waste = models.FloatField(default=0)$/;"	kind:variable	line:64
+wsgi.py	cashflow/wsgi.py	1;"	kind:file	line:1

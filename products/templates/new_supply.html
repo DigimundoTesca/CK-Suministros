@@ -1,0 +1,111 @@
+{% extends "base/base_nav_footer.html" %}
+{% block content %}
+  <div class="container center_div">
+    {% if form.initial %}
+      <font color="red"><center><h1>Modificar Insumo</h1></center></font>
+    {% else %}
+      <font color="red"><center><h1>Nuevo Insumo</h1></center></font>
+    {% endif %}
+    <div class="row">
+      <div class="col-xs-12">
+        <div class="card-panel">
+          <form method="POST" enctype="multipart/form-data">
+            {% csrf_token %}            
+            <div class="col-xs-6">
+            <p><label for="id_name">Name:</label> <input class="form-control" id="id_name"  maxlength="125" name="name" type="text" value={{form.initial.name}} required /></p>              
+            </div>
+
+            <div class="col-xs-6">
+            <p><label for="id_category">Category:</label> 
+            <select class="form-control" id="id_category" name="category" required>
+            <option value="1" selected="selected">Suplementos</option>
+            </select></p>              
+            </div>
+
+            <div class="col-xs-6">
+            <p><label for="id_barcode">Barcode:</label> <input class="form-control" id="id_barcode" min="0" name="barcode" type="number" value={{form.initial.barcode}}/> <span class="helptext">(Código de barras de 13 dígitos)</span></p>  
+            </div>
+
+            <div class="col-xs-6">
+            <p><label for="id_supplier">Supplier:</label> 
+            <select class="form-control" id="id_supplier" name="supplier" required>
+            <option value="1" selected="selected">Central de Abastos Atizapán</option>
+            </select></p>
+            </div>
+
+
+            <div class="col-xs-12">
+            <p><label for="id_storage_required">Storage required:</label> <select class="form-control" id="id_storage_required" name="storage_required" required>
+            {% if form.initial.storage_required == 'DR' %}
+            <option value="DR" selected="selected">Ambiente Seco</option>
+            <option value="RE">Refrigeración</option>
+            <option value="FR">Congelación</option>
+
+            {% elif form.initial.storage_required == 'RE' %}
+            <option value="DR">Ambiente Seco</option>
+            <option value="RE" selected="selected" >Refrigeración</option>
+            <option value="FR">Congelación</option>
+            {% else %}  
+            <option value="DR" >Ambiente Seco</option>
+            <option value="RE">Refrigeración</option>
+            <option value="FR" selected="selected" >Congelación</option>            
+            {% endif %}
+            </select></p>
+            </div>
+              
+            <div class="col-xs-6">
+            <p><label for="id_presentation_unit">Presentation unit:</label> <select class="form-control" id="id_presentation_unit" name="presentation_unit" required>
+            <option value="PA" selected="selected">Paquete</option>
+            <option value="BO">Caja</option>
+            <option value="PI">Pieza</option>            
+            </select></p>
+            </div>
+
+            <div class="col-xs-6">
+            <p><label for="id_presentation_cost">Presentation cost:</label> <input class="form-control" id="id_presentation_cost" name="presentation_cost" step="any" type="number" value={{form.initial.presentation_cost}} required /></p>
+            </div>
+
+            <div class="col-xs-12">
+            <p><label for="id_measurement_quantity">Measurement quantity:</label> <input class="form-control" id="id_measurement_quantity" name="measurement_quantity" step="any" type="number" value={{form.initial.measurement_quantity}} required /></p>
+            </div>
+
+            <div class="col-xs-6">
+            <p><label for="id_measurement_unit">Measurement unit:</label> <select class="form-control" id="id_measurement_unit" name="measurement_unit" required>
+            <option value="GR" selected="selected">gramo</option>
+            <option value="MI">mililitro</option>
+            <option value="PI">pieza</option>
+            </select></p>
+            </div>
+
+            <div class="col-xs-6">
+            <p><label for="id_optimal_duration">Optimal duration:</label> <input class="form-control" id="id_optimal_duration" name="optimal_duration" type="number" value={{form.initial.optimal_duration}} required /></p>
+            </div>
+
+
+            <div class="col-xs-12">
+            <p><label for="id_optimal_duration_unit">Optimal duration unit:</label> <select class="form-control" id="id_optimal_duration_unit" name="optimal_duration_unit" required>
+            <option value="DA" selected="selected">Dias</option>
+            <option value="MO">Meses</option>
+            <option value="YE">Años</option>
+            </select></p>
+            </div>
+
+            <div class="col-xs-6">
+            <p><label for="id_location">Location:</label> <select class="form-control" id="id_location" name="location" required>
+            <option value="1" selected="selected">Almaćen</option>
+            </select></p>
+            </div>
+
+            <div class="col-xs-12">
+            <p><label for="id_image">Image:</label> Actualmente: <a href="/media/supplies/aceite_0Axf8GG.jpg">supplies/aceite_0Axf8GG.jpg</a> <br />Modificar: <input id="id_image" name="image" type="file" /></p>
+            </div>
+            <div class="col-xs-6">
+            <button class="btn color-primary right large" type="update">Enviar<i class="material-icons right">send</i>
+            </button>              
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
+{% endblock content %}

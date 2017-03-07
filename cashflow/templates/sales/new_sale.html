@@ -1,0 +1,736 @@
+{% extends 'base/base_nav_footer.html' %}
+
+{% load humanize %}
+{% load static %}
+
+{% block page_title %}
+  {{ page_title }}
+{% endblock %}
+
+{% block link %}
+  <link rel="stylesheet" type="text/css" href="https://cdnjs.cloudflare.com/ajax/libs/limonte-sweetalert2/6.3.8/sweetalert2.min.css">
+{% endblock link %}
+
+{% block content %}
+<!-- Container -->
+<div class="container-fluid container-sales">
+  <div class="row">
+    <div class="col-xs-12 col-lg-3 group-sales">
+      <div class="card col-sm-12 card-outline-info">
+        <div class="info-sale">
+          <span class="text-total left">Total: </span>
+          <p class="text-xs-center">
+            <span class="text-price align-top" id="s-total-price">$ </span>
+            <span id="total-price">
+            <span class="text-price align-top" id="int-total-price">0</span>
+            <span class="point-total-price">.</span>
+            <span class="text-price-decimal" id="dec-total-price">00</span>
+          </span>
+          </p>
+        </div>
+        </div>
+      <div class="card col-sm-12 card-scroll-orders card-scroll card-outline-warning">
+        <div class="card-block products-block">
+          <div class="row">
+            <div class="col-xs-10 col-lg-9 col-xl-10">
+              <h4>Ticket</h4>
+            </div>
+          </div>
+        </div>
+        <ul class="list-group list-group-flush" id="sales-list">
+        </ul>
+      </div>
+      <button type="button" id="btn-orders-reset" class="btn btn-danger col-xs-12 btn-lg">Cancelar Venta</button>
+    </div>
+    <div class="group-sales col-xs-12 col-lg-9">
+      <div class="row">
+        <div class="col-xs-12 col-md-4 col-lg-4">
+          <div class="card card-block card-product-title">
+            <h3>Complementos</h3>
+          </div>
+          <div class="card col-xs-12 card-scroll card-outline-warning" id="group-complements">
+            <div class="card-block products-block">
+              {% for cartridge in cartridges %}
+                {% if cartridge.category == 'CO' %}
+                  <div class="card-block product-container" id="cartridge-{{ cartridge.pk }}">
+                    <h6 class="product-name">{{ cartridge.name }}</h6>
+                    <img src="{{ cartridge.image.url }}" id="cartridge-img-{{ cartridge.pk }}" class="product-img" alt="Nombre de la bebida">
+                    <div class="text-xs-right content-price">
+                      <span class="font-weight-bold">$ </span><span class="product-cost font-weight-bold">{{ cartridge.price }}</span>
+                    </div>
+                  </div>
+                {% endif %}
+              {% endfor %}
+            </div>
+          </div>
+        </div>
+        <div class="col-xs-12 col-md-4 col-lg-4">
+          <div class="card card-block card-product-title">
+            <h3>Rotis</h3>
+          </div>
+          <div class="card col-xs-12 card-scroll card-outline-warning" id="group-dishes">
+            <div class="card-block products-block">
+              {% for cartridge in cartridges %}
+                {% if cartridge.category == 'FD' %}
+                  <div class="card-block product-container" id="cartridge-{{ cartridge.pk }}">
+                    <h6 class="product-name">{{ cartridge.name }}</h6>
+                    <img src="{{ cartridge.image.url }}" id="cartridge-img-{{ cartridge.pk }}" class="product-img" alt="Nombre de la bebida">
+                    <div class="text-xs-right content-price">
+                      <span class="font-weight-bold">$ </span><span class="product-cost font-weight-bold">{{ cartridge.price }}</span>
+                    </div>
+                  </div>
+                {% endif %}
+              {% endfor %}
+            </div>
+          </div>
+        </div>
+        <div class="col-xs-12 col-md-4 col-lg-4">
+          <div class="row">
+            <div class=" col-xs-12">
+              <button type="button" id="btn-order" class="btn btn-success col-xs-12 btn-lg" data-toggle="modal" data-target="#modal-order">Realizar venta</button>
+              <div class="card col-xs-12 card-scroll card-outline-warning" id="group-promos">
+                <div class="card-block card-block">
+                  <h4>Promos</h4>
+                  <div class="card-block product-container" id="package-container">
+                    <h6 class="product-name">Dabba</h6>
+                    <img src="{% static 'images/pack_dabba.jpg' %}" id="dabba-img" class="dabba-img" alt="Dabba" data-toggle="modal" data-target="#modal-dabba">
+                    <div class="text-xs-right content-price">
+                      <span class="font-weight-bold">$ </span><span class="product-cost font-weight-bold"> 50.00</span>
+                    </div>
+                  </div>
+                  <div class="card-block product-container" id="package-container">
+                    <h6 class="product-name">Dabba Gratis</h6>
+                    <img src="{% static 'images/pack_dabba.jpg' %}" id="dabba-img" class="dabba-img" alt="Dabba" data-toggle="modal" data-target="#modal-dabba">
+                    <div class="text-xs-right content-price">
+                      <span class="font-weight-bold">$ </span><span class="product-cost font-weight-bold"> 0.00</span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Dabba Modal -->
+<div class="modal fade" id="modal-dabba" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+  <div class="modal-dialog modal-lg" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <div class="container-fluid">
+          <div class="card col-xs-4">
+            <span id="modal-prod-head-1" class="modal-head-prod-name"></span>
+          </div>
+          <div class="card col-xs-4">
+            <span id="modal-prod-head-2" class="modal-head-prod-name"></span>
+          </div>
+          <div class="card col-xs-4">
+            <span id="modal-prod-head-3" class="modal-head-prod-name"></span>
+          </div>
+        </div>
+      </div>
+      <div class="modal-body">
+        <div class="container-fluid">
+          <div class="card card-scroll col-xs-4 ">
+            {% for cartridge in cartridges %}
+              {% if cartridge.category == 'FD' %}
+                <div class="modal-prod-container product-container" id="modal-prod-cont-1">
+                  <h5 class="modal-prod-name">{{ cartridge.name }}</h5>
+                  <img src="{{ cartridge.image.url }}" alt="product image" id="modal-img-1-{{ cartridge.pk }}" class="modal-product-img">
+                </div>
+              {% endif %}
+            {% endfor %}
+          </div>
+          <div class="card card-scroll col-xs-4 ">
+            {% for cartridge in cartridges %}
+              {% if cartridge.category == 'CO' %}
+                <div class="modal-prod-container product-container" id="modal-prod-cont-2">
+                  <h5 class="modal-prod-name">{{ cartridge.name }}</h5>
+                  <img src="{{ cartridge.image.url }}" alt="product image" id="modal-img-2-{{ cartridge.pk }}" class="modal-product-img">
+                </div>
+              {% endif %}
+            {% endfor %}
+          </div>
+          <div class="card card-scroll col-xs-4 ">
+            {% for cartridge in cartridges %}
+              {% if cartridge.category == 'CO' %}
+                <div class="modal-prod-container product-container" id="modal-prod-cont-3">
+                  <h5 class="modal-prod-name">{{ cartridge.name }}</h5>
+                  <img src="{{ cartridge.image.url }}" alt="product image" id="modal-img-3-{{ cartridge.pk }}" class="modal-product-img">
+                </div>
+              {% endif %}
+            {% endfor %}
+          </div>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <div class="container">
+          <div class="row">
+            <button type="button" class="btn btn-secondary col-xs-3 push-xs-2" data-dismiss="modal" id="btn-close-dabba-modal">Close</button>
+            <button id="btn-add-dabba" data-dismiss="modal" type="button" class="btn btn-success col-xs-4 push-xs-3">¡Listo!</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Ticket Modal -->
+<div class="modal fade" id="modal-order" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+  <div class="modal-dialog modal-lg" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+        <h4 class="modal-title" id="myModalLabel">Realizar venta</h4>
+      </div>
+      <div class="modal-body">
+        <div class="container-fluid">
+          <div class="card card-scroll col-xs-4" id="printer-container">
+            <div id="printer" style="margin: 0 auto">
+              <figure class="content-img">
+                <img src="{% static 'images/dabbawala_black.jpg' %}" alt="logo-dabbawala">
+              </figure>
+              <div class="ticket-order-container text-xs-center">
+                <span>ORDEN</span>
+                <span id="ticket-order"></span>
+              </div>
+              <div class="ticket-address">
+                <p class="text-xs-center">
+                  20 de Noviembre #32, San Lucas Tepetlacalco, Tlanepantla Edo. De México CP 54055
+                </p>
+              </div>
+              <div class="container ticket-datetime-container">
+                <div class="row">
+                  <div class="col-xs-6 ticket-datetime">
+                    <span id="ticket-time"></span>
+                  </div>
+                  <div class="col-xs-6 ticket-datetime">
+                    <span id="ticket-date"></span>
+                  </div>
+                </div>
+              </div>
+              <ul class="list-group list-group-flush" id="sales-list-modal">
+              </ul>
+              <div class="ticket-id-container">
+                <span>ID: </span><span id="ticket-id"></span>
+              </div>
+              <div class="ticket-celphone">
+                <span>Whatsapp: 55 42 46 73 60</span>
+              </div>
+            </div>
+          </div>
+          <div class="card card-scroll" id="ticket-description">
+            <h3>No olvides recordarle al cliente las promociones</h3>
+          </div>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <div class="container">
+          <div class="row">
+            <button type="submit" id="btn-pago-tarjeta" class="btn btn-primary col-xs-4 push-xs-3 btn-printer">Pago con tarjeta</button>
+            <button type="submit" id="btn-pago-efectivo" class="btn btn-success col-xs-4 push-xs-4 btn-printer">Pago con efectivo</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Floating Action Button -->
+<div class="popout">
+  <div class="FAB">
+    <i class="material-icons">motorcycle</i>
+  </div>
+</div>
+
+{% endblock content %}
+{% block javascript %}
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/limonte-sweetalert2/6.3.8/sweetalert2.min.js"></script>
+  <script type="text/javascript" charset="utf-8">
+    $(document).ready(function() {
+      let Ticket = {
+        cartuchos: [],
+        paquetes: [],
+        payment_type: 'cash',
+      }
+
+      let DabbaProduct = {
+        id: [],
+        cost: null,
+      }
+
+      function getCookie(name) {
+        var cookieValue = null;
+        if (document.cookie && document.cookie !== '') {
+          var cookies = document.cookie.split(';');
+          for (var i = 0; i < cookies.length; i++) {
+            var cookie = jQuery.trim(cookies[i]);
+            // Does this cookie string begin with the name we want?
+            if (cookie.substring(0, name.length + 1) === (name + '=')) {
+              cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+              break;
+            }
+          }
+        }
+        return cookieValue;
+      }
+
+      function activateDabbaButton() {
+        header_1 = $('#modal-prod-head-1').is(':empty');
+        header_2 = $('#modal-prod-head-2').is(':empty');
+        header_3 = $('#modal-prod-head-3').is(':empty');
+
+        if (header_1 == false && header_2 == false && header_3 == false) {
+          $('#btn-add-dabba').attr('disabled', false);
+        } else {
+          $('#btn-add-dabba').attr('disabled', true);
+        }
+      }
+      /** Agrega un producto al carrito del ticket */
+      $(this).on('click', '.product-img', function(event) {
+        var product_type = $(this).attr('id');
+        var element = $(this)
+
+        function addProductToJSON(id, cant, price) {
+          if (id.indexOf('cartridge') >= 0) {
+            id = id.replace('cartridge-', '');
+
+            /** Itera la lista de cartuchos */
+            function findIdCartucho(cartuchos) {
+              return cartuchos.id == id;
+            }
+            if (!Ticket.cartuchos.find(findIdCartucho)) { // Si no existe
+              nuevo_cartucho = {}
+              nuevo_cartucho.id = id;
+              nuevo_cartucho.cant = cant;
+              nuevo_cartucho.price = price;
+              Ticket.cartuchos.push(nuevo_cartucho);
+
+            } else {
+              mi_cartucho = Ticket.cartuchos.find(findIdCartucho);
+              mi_cartucho.cant = cant;
+              mi_cartucho.price = price;
+            }
+          }
+        }
+
+        function addProductToTicket() {
+          let name = element.siblings('.product-name').text();
+          let cost_base = parseFloat(element.siblings('.content-price').children('.product-cost').text());
+          let cost = cost_base;
+          let id = element.parent().attr('id');
+          let li_id = ('li-' + id).toString();
+          let cant = $('ul#sales-list').find('#' + li_id + ' .cant-li').text();
+          let total = 0;
+
+          if ($('#' + li_id + '').length != 0) {
+            cant++;
+
+            cost = cost * cant;
+            if (cost % 2 != 0) {
+              cost = cost.toFixed(2);
+            } else
+              cost += '.00';
+            $('ul#sales-list').find('#' + li_id + ' .cant-li').text(cant);
+            $('ul#sales-list').find('#' + li_id + ' .total-li').text(cost);
+          } else {
+            cant = 1;
+            if (cost % 2 != 0)
+              cost = cost.toFixed(2);
+            else
+              cost += '.00';
+            if (cost_base % 2 != 0)
+              cost_base = cost_base.toFixed(2);
+            else
+              cost_base += '.00';
+            $nuevo_li = $("" +
+              "<li id='" + li_id + "' class='list-group-item'>" +
+              "<span class='name-li text-uppercase'>" + name + "</span> " +
+              "<span class='cost-base-li'>" + cost_base + "</span>" +
+              "<span class='remove-icon-li'><i class='material-icons'>remove</i></span>" +
+              "<span class='cant-li'>" + cant + "</span>" +
+              "<span class='add-icon-li'><i class='material-icons'>add</i></span>" +
+              "<span class='font-weight-bold s-li'>$ </span>" +
+              "<span class='total-li font-weight-bold'>" + cost + "</span> " +
+              "</li>");
+            $nuevo_li.appendTo('#sales-list').fadeTo('slow', 1);
+          }
+
+          /** Modificacion del total general */
+          $('ul li').find('.total-li').each(function() {
+            re = $(this).text()
+            total += parseFloat(re)
+          });
+          var arreglo = total.toFixed(2).split('.')
+          $('#total-price').html("" +
+            "<span class='text-price align-top' id='int-total-price'>" + arreglo[0] + "</span>" +
+            "<span class='point-total-price'>.</span>" +
+            "<span class='text-price-decimal' id='dec-total-price'>" + arreglo[1] + "</span>"
+          );
+
+          addProductToJSON(id, cant, cost);
+        }
+
+        addProductToTicket();
+      });
+
+      /** Elección de elementos para crear el dabba */
+      $(this).on('click', '.modal-prod-container', function(event) {
+        let number_container = $(this).attr('id');
+        let product_name = $(this).children('.modal-prod-name').text();
+        let id_product = $(this).find('img').attr('id');
+        if (number_container.indexOf('1') != -1) {
+          DabbaProduct.id[0] = id_product.substring(12);
+          $('#modal-prod-head-1').text(product_name).fadeTo('slow', 1);
+        } else if (number_container.indexOf('2') != -1) {
+          DabbaProduct.id[1] = id_product.substring(12);
+          $('#modal-prod-head-2').text(product_name).fadeTo('slow', 1);
+        } else if (number_container.indexOf('3') != -1) {
+          DabbaProduct.id[2] = id_product.substring(12);
+          $('#modal-prod-head-3').text(product_name).fadeTo('slow', 1);
+        }
+        activateDabbaButton();
+      });
+
+      $(this).on('click', '.remove-icon-li', function(event) {
+        let element = $(this);
+        let quantity_product = element.siblings('.cant-li').text();
+        let cost_base_product = element.siblings('.cost-base-li').text();
+        let total_product = element.siblings('.total-li').text();
+        let total_ticket = 0;
+        let id_product = element.parent().attr('id').substring(13);
+        var count = 0;
+
+        /** Refresh total ticket. Removes the product from the tiket list*/
+        if (quantity_product == 1) {
+          element.parent().remove(); // Removes from DOM
+
+          /** Modificacion del total del ticket */
+          $('ul li').find('.total-li').each(function() {
+            var total_span = $(this).text();
+            total_ticket += parseFloat(total_span);
+          });
+
+          var total_ticket_split = total_ticket.toFixed(2).split('.')
+
+          $('#total-price').html("" +
+            "<span class='text-price align-top' id='int-total-price'>" + total_ticket_split[0] + "</span>" +
+            "<span class='point-total-price'>.</span>" +
+            "<span class='text-price-decimal' id='dec-total-price'>" + total_ticket_split[1] + "</span>"
+          );
+
+
+          // Removes cartridge from ticket JSON
+          Ticket.cartuchos.forEach(function(cartridge_object) {
+            if (cartridge_object.id == id_product) {
+              Ticket.cartuchos.splice(count, 1);
+            };
+            count += 1;
+          });
+
+        } else {
+
+          $('ul li').find('.total-li').each(function() {
+            re = $(this).text()
+            total_ticket += parseFloat(re)
+          });
+
+          var arreglo = total_ticket.toFixed(2).split('.')
+
+          $('#total-price').html("" +
+            "<span class='text-price align-top' id='int-total-price'>" + arreglo[0] + "</span>" +
+            "<span class='point-total-price'>.</span>" +
+            "<span class='text-price-decimal' id='dec-total-price'>" + arreglo[1] + "</span>"
+          );
+        }
+
+      });
+
+      $(this).on('click', '.add-icon-li', function(event) {});
+
+      /** Resetear los titulos del modal-dabba */
+      $(this).on('click', '#btn-close-dabba-modal', function(event) {
+        $('.modal-head-prod-name').empty();
+      });
+
+      $(this).on('click', '#package-container', function(event) {
+        activateDabbaButton();
+      });
+
+      /** Agrega el dabba manual al carrito del ticket */
+      $(this).on('click', '#btn-add-dabba', function(event) {
+
+        var product_type = $(this).attr('id');
+        var element = $(this);
+
+        function addProductToJSON(id_list, name, quantity, price) {
+          new_package = {}
+          new_package.id_list = []
+          new_package.quantity = quantity;
+          new_package.price = price;
+          new_package.name = name;
+          Ticket.paquetes.push(new_package);
+
+          id_list.forEach(function(element) {
+            new_package.id_list.push(element);
+          });
+
+          $('.modal-head-prod-name').empty();
+          DabbaProduct.id.length = 0;
+
+        }
+
+        function addProductToTicket() {
+          dabba_name_list = [];
+          dabba_name_list_string = "";
+          dabba_name_string = "";
+
+          header_1 = $('#modal-prod-head-1').text().trim();
+          header_2 = $('#modal-prod-head-2').text().trim();
+          header_3 = $('#modal-prod-head-3').text().trim();
+
+          dabba_name_string += header_1 + ' ' + header_2 + ' ' + header_3;
+
+          dabba_name_list.push(header_1.split(' ', 1));
+          dabba_name_list.push(header_2.split(' ', 1));
+          dabba_name_list.push(header_3.split(' ', 1));
+
+          dabba_name_list.forEach(function(dabba_name) {
+            dabba_name.forEach(function(word) {
+              dabba_name_list_string += word.substring(0, 3) + ' ';
+            });
+          });
+
+          let cost_base = DabbaProduct.cost;
+          let cost = cost_base;
+          let id = element.parent().attr('id');
+          let li_id = DabbaProduct.id;
+          let cant = 1;
+          let total = 0;
+
+          $nuevo_li = $("" +
+            "<li class='list-group-item'>" +
+            "<span class='name-li text-uppercase'>" + dabba_name_list_string + "</span> " +
+            "<span class='cost-base-li'>" + cost_base + "</span>" +
+            "<span class='remove-icon-li'><i class='material-icons'>remove</i></span>" +
+            "<span class='cant-li'>" + cant + "</span>" +
+            "<span class='add-icon-li'><i class='material-icons'>add</i></span>" +
+            "<span class='font-weight-bold s-li'>$ </span>" +
+            "<span class='total-li font-weight-bold'>" + cost + "</span> " +
+            "</li>");
+          $nuevo_li.appendTo('#sales-list').fadeTo('slow', 1);
+
+          /** Modificacion del total general */
+          $('ul li').find('.total-li').each(function() {
+            re = $(this).text()
+            total += parseFloat(re)
+          });
+
+          var arreglo = total.toFixed(2).split('.')
+          $('#total-price').html("" +
+            "<span class='text-price align-top' id='int-total-price'>" + arreglo[0] + "</span>" +
+            "<span class='point-total-price'>.</span>" +
+            "<span class='text-price-decimal' id='dec-total-price'>" + arreglo[1] + "</span>"
+          );
+
+          addProductToJSON(li_id, dabba_name_string, cant, cost);
+
+        }
+
+        addProductToTicket();
+      });
+
+      /** Despliega el modal para realizar la venta */
+      $(this).on('click', '#btn-order', function(event) {
+        function getActualTime() {
+          var datetime = new Date();
+          var hours = datetime.getHours();
+          var minutes = datetime.getMinutes();
+          var seconds = datetime.getMinutes();
+
+          var hours_f = (hours < 10) ? '0' + hours : hours;
+          var minutes_f = (minutes < 10) ? '0' + minutes : minutes;
+          var seconds_f = (seconds < 10) ? '0' + seconds : seconds;
+
+          var actual_time = hours_f + ":" + minutes_f + ":" + seconds_f;
+
+          return actual_time;
+        }
+
+        function getActualDate() {
+          var datetime = new Date();
+          var day = datetime.getDate();
+          var month = datetime.getMonth() + 1;
+          var year = datetime.getFullYear();
+
+          var day_f = (day < 10) ? '0' + day : day;
+          var month_f = (month < 10) ? '0' + month : month;
+
+          var actual_date = day_f + "/" + month_f + "/" + year;
+
+          return actual_date;
+        }
+
+        $("#ticket-time").text(getActualTime());
+        $("#ticket-date").text(getActualDate());
+
+        $('#sales-list-modal').empty();
+
+        $nuevo_li = $("" +
+          "<li>" +
+          "<span class='name-li-title-modal'>Nombre</span> " +
+          "<span class='cost-li-title-modal'>Cost</span>" +
+          "<span class='cant-li-title-modal'>Cant</span>" +
+          "<span class='total-li-title-modal'>Total</span> " +
+          "</li>");
+
+        $nuevo_li.appendTo('#sales-list-modal');
+
+        $('#sales-list li').each(function() {
+          let name = $(this).find('.name-li').text();
+          let cost_base = $(this).find('.cost-base-li').text();
+          let cant = $(this).find('.cant-li').text();
+          let total = $(this).find('.total-li').text();
+          let id = $(this).attr('id');
+          let li_id = (id + '-modal').toString();
+
+          /** Acorta el nombre */
+          name = name.split(' ');
+          $.each(name, function(index, item) {
+            name[index] = item.substring(0, 3);
+          });
+
+          name = name.toString().replace(',', ' ');
+          name = name.replace(/,/g, ' ');
+
+          $nuevo_li = $("" +
+            "<li id='" + li_id + "' class='list-group-item'>" +
+            "<span class='name-li-modal text-uppercase'>" + name + "</span> " +
+            "<span class='cost-li-modal'>" + '$ ' + cost_base + "</span>" +
+            "<span class='cant-li-modal'>" + cant + "</span>" +
+            "<span class='total-li-modal'>" + '$ ' + total + "</span> " +
+            "</li>");
+
+          $nuevo_li.appendTo('#sales-list-modal');
+        });
+
+        let total_ticket = $('#total-price').text();
+
+        $nuevo_li = $("" +
+          "<li class='total-ticket-container'>" +
+          "<span id='total-ticket'>" + "$ " + total_ticket + "</span> " +
+          "</li>");
+
+        $nuevo_li.appendTo('#sales-list-modal');
+
+        function setButtonStatus(length) {
+          if (length <= 2) {
+            $('.btn-printer').attr('disabled', true);
+          } else {
+            $('.btn-printer').attr('disabled', false);
+          }
+        }
+
+        var size_tickets = $('#sales-list-modal li').length;
+        setButtonStatus(size_tickets);
+      });
+
+      /** Despliega el modal para realizar la venta */
+      $(this).on('click', '#dabba-img', function(event) {
+        element = $(this);
+        price = element.parent().find('span.product-cost').text();
+        DabbaProduct.cost = price;
+      });
+
+      /** Realizar la venta e imprimir ticket */
+      $(this).on('click', '.btn-printer', function(event) {
+        var payment_type = $(this).attr('id');
+        var ticket_list = $('#sales-list-modal li');
+        var csrf_token = getCookie('csrftoken');
+
+        function rel() {
+          location.reload();
+        }
+
+        // Add payment type to ticket json
+        if (payment_type == 'btn-pago-efectivo') {
+          Ticket['payment_type'] = 'CA';
+        } else {
+          Ticket['payment_type'] = 'CR';
+        }
+
+        if (ticket_list.length > 2) {
+          JSONTicket = JSON.stringify(Ticket);
+          $.ajax({
+            url: '{% url "sales:new_sale" %}',
+            type: 'POST',
+            data: {
+              'ticket': JSONTicket,
+              csrfmiddlewaretoken: csrf_token,
+            },
+            traditional: true,
+            datatype: 'jsonp',
+            success: function(result) {
+              swal({
+                title: "Éxito",
+                text: "Venta realizada",
+                type: "success",
+                showConfirmButton: false,
+              });
+              $('#btn-pago-efectivo').attr('disabled', 'true');
+              $('#btn-pago-tarjeta').attr('disabled', 'true');
+              $('#ticket-id').text(result.ticket_id);
+              $('#ticket-order').text(result.ticket_order);
+              var options = {
+                mode: 'iframe',
+                popClose: true,
+              };
+              $("#printer").printArea(options);
+              setTimeout(rel, 1500);
+            },
+            error: function(result, jqXHR, textStatus, errorThrown) {
+              swal({
+                title: "Venta no realizada!",
+                text: 'Contacte a soporte!\n ' + 'Errores: ' + textStatus + ', ' + jqXHR,
+                type: "error",
+                showConfirmButton: false
+              });
+              setTimeout(rel, 3000);
+            },
+          });
+        };
+      });
+
+      /** Cancelar Venta - Resetear ticket */
+      $(this).on('click', '#btn-orders-reset', function(event) {
+        function resetTicketObject() {
+          Ticket.cartuchos.length = 0;
+          Ticket.paquetes.length = 0;
+          DabbaProduct.id.length = 0;
+        }
+
+        function resetTicketList() {
+          swal({
+            title: "Venta Cancelada!",
+            type: "error",
+            timer: 700,
+            showConfirmButton: false
+          });
+          $('#sales-list').empty();
+          $('#total-price').html("" +
+            "<span class='text-price align-top' id='int-total-price'>0</span>" +
+            "<span class='point-total-price'>.</span>" +
+            "<span class='text-price-decimal' id='dec-total-price'>00</span>"
+          );
+          $('.modal-head-prod-name').empty();
+        }
+        resetTicketList();
+        resetTicketObject();
+      });
+    });
+  </script>
+
+{% endblock javascript %}

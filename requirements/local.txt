@@ -1,0 +1,6 @@
+# Local development dependencies go here
+-r base.txt
+
+# Your custom requirements go here
+# -----------------------------------------------------------------------------
+django-extensions

@@ -1,0 +1,31 @@
+{% extends "base/base_nav_footer.html" %}
+{% block content %}
+
+<div class="container">
+  <div class="row">
+    <div class="col s12 l6">
+      <h1>{{ cartridge.name }}</h1>
+    </div>
+  </div>
+  <p>
+    <strong>Nombre: </strong> {{ cartridge.name }}
+  </p>
+  <p>
+    <strong>Precio: </strong> {{ cartridge.price }}
+  </p>
+  <p>
+    {% if cartridge.category == 'CO' %}
+      <strong>Categoria: </strong> Complemento
+    {% else %}
+      <strong>Categoria: </strong> Platillo    
+    {% endif %}
+  </p>
+  <p>
+    <strong>Fecha de creación: </strong> {{ cartridge.created_at }}
+  </p>
+
+  <img class="materialboxed" width="650" src="{{ cartridge.image.url | default_if_none:'#'}}">
+
+</div>
+
+{% endblock content %}

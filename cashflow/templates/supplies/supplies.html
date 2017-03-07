@@ -1,0 +1,39 @@
+{% extends "base/base_nav_footer.html" %}
+{% block content %}
+<div class="container container-main col-lg-10 push-lg-1">
+  <div class="row">
+    {% for sp in supplies %}
+    <div class="card col-lg-4 col-xl-2">
+      <figure>
+        <img class="card-img-top" src="{{ sp.image.url }}" alt="Card image cap" style="max-width: 100%;max-height: 150px" >
+      </figure>
+      <div class="card-block">
+        <h4 class="card-title">{{ sp.name }}</h4>
+        <h6 class="card-subtitle text-muted">{{ sp.category }}</h6>
+        <div class="card-bloc text-xs-right">
+          <a href="{% url 'products:supply_detail' sp.pk %}">Detalles</a> <br>
+          <a href="{% url 'products:supply_modify' sp.pk %}">Modificar</a> <br>
+          <a href="{% url 'products:supply_delete' sp.pk %}">Delete</a>
+        </div>
+      </div>
+    </div>
+    {% endfor %}
+  </div>
+</div>
+
+<div class="popout">
+  <div class="FAB" id="fab-add-supply">
+    <i class="material-icons">add</i>
+  </div>
+</div>
+{% endblock content %}
+
+{% block javascript %}
+<script type="text/javascript">
+  $(function() {
+    $('#fab-add-supply').click(function(event) {
+      location.href = '/supplies/new/';
+    });
+  });
+</script>
+{% endblock javascript %}

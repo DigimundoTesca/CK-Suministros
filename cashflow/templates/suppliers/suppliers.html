@@ -1,0 +1,21 @@
+{% extends "base/base_nav_footer.html" %}
+
+{% block content %}
+  <div class="container">
+    <div class="row">
+      {% for p in suppliers %}
+
+        <div class="card col-lg-4 col-xl-2">
+          <figure>
+            <img class="card-img-top" src="{{ p.image.url }}" alt="Card image cap" style="max-width: 100%;max-height: 150px">
+          </figure>
+          <div class="card-block">
+            <h4 class="card-title">{{ p.name }}</h4>
+
+          </div>
+        </div>
+      {% endfor %}
+    </div>
+    </ul>
+  </div>
+{% endblock content %}

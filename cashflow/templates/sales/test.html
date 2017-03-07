@@ -1,0 +1,46 @@
+{% extends 'base/base_nav_simple_footer.html' %}
+{% block content %}
+  <div class="container-fluid">
+    <h1>TEST VENTAS!</h1>
+    <table class="table table-hover table-sales-details">
+      <thead class="thead-inverse">
+        <tr>
+          <th>Id</th>
+          <th class="header-date">Fecha</th>
+          <th class="header-products">Productos</th>
+          <th class="header-dabba">Dabbas</th>
+          <th>Vendedor</th>
+          <th>Total</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for ticket in tickets %}
+          <tr>
+            <th>{{ ticket.ticket_parent }}</th>
+            <td class="header-date">{{ ticket.ticket_parent.created_at }}</td>
+            <td class="header-products">
+              {% for cartridge in ticket.cartridges %}
+                <span class="badge badge-success">
+                  <span class="badge badge-info" >{{ cartridge.quantity }}</span>
+                  <span class="badge badge-success ">{{ cartridge.cartridge }}</span>
+                </span>
+              {% endfor %}
+            </td>
+            <td class="header-dabba">
+              {% for package in ticket.packages %}
+                <span class="badge badge-primary">
+                  <span class="badge badge-info">{{ package.quantity}}</span>
+                  <span class="badge badge-primary">{{ package.package }}</span>
+                </span>
+              {% endfor %}
+            </td>
+            <td>{{ ticket.ticket_parent.seller }}</td>
+            <td>
+              {{ ticket.total }}
+            </td>
+          </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+{% endblock %}

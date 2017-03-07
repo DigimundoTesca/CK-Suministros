@@ -1,0 +1,17 @@
+# Requirements for Linux only
+-r local.txt
+
+# libraries to creating and executing simple grammars
+# ------------------------------------------------
+pyparsing==2.1.10
+
+# Python interface to Graphviz's Dot
+# ------------------------------------------------
+pydot==1.2.3
+
+# Python interface to Graphviz's Dot language
+# ------------------------------------------------
+pydotplus==2.0.2
+
+# Python interface to the Graphviz graph layout and visualization package.
+pygraphviz==1.3.1

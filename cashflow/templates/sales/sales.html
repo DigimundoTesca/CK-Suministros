@@ -1,0 +1,780 @@
+{% extends 'base/base_nav_footer.html' %}
+
+{% load static %}
+
+{% block link %}
+  <link rel="stylesheet" type="text/css" href="https://cdnjs.cloudflare.com/ajax/libs/limonte-sweetalert2/6.3.8/sweetalert2.min.css">
+{% endblock link %}
+
+{% block page_title %}
+  {{ page_title }}
+{% endblock %}
+
+{% block content %}
+  <div class="container-fluid container-sales-reports">
+    <div class="row container-sales-header">
+      <div class="col-xs-12 col-md-6">
+        <div class="text-xs-center">
+          <p>Ventas de la semana: <span id="total-earnings-text" class="font-weight-bold">$ </span></p>
+        </div>
+      </div>
+      <div class="col-xs-12 col-md-6">
+        <div class="row">
+          <div class="col-xs-6">
+            <p class="float-xs-right">Hoy es: <span class="font-weight-bold">{{ today_name }}</span></p>
+          </div>
+          <div class="col-xs-6">
+            <p class="float-xs-right">Semana: <span class="font-weight-bold">{{ week_number }}</span></p>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="row sales-graphics">
+      <div class="col-xs-12 col-lg-6">
+        <div class="canvas-holder">
+          <canvas id="canvas-week-sales"></canvas>
+        </div>
+      </div>
+      <div class="col-xs-12 col-lg-6">
+        <div class="canvas-holder">
+          <canvas id="canvas-day-sales"></canvas>
+        </div>
+      </div>
+    </div>
+    <div class="row sales-details">
+      <div class="col-xs-12">
+        <h4 class="col-xs-12 col-sm-8 col-xl-10">Ventas de hoy</h4>
+        <button id="btn-save-ticket-csv" class="col-xs-12 col-sm-4 col-xl-2 btn btn-primary d-flex">
+          <span class="btn-reports d-flex align-items-center"><i class="material-icons">file_download</i>Generar Reporte</span>
+        </button>
+      </div>
+      <div class="col-xs-12">
+        <div class="card card-scroll-x">
+          <table class="table table-hover table-sales-details">
+            <thead class="thead-inverse">
+              <tr>
+                <th>Id</th>
+                <th class="header-date">Fecha</th>
+                <th class="header-products">Productos</th>
+                <th class="header-dabba">Dabbas</th>
+                <th>Vendedor</th>
+                <th>Total</th>
+                <th>Acciones</th>
+              </tr>
+            </thead>
+            <tbody>
+              {% for ticket in tickets %}
+                <tr>
+                  <th class="header-id">{{ ticket.ticket_parent }}</th>
+                  <td class="header-date">{{ ticket.ticket_parent.created_at }}</td>
+                  <td class="header-products">
+                    {% for cartridge in ticket.cartridges %}
+                      <span class="badge badge-success">
+                        <span class="badge badge-info" >{{ cartridge.quantity }}</span>
+                        <span class="badge badge-success ">{{ cartridge.cartridge }}</span>
+                      </span>
+                    {% endfor %}
+                  </td>
+                  <td class="header-dabba">
+                    {% for package in ticket.packages %}
+                      <span class="badge badge-primary">
+                        <span class="badge badge-info">{{ package.quantity}}</span>
+                        <span class="badge badge-primary">{{ package.package }}</span>
+                      </span>
+                    {% endfor %}
+                  </td>
+                  <td>{{ ticket.ticket_parent.seller }}</td>
+                  <td>
+                    {{ ticket.total }}
+                  </td>
+                  <td class="header-actions">
+                    <span class="sales-actions delete-ticket"><i class="material-icons text-muted">delete</i></span>
+                    <span class="sales-actions print-ticket"><i class="material-icons text-primary">local_printshop</i></span>
+                  </td>
+                </tr>
+              {% endfor %}
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Ticket Modal -->
+<div class="modal fade" id="modal-ticket" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+        <h5 class="modal-title" id="myModalLabel">Imprimir</h5>
+      </div>
+      <div class="modal-body">
+        <div class="printer-container">
+          <div id="printer">
+            <figure class="content-img">
+              <img src="{% static 'images/dabbawala_black.jpg' %}" alt="logo-dabbawala">
+            </figure>
+            <div class="ticket-order-container text-xs-center">
+              <span>ORDEN</span>
+              <span id="ticket-order"></span>
+            </div>
+            <div class="ticket-address">
+              <p class="text-xs-center">
+                20 de Noviembre #32, San Lucas Tepetlacalco, Tlanepantla Edo. De México CP 54055
+              </p>
+            </div>
+            <div class="container ticket-datetime-container">
+              <div class="row">
+                <div class="col-xs-6 ticket-datetime">
+                  <span id="ticket-time"></span>
+                </div>
+                <div class="col-xs-6 ticket-datetime">
+                  <span id="ticket-date"></span>
+                </div>
+              </div>
+            </div>
+            <ul class="list-group list-group-flush" id="sales-list-modal">
+            </ul>
+            <div class="ticket-id-container">
+              <span>ID: </span><span id="ticket-id"></span>
+            </div>
+            <div class="ticket-celphone">
+              <span>Whatsapp: 55 42 46 73 60</span>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button type="submit" class="btn btn-primary btn-printer">Imprimir</button>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock content %}
+
+{% block javascript %}
+<script src="https://cdnjs.cloudflare.com/ajax/libs/limonte-sweetalert2/6.3.8/sweetalert2.min.js"></script>
+<script src="{% static 'js/Chart.bundle.min.js' %}" defer></script>
+<script src="{% static 'js/papaparse.min.js' %}" defer></script>
+<script src="{% static 'js/blob.js' %}" defer></script>
+<script src="{% static 'js/fileSaver.min.js' %}" defer></script>
+
+<script type="text/javascript" charset="utf-8" defer>
+  $(function() {
+    var ctx_week = document.getElementById("canvas-week-sales"),
+        ctx_day = document.getElementById("canvas-day-sales");
+    var today_number = {{ today_number }};
+    var sales_week = JSON.parse('{{ sales_week|safe }}');
+    var earnings_week_chart,
+        earnings_day_chart;
+
+
+    /**
+     * returns a list with the earnings of the week per day
+     */
+    function get_earnings_week_list() {
+      var earnings_list = [];
+      var count = 0;
+
+      while (count < sales_week.length) {
+        earnings_list.push(parseFloat(sales_week[count].earnings));
+        count++;
+      }
+      return earnings_list;
+    }
+
+    /**
+     * Receives an hour in 24-hour format and returns the same hour but
+     * converted into minutes.
+     * The string must have to have the following format: hh:mm
+     */
+    function hours_to_minutes(original_time) {
+      var hours,
+          minutes;
+        hours = parseInt(original_time.split(':')[0])*60;
+        minutes = parseInt(original_time.split(':')[1]);
+      return parseInt(hours + minutes);
+    }
+
+    /**
+     * Receives an hour in minutes format and returns the same hour but
+     * converted into 24-hour format.
+     * The string returned have the next format: hh:mm
+     */
+    function minutes_to_hours(original_time) {
+      hours = parseInt(original_time / 60);
+      minutes = parseInt(original_time % 60);
+      
+      if (hours.toString().length < 2) {
+        hours = "0"+hours;
+      }
+      
+      if (minutes.toString().length < 2) {
+        minutes = "0"+minutes;
+      }
+        return hours + ':' + minutes;
+    }
+
+    /**
+     * Receives an hour and verifies if it't is in the offered time range.
+     * The hours received must have the following format: hh:mm
+     * Returns true if the condition is met. Otherwise returns false.
+     */
+    function is_time_in_range(hour, start_hour, end_hour) {
+      hour_in_minutes = hours_to_minutes(hour);
+      start_hour_in_minutes = hours_to_minutes(start_hour);
+      end_hour_in_minutes = hours_to_minutes(end_hour);
+
+      if(hour_in_minutes >= start_hour_in_minutes && hour_in_minutes < end_hour_in_minutes)
+        return true;
+      return false;
+    }
+
+    /**
+     * Receives two hours with the next format: hh:mm
+     * Returns the diference of the hours given with the following format: hh:mm
+     */
+    function get_time_differences(initial_time, final_time){
+      initial_mins = parseInt(initial_time.substr(3,2));
+      initial_hours = parseInt(initial_time.substr(0,2));
+      
+      final_mins = parseInt(final_time.substr(3,2));
+      final_hours = parseInt(final_time.substr(0,2));
+
+      elapsed_mins = final_mins - initial_mins;
+      elapsed_hours = final_hours - initial_hours;
+      
+      if (elapsed_mins < 0) {
+        elapsed_hours--;
+        elapsed_mins = 60 + elapsed_mins;
+      }
+      
+      hours = elapsed_hours.toString();
+      minutes = elapsed_mins.toString();
+      
+      if (hours.length < 2) {
+        hours = "0"+hours;
+      }
+      
+      if (minutes.length < 2) {
+        minutes = "0"+minutes;
+      }
+      return hours+':'+minutes;
+    }
+
+    /**
+     * Receives a datetime with format from python.
+     * Returns an hour converted into 24-hours format: hh:mm ith Timezone +06:00
+     */
+    function convert_datetime_to_hour(original_datetime){
+      hour_formated = original_datetime.split('T')[1].split('.')[0].substr(0,5);
+      return hour_formated;
+    }
+
+    /** 
+     * Returns a list with the earnings of each time range
+     */
+    function get_sales_day_list(initial_hour, final_hour, separation_time, sales_list) {
+      var initial_hour_minutes,
+            final_hour_minutes;
+      var list_formated = [],
+          elements_ok = [];
+      var earnings = 0;
+
+      initial_hour_minutes = hours_to_minutes(initial_hour);
+      final_hour_minutes = hours_to_minutes(final_hour);
+
+      while(initial_hour_minutes < final_hour_minutes) {
+        start_hour_f = minutes_to_hours(initial_hour_minutes);
+        end_hour_f = minutes_to_hours(initial_hour_minutes + separation_time);
+
+        for (var i = 0; i < sales_list.length; i++) {
+          hour_sale = convert_datetime_to_hour(sales_list[i].datetime);
+          
+          if(is_time_in_range(hour_sale, start_hour_f, end_hour_f)) {
+            earnings += parseFloat(sales_list[i].earnings);
+            elements_ok.push(sales_list[i]);
+          }
+        }
+
+        list_formated.push(earnings);
+        initial_hour_minutes += separation_time;
+        earnings = 0;
+      }
+
+      // Searches the times outside the time range
+      for(var i = 0; i < sales_list.length; i++) {
+        if(elements_ok.indexOf(sales_list[i]) == -1) {
+          earnings += parseFloat(sales_list[i].earnings);
+        }
+      }
+      list_formated.push(earnings)
+      return list_formated.reverse();
+    }
+
+    /*
+     * Get's the earnings of the selected day in week chart and
+     * show the results in sales day chart
+     */
+    function get_sales_day(day_number) {
+      var earnings_list = [];
+      date =  sales_week[day_number].date;
+ 
+      $.ajax({
+        url: "{% url 'sales:sales' %}",
+        type: 'POST',
+        data: {
+          csrfmiddlewaretoken: '{{ csrf_token }}',
+          'date': date,
+          'type': 'sales_day',
+        },
+        traditional: true,
+        datatype: 'jsonp',
+        beforeSend: function(){
+          swal({
+              title: "Generando gráficas",
+              text: "Espere mientras se calculan los datos",
+            });
+          swal.enableLoading();
+        },
+        success: function(result) {
+          var sales_day_earnings_list = [];
+          var initial_hour = '05:00',
+              final_hour = '13:00',
+              separation_time = 30; // In minutes
+          var sales_day_object_list = result['sales_day_list'];
+          var total_datas = sales_day_object_list.length;
+
+          sales_day_earnings_list = get_sales_day_list(initial_hour, final_hour, separation_time, sales_day_object_list);
+          earnings_day_chart.data.datasets[0].data = sales_day_earnings_list;
+          earnings_day_chart.update();
+          swal({
+            title: "Éxito",
+            text: "Gráfica generada",
+            type: "success",
+            timer: 750,
+            showConfirmButton: false
+          }).then(
+          function(){},
+          function(dismiss){}
+          );
+        },
+
+        error: function(result, jqXHR, textStatus, errorThrown) {
+          console.log(result);
+        },
+      });
+    }
+
+    /**
+     * Draws the chart of sales of the week
+     */
+    earnings_week_chart = new Chart(ctx_week, {
+      type: 'bar',
+      data: {
+        labels: ["Lunes", "Martes", "Miercoles", "Jueves", "Viernes", "Sábado", "Domingo"],
+        datasets: [{
+          label: 'Ventas del día',
+          data: get_earnings_week_list(),
+          backgroundColor: [
+          'rgba(241,196,15,0.7)',
+          'rgba(230,126,34,0.7)',
+          'rgba(231,76,60,0.7)',
+          'rgba(26,188,156,0.7)',
+          'rgba(46,204,113,0.7)',
+          'rgba(52,152,219,0.7)',
+          'rgba(52,73,94,0.7)',
+          ],
+          borderColor: [
+          'rgba(241,196,15,0.9)',
+          'rgba(230,126,34,0.9)',
+          'rgba(231,76,60,0.9)',
+          'rgba(26,188,156,0.9)',
+          'rgba(46,204,113,0.9)',
+          'rgba(52,152,219,0.9)',
+          'rgba(52,73,94,0.9)',
+          ],
+        }]
+      },
+      options: {
+        responsive: true,
+        onClick: function(event, legendItem) {
+          try {
+            get_sales_day(legendItem[0]._index);
+          } catch (error) {
+            console.log(error.message);
+          }
+        },
+        scales: {
+          yAxes: [{
+            ticks: {
+              beginAtZero: true,
+            },
+          }]
+        }
+      }
+    });
+
+    /**
+     * Draws the chart of sales of the day
+     */
+    earnings_day_chart = new Chart(ctx_day, {
+      type: 'horizontalBar',
+      data: {
+        labels: [
+        "Out",
+        "12:30 - 13:00", "12:00 - 12:30", "11:30 - 12:00", "11:00 - 11:30", "10:30 - 11:00", "10:00 - 10:30", "09:30 - 10:00", "09:00 - 09:30",
+        "08:30 - 09:00", "08:00 - 08:30", "07:30 - 08:00", "07:00 - 07:30", "06:30 - 07:00", "06:00 - 06:30", "05:30 - 06:00", "05:00 - 05:30",
+        ],
+        datasets: [{
+          label: 'Ventas en este horario',
+          data: [],
+          backgroundColor: [
+          'rgba(247,202,24,0.7)',
+          'rgba(103,65,114,0.7)',
+          'rgba(65,131,215,0.7)',
+          'rgba(246,36,89,0.7)',
+          'rgba(103,65,114,0.7)',
+          'rgba(54,215,183,0.7)',
+          'rgba(46,204,113,0.7)',
+          'rgba(247,202,24,0.7)',
+          'rgba(249,105,14,0.7)',
+          'rgba(242,38,19,0.7)',
+          'rgba(246,36,89,0.7)',
+          'rgba(103,65,114,0.7)',
+          'rgba(65,131,215,0.7)',
+          'rgba(54,215,183,0.7)',
+          'rgba(46,204,113,0.7)',
+          'rgba(247,202,24,0.7)',
+          'rgba(249,105,14,0.7)',
+          ],
+          borderWidth: 0
+        }]
+      },
+      options: {
+        responsive: true,
+        onClick: function(event, legendItem) {
+          try {
+            console.log(legendItem[0]._index);
+          }
+          catch(error) {
+            console.log(error.message);
+          }
+        },
+        scales: {
+          xAxes: [{
+            ticks: {
+              beginAtZero: true
+            }
+          }]
+        }
+      }
+    });
+
+    /** 
+     * Receives a number and returns it with currency format
+     */
+    function set_number_format(amount, decimals) {
+      var amount_parts,
+          regexp = /(\d+)(\d{3})/;
+
+      amount += '';
+      amount = parseFloat(amount.replace(/[^0-9\.]/g, ''));
+      decimals = decimals || 0;
+
+      if (isNaN(amount) || amount === 0)
+        return parseFloat(0).toFixed(decimals);
+
+      amount = '' + amount.toFixed(decimals);
+      amount_parts = amount.split('.');
+
+      while (regexp.test(amount_parts[0]))
+        amount_parts[0] = amount_parts[0].replace(regexp, '$1' + ' ' + '$2');
+
+      return amount_parts.join('.');
+    }
+
+    /** 
+     * Calculates total earnings in the actual week and print it
+     */
+    function set_total_earnings() {
+      var total_earnings = 0;
+      var earnings_list = get_earnings_week_list();
+      for (var i = 0; i < earnings_list.length; i++) {
+        total_earnings += earnings_list[i];
+      }
+      total_earnings = set_number_format(total_earnings, 2);
+      $('#total-earnings-text').append(total_earnings);
+    }
+
+    /**
+     * Get's the ticket id for printer-icon selected 
+     * TODO: Make an iframe to print the ticket
+     */
+    $(this).on('click', '.print-ticket', function(event) {
+      var id_element = $(this).parent().siblings('.header-id').text();
+      var products_list = $(this).parent().siblings('.header-products');
+      var dabbas_list = $(this).parent().siblings('.header-dabbas');
+      var btn_printer = $('.btn-printer');
+      var ticket_details;
+      var sales_list_modal = $('#sales-list-modal');
+
+      function show_modal(dataResponse) {
+        var nuevo_li;
+
+        // First reset the ticket 
+        sales_list_modal.empty();
+
+        nuevo_li = ("" +
+        "<li>" +
+        "<span class='name-li-title-modal'>Nombre</span> " +
+        "<span class='cost-li-title-modal'>Cost</span>" +
+        "<span class='cant-li-title-modal'>Cant</span>" +
+        "<span class='total-li-title-modal'>Total</span> " +
+        "</li>");
+
+        sales_list_modal.append(nuevo_li);
+       
+        function iterate_cartridges(element, index, array) {
+          var name = element.name;
+          var cost_base = parseFloat(element.total) / element.quantity;
+          var total = parseFloat(element.total);
+          var quantity = element.quantity;
+
+          // Formarts the cost_base and total
+          if (cost_base % 2 != 0) {
+              cost_base = cost_base.toFixed(2);
+            } else
+              cost_base += '.00';
+
+          if (total % 2 != 0) {
+              total = total.toFixed(2);
+            } else
+              total += '.00';
+
+          // Adds the list to tickets
+          nuevo_li = $("" +
+            "<li class='list-group-item'>" +
+            "<span class='name-li-modal text-uppercase'>" + name + "</span> " +
+            "<span class='cost-li-modal'>" + '$ ' + cost_base + "</span>" +
+            "<span class='cant-li-modal'>" + quantity + "</span>" +
+            "<span class='total-li-modal'>" + '$ ' + total + "</span> " +
+            "</li>");
+
+            sales_list_modal.append(nuevo_li);
+        }
+
+        function iterate_packages(element, index, array) {
+          var cartridges_list = array[0].cartridges;
+          var name = '';
+          var cost_base = parseFloat(element.total) / element.quantity;
+          var total = parseFloat(element.total);
+          var quantity = element.quantity;
+
+          // Formats the names
+          $.each(cartridges_list, function(index, item) {
+            name += item.substring(0, 3) + ' ';
+          });
+
+          // Formarts the cost_base and total
+          if (cost_base % 2 != 0) {
+              cost_base = cost_base.toFixed(2);
+            } else
+              cost_base += '.00';
+
+          if (total % 2 != 0) {
+              total = total.toFixed(2);
+            } else
+              total += '.00';
+
+          // Adds the list to tickets
+          nuevo_li = $("" +
+            "<li class='list-group-item'>" +
+            "<span class='name-li-modal text-uppercase'>" + name + "</span> " +
+            "<span class='cost-li-modal'>" + '$ ' + cost_base + "</span>" +
+            "<span class='cant-li-modal'>" + quantity + "</span>" +
+            "<span class='total-li-modal'>" + '$ ' + total + "</span> " +
+            "</li>");
+
+            sales_list_modal.append(nuevo_li);
+        }
+
+        ticket_details.cartridges.forEach(iterate_cartridges);
+        ticket_details.packages.forEach(iterate_packages);
+        $("#ticket-id").text(id_element)
+        
+        $('#modal-ticket').modal('show');
+      }
+
+      /**
+       * Draws the ticket details and activates btn-ptinter onClick listener
+       */
+      $.ajax({
+        url: "{% url 'sales:sales' %}",
+        type: 'POST',
+        traditional: true,
+        dataType: 'json',
+        data: {
+          csrfmiddlewaretoken: '{{ csrf_token }}',
+          'ticket_id': id_element,
+          'type': 'ticket_details',
+        },
+        beforeSend: function(){
+          swal({
+              title: "Obteniendo datos del ticket",
+              text: "Espere mientras obtenemos toda la información",
+            });
+          swal.enableLoading();
+        },
+        success: function(result, status, XHR) {
+          swal({
+            title: "Éxito",
+            text: "Datos obtenidos",
+            type: "info",
+            timer: 750,
+            showConfirmButton: false
+          }).then(
+            function(){},
+            function(dismiss){}
+          );
+        },
+        complete: function(result){
+          ticket_details = result.responseJSON.ticket_details;
+
+          setTimeout(function() {
+            show_modal(ticket_details)
+          }, 750);
+
+          btn_printer.on('click', function(){
+            var options = {
+              mode: 'iframe',
+              popClose: true,
+            };
+            $("#printer").printArea(options);
+          });
+        }
+      });
+    });
+
+    /**
+     * Get's the ticket id for delete-icon selected 
+     * TODO: Make a view for delete the ticket from backend
+     */
+    $(this).on('click', '.delete-ticket', function(event) {
+      var id_element = $(this).parent().siblings('.header-id').text();
+
+      function delete_ticket() {
+        $.ajax({
+          url: "{% url 'sales:delete-sale' %}",
+          type: 'POST',
+          data: {
+            csrfmiddlewaretoken: '{{ csrf_token }}',
+            'ticket_id': id_element,
+          },
+          traditional: true,
+          datatype: 'jsonp',
+          beforeSend: function(){
+            swal({
+                title: "Eliminando ticket",
+                text: "Espere mientras se realiza la petición",
+              });
+            swal.enableLoading();
+          },
+          success: function(result) {
+            swal({
+              title: "Éxito",
+              text: "Ticket Eliminando",
+              type: "warning",
+              timer: 1000,
+              showConfirmButton: false
+            }).then(
+              function(){},
+              function(dismiss){
+                location.reload();
+              }
+            );
+          }
+        });
+      }
+
+      swal({
+          title: '¿Estás seguro?',
+          text: "No podras recuperar el ticket!",
+          type: 'warning',
+          showCancelButton: true,
+          cancelButtonColor: '#3085d6',
+          confirmButtonColor: '#d33',
+          confirmButtonText: 'Sí, eliminar ticket!'
+        }).then(function () {
+            delete_ticket();
+          },
+          function(dismiss){});
+    });
+
+    /** 
+     * Saves the ticket a csv file
+     */
+    $(this).on('click', '#btn-save-ticket-csv', function(event) {
+      /**
+       * Convert JSON TO CSV
+       */
+
+        var tickets_json = null
+        $.ajax({
+          url: "{% url 'sales:sales' %}",
+          type: 'POST',
+          dataType: 'json',
+          data: {
+            type: 'tickets',
+            csrfmiddlewaretoken: '{{ csrf_token }}',
+          },
+          beforeSend: function(){
+            swal({
+                title: "Generando Excel",
+                text: "Espere mientras obtenemos toda la información",
+              });
+            swal.enableLoading();
+          },
+          success: function(result, status, XHR) {
+            ticket_details = Papa.unparse(result.ticket);
+            // console.log(ticket_details);
+            // typeof(ticket_details)
+            // var tmpElemento = document.createElement('a');
+            // var data_type = 'data:application/vnd.ms-excel';
+            // tmpElemento.href = data_type + ', ' + ticket_details;
+            // tmpElemento.download = 'Nombre_De_Mi_Excel.xls';
+            // tmpElemento.click();
+
+            var blob = new Blob([ ticket_details ], { 
+              type: "text/csv;charset=UTF-8" }
+              );
+            var datetime = new Date();
+            saveAs(blob, datetime + '.csv');
+
+            swal({
+              title: "Éxito",
+              text: "Datos obtenidos",
+              type: "info",
+              timer: 750,
+              showConfirmButton: false
+            }).then(
+              function(){},
+              function(dismiss){}
+            );
+          },
+          complete: function(result){
+            setTimeout(function() {
+            }, 750);
+          }
+        });
+    });
+
+    /**
+     * Functions to initialize the graphs
+     */
+    set_total_earnings();
+    get_sales_day(today_number);
+  });
+</script>
+{% endblock javascript %}

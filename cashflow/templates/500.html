@@ -1,0 +1,19 @@
+{% extends 'base/base.html' %}
+{% load static %}
+
+{% block content %}
+  <div class="container container-error text-xs-center">
+    <div class="col-xs-12 col-md-6 push-md-3">
+      <h1>Error de Respuesta :(</h1>
+      <img src="{% static 'images/500.gif' %}" alt="">
+      <div class="alert alert-info" role="alert">
+        <strong>Error 500: </strong>Pero tranquilo nuestros ingenieros ya se encuentran reparándolo. <strong><a href="{% url 'users:login' %}">Regresar al Inicio</a></strong>
+      </div>
+    </div>
+  </div>
+
+{% endblock %}
+
+{% block footer %}
+  {% include 'base/footer.html' %}
+{% endblock %}

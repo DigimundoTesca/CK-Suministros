@@ -1,0 +1,254 @@
+{% extends 'base/base_nav_simple_footer_address.html' %}
+
+{% load static %}
+
+
+{% block link %}
+<link rel="stylesheet" type="text/css" href="{% static 'css/sweetalert.css' %}">
+{% endblock link %}
+
+{% block content %}
+<div class="container">
+  <h1 class="text-xs-center">Bienvenido a Dabbawala</h1>
+  <figure>
+    <figure class="container-dabbawala-logo">
+      <img src="{% static 'images/LogoDabba_naranja.png' %}" alt="dabbawala_logo" class="dabbawala-logo-register">
+    </figure>
+  </figure>
+  <div class="row">
+    <div class="col-xs-12">
+      <h3 class="text-xs-center">Registrate y obtén un desayuno gratis</h3>
+      <form action="" method="POST" class="form-register-customer">
+        <div class="row">
+          <div class="col-xs-12 col-md-6">
+            {% csrf_token %}
+            <div class="form-group">
+              <label for="id_name" class="sr-only">Nombre de usuario.</label>
+              <small id="id_name_help" class="form-text text-muted">Nombre con el que te identificaremos.</small>
+              <input type="text" class="form-control" id="id_name" name="{{ form_customer.user.name }}" placeholder="Nombre de usuario (Nickname)" maxlength="30" value="{% if form_customer.user.value == None %}{% else %}{{ form_customer.user.value }}{% endif %}" required autofocus onkeypress="return pulsar(event)" >
+              {%  if form_customer.user.errors %}
+              <div class="has-danger">
+                {%  for error in form_customer.user.errors %}
+                <small class="form-control-feedback">
+                  {{ error|escape }}
+                </small>
+                {% endfor %}
+              </div>
+              {% endif %}
+            </div>
+            <div class="form-group">
+              <label for="id_email" class="sr-only">Correo</label>
+              <small id="id_email_help" class="form-text text-muted"></small>
+              <input type="email" class="form-control" id="id_email" name="{{ form_customer.email.name }}" placeholder="Correo" maxlength="255" value="{% if  form_customer.email.value == None %}{% else %}{{ form_customer.email.value }}{% endif %}" required onkeypress="return pulsar(event)" >
+              {%  if form_customer.email.errors %}
+              <div class="has-danger">
+                {%  for error in form_customer.email.errors %}
+                <small class="form-control-feedback">{{ error|escape }}
+                </small>
+                {% endfor %}
+              </div>
+              {% endif %}
+            </div>
+            <div class="form-group">
+              <label for="id_phone_number" class="sr-only">Teléfono celular</label>
+              <small id="id_phone_number_help" class="form-text text-muted"></small>
+              <input type="text" class="form-control" id="id_phone_number" name="{{ form_customer.phone_number.name }}" placeholder="Número con WhatsApp" maxlength="10" value="{% if  form_customer.phone_number.value == None %}{% else %}{{ form_customer.phone_number.value }}{% endif %}" required onkeypress="return pulsar(event)" >
+              {%  if form_customer.phone_number.errors %}
+              <div class="has-danger">
+                {%  for error in form_customer.phone_number.errors %}
+                <small class="form-control-feedback">{{ error|escape }}
+                </small>
+                {% endfor %}
+              </div>
+              {% endif %}
+            </div>
+            <input type="hidden" class="form-control " id="id_longitude" name="longitude" value="{{ form_customer.longitude.value }}">
+            <input type="hidden" class="form-control" id="id_latitude" name="latitude" value="{{ form_customer.latitude.value }}">
+            <div class="form-group row">
+              <div class="col-xs-12">
+                <small id="id_address_help" class="form-text text-muted"></small>
+              </div>
+              <div class="col-xs-12">
+                <div class="input-group">
+                  <input type="text" class="form-control" id="id_address" name="address" placeholder="Lugar donde enviaremos tu Dabba gratis" maxlength="255" onkeypress="return search(event)" required="">
+                  <span class="input-group-btn" id="icon-search">
+                    <button class="btn btn-primary" type="button" id="btn-search"><i class="material-icons">search</i></button>
+                  </span>
+                </div>
+                {%  if form_customer.address.errors %}
+                <div class="has-danger">
+                  {%  for error in form_customer.address.errors %}
+                  <small class="form-control-feedback">{{ error|escape }}
+                  </small>
+                  {% endfor %}
+                </div>
+                {% endif %}
+              </div>
+            </div>
+            <div id="container-msj-alert" class="form-group container-hidden">
+              <div class="alert alert-warning" role="alert">
+                <strong>Oops! </strong><span id="msj-alert">mensaje</span>
+              </div>
+            </div>
+            <div class="row">
+              <div class="col-xs-12">
+                <button type="submit" class="btn btn-success btn-block">Registrate</button>
+              </div>
+            </div>
+          </div>
+          <div class="col-xs-12 col-md-6 map-container">
+            <!-- Google maps -->
+            <div id="map" class=""></div>  
+          </div>
+        </div>
+        <br>
+      </form>
+    </div>
+    </small>
+    <small id="id_phone_number_help" class="form-text text-muted">Para hacer válida la promoción de tu primer Dabba debes pedirlo por whatsapp y estar dentro de la zona de cobertura.
+  </div>
+</div>
+
+{% endblock %}
+
+{% block javascript %}
+<script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyCrITfQswCPmOPEBRM1Ufeiogh22FxQV5k" defer charset="utf-8"></script>
+
+<script src="{% static 'js/sweetalert.min.js' %}" charset="utf-8"></script>
+
+<script type="text/javascript">
+  var map = null;
+  var infoWindow = null;
+  var marker = null;
+
+  function drawMap (options) {
+    map = new google.maps.Map($("#map").get(0), options);
+  }
+
+  function setAddressValue (address) {
+    $('#id_address').val(address);
+  }
+
+  function setLatLng(lat, lng){
+    $('#id_latitude').val(lat);
+    $('#id_longitude').val(lng); 
+  }
+
+  function openInfoWindow(marker) {
+    var markerLatLng = marker.getPosition();
+    infoWindow.setContent([
+      'Aquí enviaremos tu Dabba.'
+      ].join(''));
+
+    infoWindow.open(map, marker);
+
+    var latitude = markerLatLng.lat();
+    var longitude = markerLatLng.lng();
+
+    setLatLng(latitude, longitude);
+  }
+
+  function addMarkerLsteners (marker) {
+    google.maps.event.addListener(marker, 'dragend', function(){ 
+      openInfoWindow(marker); 
+    });
+    google.maps.event.addListener(marker, 'click', function(){ 
+      openInfoWindow(marker); 
+    });
+  }
+
+  function initMap() {
+    var LatLng = new google.maps.LatLng(19.5228008,-99.2291418);
+    var optionsMap = {
+      zoom: 15,
+      center: LatLng,
+      mapTypeId: google.maps.MapTypeId.ROADMAP,
+    }
+
+    infoWindow = new google.maps.InfoWindow();
+
+    drawMap(optionsMap);
+
+    marker = new google.maps.Marker({
+      animation: google.maps.Animation.DROP,
+      draggable: true,
+      map: map,
+      position: LatLng,
+    });
+
+    addMarkerLsteners(marker);
+    openInfoWindow(marker);
+  }
+
+  $('#btn-search').on('click', function() {
+    var address = $('#id_address').val();
+    var geocoder = new google.maps.Geocoder();
+    geocoder.geocode({'address': address}, geocodeResult);
+  });
+
+  function pulsar(e) {
+    tecla = (document.all) ? e.keyCode :e.which;
+    return (tecla!=13);
+  }
+
+  function search(e) {
+    var code = (e.keyCode ? e.keyCode : e.which);
+    if(code == 13) { 
+      var address = $('#id_address').val();
+      var geocoder = new google.maps.Geocoder();
+      geocoder.geocode({'address': address}, geocodeResult);
+    }
+
+    return (code!=13);
+  }
+
+  function geocodeResult(results, status) {
+    if (status == 'OK') {
+      var address = results[0].formatted_address;
+      setAddressValue(address);
+
+      var optionsMap = {
+        zoom: 15,
+        mapTypeId: google.maps.MapTypeId.ROADMAP,
+      }
+
+      drawMap(optionsMap);
+      map.fitBounds(results[0].geometry.viewport);
+
+      var markerOptions = { 
+        position: results[0].geometry.location,
+        draggable: true, 
+        animation: google.maps.Animation.DROP,
+      }
+
+      marker = new google.maps.Marker(markerOptions);
+      marker.setMap(map);
+
+      var latitude = marker.position.lat();
+      var longitude = marker.position.lng();
+
+      setLatLng(latitude, longitude);
+
+
+      addMarkerLsteners(marker);
+
+    } else {
+      /** If there's not results */
+      $("#msj-alert").text('No encontramos tu dirección');
+      $("#container-msj-alert").fadeIn(1500);
+      setTimeout(function() {
+        $("#container-msj-alert").fadeOut(1500);
+      },6000);
+    }
+  }
+  $(function() {
+    initMap();
+    // swal({
+    //   title: "+52 1 55 42 46 73 60",
+    //   text: "Estamos en Mantenimiento!. Péro aún puedes pedir tu primer dabba gratis en whatsapp",
+    //   type: "warning",
+    //   showConfirmButton: true
+    // }); 
+  });
+</script>
+{% endblock %}

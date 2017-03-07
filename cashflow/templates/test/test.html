@@ -1,0 +1,47 @@
+{% extends 'base/base_nav_simple_footer_address.html' %}
+
+{% load static %}
+
+{% block content %}
+
+<form action="" method="post">
+
+
+  <input type='hidden' name='csrfmiddlewaretoken' value='CEN3vF3DhtTeqcelfBokdwXksZpA1orOxLi6NKhbItfGF0bozAnN7orAMbPCYrTD' />
+  
+  <h2>form users
+  </h2>
+  
+  <p>
+    <label for="id_username">Nombre de usuario:
+    </label> 
+    <input id="id_username" maxlength="150" name="username" type="text" required /> 
+    <small class="helptext">Required. 150 characters or fewer. Letters, digits and @/./+/-/_ only.
+    </small>
+  </p>
+
+  <p>
+    <label for="id_email">Email address:
+    </label> 
+    <input id="id_email" maxlength="254" name="email" type="email" />
+  </p>
+
+  <p>
+    <label for="id_password">Contraseña:
+    </label> 
+    <input id="id_password" maxlength="128" name="password" type="text" required />
+  </p>
+
+
+  <p>
+    <input id="id_is_active" name="is_active" type="hidden" /> 
+  </p>
+
+
+  <input type="submit" name="form-register" value="Enviar"/>
+</form>
+{% endblock %}
+
+
+
+
