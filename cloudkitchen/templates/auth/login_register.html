@@ -1,0 +1,29 @@
+{% extends 'base/base_nav_footer.html' %}
+{% load static %}
+
+{% block content %}
+<div class="container-fluid">
+  <div class="row">
+    <table class="table">
+      <thead>
+        <tr>
+          <th>Usuario</th>
+          <th>Fecha</th>
+          <th>Categoria</th>
+        </tr>
+      </thead>
+      <tbody>
+        {%for object in objects %}
+        <tr>
+          <td>{{ object.user }}</td>
+          <td>{{ object.category }}</td>
+          <td>{{ object.creation_date }}</td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+</div> 
+
+
+{% endblock %}

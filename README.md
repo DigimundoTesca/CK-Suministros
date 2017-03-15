@@ -1,6 +1,6 @@
-# CashFlow project - Instructions
+# CloudKitchen project - Instructions
 
-To install CashFlow, you must to install virtualenv and a python version >= 3.4
+To install CloudKitchen, you must to install virtualenv and a python version >= 3.4
 
 
 ### Unix OS 

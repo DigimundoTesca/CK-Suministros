@@ -3,19 +3,23 @@ import json
 from django.contrib.auth.decorators import login_required
 from django.http import JsonResponse, HttpResponse
 from django.shortcuts import render, redirect
+from django.core.signals import request_finished
+from django.dispatch import receiver
 
 from django.contrib.auth import authenticate
 from django.contrib.auth import login as login_django
 from django.contrib.auth import logout as logout_django
 
 from users.forms import CustomerProfileForm, UserForm
+from users.models import CustomerProfile
+from users.models import UserMovements
 
-from cashflow.settings.base import PAGE_TITLE
+
+from cloudkitchen.settings.base import PAGE_TITLE
+
 
 
 # -------------------------------------  Index -------------------------------------
-from users.models import CustomerProfile
-
 
 def arduino(request):
     print(request)
@@ -50,6 +54,7 @@ def index(request):
 # -------------------------------------  Auth -------------------------------------
 def login(request):
     if request.user.is_authenticated():
+        # login(request.user)
         return redirect('sales:sales')
     tab = 'login'
     error_message = None
@@ -76,7 +81,8 @@ def login(request):
             user = authenticate(username=username_login, password=password_login)
 
             if user is not None:
-                login_django(request, user)
+                login_django(request, user)                   
+                login_check(user.username)
                 return redirect('sales:sales')
 
             else:
@@ -162,3 +168,28 @@ def customers_list(request):
     }
 
     return render(request, template, context)
+
+
+@login_required(login_url='users:login')
+def login_register(request):
+
+    objects = UserMovements.objects.all()
+
+    template = 'auth/login_register.html'
+    title = 'Tabla de Usuarios'
+    context={
+    'titie' : title,
+    'objects' : objects
+    }
+    return render(request, template, context)    
+
+
+def login_check(user):       
+    movement = UserMovements.objects.create(category='LogIn',user=user)    
+    movement.save()
+
+
+@login_required(login_url='users:login')
+def logout_check(user):       
+    movement = UserMovements.objects.create(category='LogOut',user=user)    
+    movement.save()

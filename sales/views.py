@@ -12,7 +12,7 @@ from django.middleware.csrf import get_token
 from django.utils import timezone
 
 from branchoffices.models import CashRegister
-from cashflow.settings.base import PAGE_TITLE
+from cloudkitchen.settings.base import PAGE_TITLE
 from products.models import Cartridge, PackageCartridge, PackageCartridgeRecipe
 from sales.models import Ticket, TicketDetail
 from users.models import User as UserProfile
@@ -98,7 +98,6 @@ def are_equal_lists(list_1, list_2):
                 return False
 
     return True
-
 
 
 """
@@ -314,8 +313,6 @@ def new_sale(request):
             3. save the 'new_ticket_object' with the new atribute (n + 1)
             4. Save the new object
             """
-            new_ticket_object = Ticket(
-                cash_register=cash_register, seller=user_profile_object, payment_type=payment_type)
             new_ticket_object.save()
 
             """
@@ -323,7 +320,7 @@ def new_sale(request):
             """
             for ticket_detail in ticket_detail_json_object['cartuchos']:
                 cartridge_object = get_object_or_404(Cartridge, id=ticket_detail['id'])
-                quantity = ticket_detail['cant']
+                quantity = ticket_detail['quantity']
                 price = ticket_detail['price']
                 new_ticket_detail_object = TicketDetail(
                     ticket=new_ticket_object,
@@ -333,80 +330,21 @@ def new_sale(request):
                 )
                 new_ticket_detail_object.save()
 
-            for ticket_detail_packages in ticket_detail_json_object['paquetes']:               
+            for ticket_detail_package in ticket_detail_json_object['paquetes']:               
                 """
                 Saves the tickets details for package cartridges
-                    1. Iterates each package
-                    2. For each package, gets the list of cartridges tha make up each recipe
-                    3. Compares the cartridge's list obtained with the corresponding list in the JSON
-                    4. Depending on the result on th result creates a new item in the package table and the new
-                        ticket or just creates the new ticket
                 """
-                quantity = ticket_detail_packages['quantity']
-                price = ticket_detail_packages['price']
-                packages_id_list = ticket_detail_packages['id_list']
-                package_id = None
-                is_new_package = True
-                packages_recipes = PackageCartridge.objects.all()
+                package_object = get_object_or_404(PackageCartridge, id=ticket_detail_package['id'])
+                quantity = ticket_detail_package['quantity']
+                price = ticket_detail_package['price']         
+                new_ticket_detail_object = TicketDetail(
+                    ticket=new_ticket_object,
+                    package_cartridge=package_object,
+                    quantity=quantity,
+                    price=price
+                )
+                new_ticket_detail_object.save()
 
-                for package_recipe in packages_recipes:
-                    """
-                    Gets the cartridges for each package cartridge and compares
-                    each package recipe cartridges if is equal that packages_id_list
-                    """
-                    cartridges_per_recipe = PackageCartridgeRecipe.objects.select_related(
-                        'package_cartridge', 'cartridge').filter(package_cartridge=package_recipe)
-                    cartridges_in_package_recipe = []
-
-                    for cartridge_recipe in cartridges_per_recipe:
-                        cartridges_in_package_recipe.append(cartridge_recipe.cartridge.id)
-
-                    if are_equal_lists(cartridges_in_package_recipe, packages_id_list):
-                        is_new_package = False
-                        package_id = package_recipe.id
-
-                if is_new_package:
-                    package_name = ticket_detail_packages['name']
-                    package_price = ticket_detail_packages['price']
-                    new_package_object = PackageCartridge(name=package_name, price=package_price, package_active=True)
-                    new_package_object.save()
-
-                    """
-                    Creates a new package
-                    """
-                    for id_cartridge in packages_id_list:
-                        cartridge_object = get_object_or_404(Cartridge, id=id_cartridge)
-                        new_package_recipe_object = PackageCartridgeRecipe(
-                            package_cartridge=new_package_object,
-                            cartridge=cartridge_object,
-                            quantity=1
-                        )
-                        new_package_recipe_object.save()
-
-                    """
-                    Creates the ticket detail
-                    """
-                    new_ticket_detail_object = TicketDetail(
-                        ticket=new_ticket_object,
-                        package_cartridge=new_package_object,
-                        quantity=quantity,
-                        price=price
-                    )
-                    new_ticket_detail_object.save()
-
-                else:
-                    """
-                    Uses an existent package
-                    """
-                    package_object = get_object_or_404(PackageCartridge, id=package_id)
-                    new_ticket_detail_object = TicketDetail(
-                        ticket=new_ticket_object,
-                        package_cartridge=package_object,
-                        quantity=quantity,
-                        price=price,
-                    )
-                    new_ticket_detail_object.save()
-            print(new_ticket_object.order_number)
             json_response = {
                 'status': 'ready',
                 'ticket_id': new_ticket_object.id,
@@ -417,8 +355,8 @@ def new_sale(request):
         return JsonResponse({'status': 'error'})
 
     else:
-        cartridges_list = Cartridge.objects.all()
-        package_cartridges = PackageCartridge.objects.all()
+        cartridges_list = Cartridge.objects.all().order_by('name')
+        package_cartridges = PackageCartridge.objects.all().order_by('name')
         template = 'sales/new_sale.html'
         title = 'Nueva venta'
         context = {

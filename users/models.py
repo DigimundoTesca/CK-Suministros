@@ -63,3 +63,15 @@ class CustomerProfile(models.Model):
     class Meta:
         verbose_name = 'Perfil de Usuario'
         verbose_name_plural = 'Perfiles de Usuarios'
+
+
+class UserMovements(models.Model):        
+    user = models.CharField(max_length=20,default='None')
+    category = models.CharField(max_length=20,default='None')
+    creation_date = models.DateField(auto_now=True)
+
+    def __str__(self):
+        return self.user
+
+        def __str__(self):
+            return self.category

@@ -127,24 +127,31 @@ cloudkitchen/__pycache__/
 
 products/migrations/*
 !products/migrations/__init__.py
+products/__pycache__/* 
 
 users/migrations/*
 !users/migrations/__init__.py
+users/__pycache__/* 
 
 branchoffices/migrations/*
 !branchoffices/migrations/__init__.py
+branchoffices/__pycache__/* 
 
 sales/migrations/*
 !sales/migrations/__init__.py
+sales/__pycache__/* 
 
 orders/migrations/*
 !orders/migrations/__init__.py
+orders/__pycache__/* 
 
 kitchen/migrations/*
 !kitchen/migrations/__init__.py
+kitchen/__pycache__/* 
 
 diner/migrations/*
 !diner/migrations/__init__.py
+diner/__pycache__/* 
 
 # Django settings
 staticfiles/

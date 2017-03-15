@@ -7,7 +7,7 @@ from django.shortcuts import get_object_or_404, render, redirect
 from django.contrib.auth.decorators import login_required
 
 from branchoffices.models import Supplier
-from cashflow.settings.base import PAGE_TITLE
+from cloudkitchen.settings.base import PAGE_TITLE
 from products.forms import SupplyForm, SuppliesCategoryForm, CartridgeForm
 from products.models import Cartridge, Supply, SuppliesCategory
 from django.urls import reverse

@@ -1,6 +1,8 @@
 # -*- encoding: utf-8 -*-
 from __future__ import unicode_literals
 
+import datetime
+
 from django.core.validators import MaxValueValidator, MinLengthValidator
 from django.db import models
 
@@ -131,8 +133,8 @@ class Cartridge(models.Model):
 
     class Meta:
         ordering = ('id',)
-        verbose_name = 'Cartucho'
-        verbose_name_plural = 'Cartuchos'
+        verbose_name = 'Producto'
+        verbose_name_plural = 'Productos'
 
 
 class CartridgeRecipe(models.Model):
@@ -145,7 +147,7 @@ class CartridgeRecipe(models.Model):
 
     class Meta:
         ordering = ('id',)
-        verbose_name = 'Receta del Cartucho'
+        verbose_name = 'Receta de Productos'
         verbose_name_plural = 'Recetas de Cartuchos'
 
 
@@ -153,6 +155,8 @@ class PackageCartridge(models.Model):
     name = models.CharField(max_length=90)
     price = models.DecimalField(default=0, max_digits=12, decimal_places=2)
     package_active = models.BooleanField(default=False)
+    created_at = models.DateTimeField(auto_now=True)
+    image = models.ImageField(blank=False, upload_to='cartridges', default='')
 
     def __str__(self):
         return self.name
@@ -172,8 +176,8 @@ class PackageCartridge(models.Model):
 
     class Meta:
         ordering = ('name',)
-        verbose_name = 'Dabba'
-        verbose_name_plural = 'Dabbas'
+        verbose_name = 'Paquete'
+        verbose_name_plural = 'Paquetes'
 
 
 class PackageCartridgeRecipe(models.Model):

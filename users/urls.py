@@ -12,6 +12,7 @@ urlpatterns = [
     # auth
     url(r'^auth/$', views.login, name='login'),
     url(r'^auth/logout/$', views.logout, name='logout'),
+    url(r'^auth/login_register/$', views.login_register, name='login_register'),
 
     # New Customer
     url(r'^register/$', views.new_customer, name='new_customer'),

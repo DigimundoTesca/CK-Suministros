@@ -1,0 +1,139 @@
+{% extends "base/base_footer.html" %}
+
+{% load static %}
+
+{% block page_title %}
+{{ page_title }}
+{% endblock page_title %}
+
+{% block content %}
+<div class="container container-signin">
+  <div class="col-lg-8 col-xl-6 push-lg-2 push-xl-3">
+    <div class="card card-login">
+      <!-- Nav tabs -->
+      <ul class="nav nav-tabs card-login-nav" role="tablist">
+        <li class="nav-item">
+          <a class="nav-link
+          {% if tab == 'login' %}
+          active
+          {% endif %}
+          " data-toggle="tab" href="#login" role="tab"
+          >Login</a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link
+          {% if tab == 'register' %}
+          active
+          {% endif %}
+          " data-toggle="tab" href="#register" role="tab">Registro</a>
+        </li>
+      </ul>
+      <figure class="container-web-logo">
+        <img src="{% static 'images/LogoDabba_naranja.png' %}" alt="Logo web" class="web-logo">
+      </figure>
+      <!-- Tab panes -->
+      <div class="tab-content">
+        <div class="tab-pane {% if tab == 'login' %}active{% endif %}" id="login" role="tabpanel">
+          <!-- Form Login -->
+          <form class="form-login" method="post" action="">
+            {% csrf_token %}
+            <h2>Inicia sesión</h2>
+            {% if error_message %}
+            <div class="alert alert-danger" role="alert">
+              {{ error_message }}
+            </div>
+            {% endif %}
+            <div class="form-group">
+              <label for="username_login" class="sr-only">Username</label>
+              <small id="username_login_help" class="form-text text-muted">Ingresa tu nombre de usuario</small>
+              <input type="text" class="form-control" id="username_login" name="username_login" aria-describedby="emailHelp" placeholder="Nombre de usuario" required autofocus>
+            </div>
+            <div class="form-group">
+              <label for="password_login" class="sr-only">Password</label>
+              <input type="password" class="form-control" id="password_login" name="password_login" placeholder="Contraseña" required>
+            </div>
+            <div class="form-group text-xs-right">
+              <input type="submit" class="btn btn-primary" name="form-login" value="Submit">
+            </div>
+          </form>
+        </div>
+        <!-- Form Register -->
+        <div class="tab-pane {% if tab == 'register' %}active {% endif %}" id="register" role="tabpanel">
+          <form class="form-register" method="post" action="">
+            {% csrf_token %}
+            <h2>Ingresa tus datos</h2>
+            {% if success_message %}
+            <div class="alert alert-success" role="alert">
+              {{ success_message }}
+            </div>
+            {% endif %}
+            <div class="form-group">
+              <label for="username_register" class="sr-only">Username</label>
+              <input type="text" class="form-control" id="username_register" name="{{ form_user.username.name }}" aria-describedby="emailHelp" placeholder="Nombre de usuario"
+              {% if form_user.username.value is not None %}
+              value='{{ form_user.username.value }}'
+              {% endif %}  required autofocus>
+              {%  if form_user.username.errors %}
+              <div class="has-danger">
+                {%  for error in form_user.username.errors %}
+                <small class="form-control-feedback">
+                  {{ error|escape }}
+                </small>
+                {% endfor %}
+              </div>
+              {% endif %}
+            </div>
+            <div class="form-group">
+              <label for="email_register" class="sr-only">Email</label>
+              <input type="email" class="form-control" id="email_register" name="{{ form_user.email.name }}" aria-describedby="emailHelp" placeholder="Email"
+              {% if form_user.email.value is not None %}
+              value='{{ form_user.email.value }}'
+              {% endif %}  required>
+              {%  if form_user.email.errors %}
+              <div class="has-danger">
+                {%  for error in form_user.email.errors %}
+                <small class="form-control-feedback">
+                  {{ error|escape }}
+                </small>
+                {% endfor %}
+              </div>
+              {% endif %}
+            </div>
+            <div class="form-group">
+              <label for="password_register" class="sr-only">Password</label>
+              <small id="passwordHelp" class="form-text text-muted">Utiliza una contraseña defirente a las que usas en otras páginas web.</small>
+              <input type="password" class="form-control" id="password_register" name='{{ form_user.password.name }}' placeholder="Contraseña" required>
+              {%  if form_user.password.errors %}
+              <div class="has-danger">
+                {%  for error in form_user.password.errors %}
+                <small class="form-control-feedback">
+                  {{ error|escape }}
+                </small>
+                {% endfor %}
+              </div>
+              {% endif %}
+            </div>
+            <div class="form-group text-xs-right">
+              <div class="form-group">
+                <label for="password_register_conf" class="sr-only">Password</label>
+                <input type="password" class="form-control" id="password_register_conf" name="password_register_conf" placeholder="Repite tu contraseña" required>
+              </div>
+              <p>
+                <input id="id_is_active" name="is_active" type="hidden" /> 
+              </p>
+              <div class="form-group texts-xs-right">
+                <input id="submit" type="submit" class="btn btn-primary" name="form-register" value="Submit">
+              </div>
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+{% endblock %}
+
+{% block javascript %}
+
+{% endblock javascript %}

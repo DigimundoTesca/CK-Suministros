@@ -2,7 +2,7 @@ from django.contrib.auth.decorators import login_required
 from django.shortcuts import render, redirect
 
 # -------------------------------------  Kitchen -------------------------------------
-from cashflow.settings.base import PAGE_TITLE
+from cloudkitchen.settings.base import PAGE_TITLE
 from kitchen.models import ProcessedProduct
 from products.models import PackageCartridgeRecipe, Cartridge, PackageCartridge
 from sales.models import Ticket, TicketDetail

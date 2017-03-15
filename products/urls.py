@@ -4,6 +4,10 @@ from django.conf.urls import url
 from products import views
 from products.views import *
 
+from products.views import Update_Cartridge
+from products.views import Delete_Cartridge
+from products.views import Create_Cartridge
+
 
 app_name = 'products'
 

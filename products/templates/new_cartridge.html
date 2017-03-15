@@ -1,41 +1,41 @@
 {% extends "base/base_nav_footer.html" %}
 {% block content %}
-  <div class="container center_div">
-    {% if form.initial %}
-      <font color="red"><center><h1>Modificar Cartucho</h1></center></font>
-    {% else %}
-      <font color="red"><center><h1>Nuevo Cartucho</h1></center></font>
-    {% endif %}
-    <div class="row">
-      <div class="col-xs-12">
-        <div class="card-panel">
-          <form method="POST" enctype="multipart/form-data">
-            {% csrf_token %}
-            <div class="col-xs-12">
-              <p><label for="id_name">Nombre:</label><input class="form-control" id="id_name" maxlength="128" name="name" type="text" value={{form.initial.name}} required /></p>
-              <p><label for="id_price">Precio:</label> <input class="form-control" id="id_price" name="price" step="0.01" type="number" value={{form.initial.price}} required /></p>              
-              <div class = "col-xs-6">
-                <p><label for="id_category">Categoria:</label> <select class="custom-select" id="id_category" name="category" required>
+<div class="container center_div">
+  {% if form.initial %}
+  <font color="red"><center><h1>Modificar Cartucho</h1></center></font>
+  {% else %}
+  <font color="red"><center><h1>Nuevo Cartucho</h1></center></font>
+  {% endif %}
+  <div class="row">
+    <div class="col-xs-12">
+      <div class="card-panel">
+        <form method="POST" enctype="multipart/form-data">
+          {% csrf_token %}
+          <div class="col-xs-12">
+            <p><label for="id_name">Nombre:</label><input class="form-control" id="id_name" maxlength="128" name="name" type="text" value={{form.initial.name}} required /></p>
+            <p><label for="id_price">Precio:</label> <input class="form-control" id="id_price" name="price" step="0.01" type="number" value={{form.initial.price}} required /></p>              
+            <div class = "col-xs-6">
+              <p><label for="id_category">Categoria:</label> <select class="custom-select" id="id_category" name="category" required>
                 {% if form.initial.category == 'Platillos' %}
-                  <option value="FD" selected="selected">Platillos</option>
-                  <option value="CO">Complementos</option>
+                <option value="FD" selected="selected">Platillos</option>
+                <option value="CO">Complementos</option>
                 {% else %}
-                  <option value="FD">Platillos</option>
-                  <option value="CO" selected="selected">Complementos</option>
+                <option value="FD">Platillos</option>
+                <option value="CO" selected="selected">Complementos</option>
                 {% endif %}
               </select></p>              
             </div>
             <div class ="col-xs-6">
               <p><label for="id_image">Imagen:</label>
-              <a href="{{form.initial.image.url}}">{{form.initial.image}}</a>
-              <br/>Modificar:
-              <input class="form-control-file" id="id_image" name="image" type="file" /></p>
-              
-            </div>
-            <center><button class="btn btn-primary center-block" type="update">Enviar<i </i></button></center>
-          </form>
+                <a href="{{form.initial.image.url}}">{{form.initial.image}}</a>
+                <br/>Modificar:
+                <input class="form-control-file" id="id_image" name="image" type="file" /></p>
+                
+              </div>
+              <center><button class="btn btn-primary center-block" type="update">Enviar<i </i></button></center>
+            </form>
+          </div>
         </div>
       </div>
     </div>
-  </div>
-{% endblock content %}
+    {% endblock content %}

@@ -33,8 +33,9 @@ class CartridgeRecipeInline(admin.TabularInline):
 class AdminCartridge(admin.ModelAdmin):
     list_display = ('id', 'name', 'price', 'category', 'created_at', 'get_image', 'image')
     list_display_links = ('id', 'name')
-    list_editable = ('image',)
+    list_editable = ('price', 'image',)
     inlines = [CartridgeRecipeInline, ]
+    ordering = ['name']
 
 
 class PackageCartridgeRecipeInline(admin.TabularInline):
@@ -50,4 +51,6 @@ class PackageCartridgeRecipeInline(admin.TabularInline):
 class AdminPackageCartridge(admin.ModelAdmin):
     list_display = ('id', 'name', 'price', 'package_active', 'package_recipe')
     list_display_links = ('id', 'name')
+    list_editable = ('price',)
     inlines = [PackageCartridgeRecipeInline]
+    ordering = ['name']
