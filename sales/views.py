@@ -3,13 +3,14 @@ from datetime import datetime, date, timedelta, time
 import time as python_time
 
 from decimal import Decimal
-
+ 
 from django.contrib.auth.decorators import login_required,permission_required
 from django.http import JsonResponse
 from django.shortcuts import render, get_object_or_404
 from django.views.decorators.csrf import csrf_protect, requires_csrf_token
 from django.middleware.csrf import get_token
 from django.utils import timezone
+from django.db.models import Max
 
 from branchoffices.models import CashRegister
 from cloudkitchen.settings.base import PAGE_TITLE
@@ -301,8 +302,7 @@ def new_sale(request):
             cash_register = CashRegister.objects.first()
             ticket_detail_json_object = json.loads(request.POST.get('ticket'))
             payment_type = ticket_detail_json_object['payment_type']
-            new_ticket_object = Ticket(
-                cash_register=cash_register, seller=user_profile_object, payment_type=payment_type)
+            max_value = 0
 
             """ 
             Gets the tickets in the week and returns n + 1 
@@ -313,6 +313,14 @@ def new_sale(request):
             3. save the 'new_ticket_object' with the new atribute (n + 1)
             4. Save the new object
             """
+
+            tickets = Ticket.objects.filter(created_at__gte=datetime.now() - timedelta(days=get_number_day()))
+
+            for ticket in tickets:
+                max_value = max_value + 1
+            new_ticket_object = Ticket(
+                cash_register=cash_register, seller=user_profile_object, 
+                payment_type=payment_type, order_number=max_value)
             new_ticket_object.save()
 
             """
