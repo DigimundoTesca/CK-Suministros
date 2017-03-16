@@ -2,23 +2,23 @@
 {% load static %}
 
 {% block content %}
-
-<input type="text" id="myInput" onkeyup="myFunction()" placeholder="Buscar Ids">
-
 <div class="container-fluid">
+<input type="text" id="myInput" placeholder="Buscar Comensal por ID">
   <div class="row">
     <table class="table" id="myTable">
-      <thead>
+      <thead class="thead-inverse">
         <tr>
-          <th>Id_Comensal</th>
-          <th>Fecha</th>                 
+          <th>RFID</th>
+          <th>Nombre</th>
+          <th>Fecha de Acceso</th>                 
         </tr>
       </thead>      
       <tbody>      
         {%for object in objects %}        
         <tr>       
-          <td>{{ object.diner_id }}</td>          
-          <td>{{ object.created_at }}</td>
+          <td>{{ object.diner.RFID }}</td>          
+          <td>{{ object.diner.name }}</td>          
+          <td>{{ object.access_to_room }}</td>
         </tr>      
         {% endfor %}        
       </tbody>
@@ -28,27 +28,29 @@
 
 {% endblock %} 
 
-{% block script %}
-<script>
-  function myFunction() {
-    /** Declare variables */
-    var input, filter, table, tr, td, i;
-    input = document.getElementById("myInput");
-    filter = input.value.toUpperCase();
-    table = document.getElementById("myTable");
-    tr = table.getElementsByTagName("tr");
+{% block javascript %}
+<script type="text/javascript" charset="utf-8" async>
+  $(function() {
+    $(this).on('keyup', '#myInput', function(event) {
+      /** Declare variables */
+      var input, filter, table, tr, td, i;
+      input = document.getElementById("myInput");
+      filter = input.value.toUpperCase();
+      table = document.getElementById("myTable");
+      tr = table.getElementsByTagName("tr");
 
-    /** Loop through all table rows, and hide those who don't match the search query */
-    for (i = 0; i < tr.length; i++) {
-      td = tr[i].getElementsByTagName("td")[0];
-      if (td) {
-        if (td.innerHTML.toUpperCase().indexOf(filter) > -1) {
-          tr[i].style.display = "";
-        } else {
-          tr[i].style.display = "none";
-        }
-      } 
-    }
-  }
+      /** Loop through all table rows, and hide those who don't match the search query */
+      for (i = 0; i < tr.length; i++) {
+        td = tr[i].getElementsByTagName("td")[0];
+        if (td) {
+          if (td.innerHTML.toUpperCase().indexOf(filter) > -1) {
+            tr[i].style.display = "";
+          } else {
+            tr[i].style.display = "none";
+          }
+        } 
+      }
+    });
+  });
 </script>
-{% endblock script %}
+{% endblock javascript %}

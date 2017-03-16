@@ -4,7 +4,7 @@ from __future__ import unicode_literals
 
 from django.http import HttpResponse
 from django.shortcuts import render
-from diners.models import Diner
+from diners.models import AccessLog
 
 def pin(request, pin,date):
     print('PIN::::')
@@ -15,7 +15,7 @@ def pin(request, pin,date):
 
 
 def diners(request):
-    objects = Diner.objects.all()
+    objects = AccessLog.objects.all().prefetch_related('diner')
 
     template = 'diners.html'
     title = 'Comensales del Dia'

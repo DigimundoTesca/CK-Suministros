@@ -149,14 +149,13 @@ kitchen/migrations/*
 !kitchen/migrations/__init__.py
 kitchen/__pycache__/* 
 
-diner/migrations/*
-!diner/migrations/__init__.py
-diner/__pycache__/* 
+diners/migrations/*
+!diners/migrations/__init__.py
+diners/__pycache__/* 
 
 # Django settings
 staticfiles/
 #Database
 media/
 # Databases
-db.sqlite3
-db_temporal.sqlite3
+*.sqlite3

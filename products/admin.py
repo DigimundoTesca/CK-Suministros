@@ -26,7 +26,7 @@ class AdminSupply(admin.ModelAdmin):
 
 class CartridgeRecipeInline(admin.TabularInline):
     model = CartridgeRecipe
-    extra = 1
+    extra = 0
 
 
 @admin.register(Cartridge)
