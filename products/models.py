@@ -147,8 +147,24 @@ class CartridgeRecipe(models.Model):
 
     class Meta:
         ordering = ('id',)
-        verbose_name = 'Receta de Productos'
-        verbose_name_plural = 'Recetas de Cartuchos'
+        verbose_name = 'Receta del Producto'
+        verbose_name_plural = 'Recetas de Productos'
+
+
+class ExtraIngredient(models.Model):
+    """
+    Description: Extra ingredients that could have the cartridges in a new sale
+    """
+    ingredient = models.ForeignKey(Supply)
+    cartridge = models.ForeignKey(Cartridge)
+
+    def __str__(self):
+        return '%s' % self.cartridge
+
+    class Meta:
+        ordering = ('cartridge', 'ingredient')
+        verbose_name = 'Ingrediente Extra'
+        verbose_name_plural = 'Ingredientes Extra'
 
 
 class PackageCartridge(models.Model):
@@ -190,5 +206,5 @@ class PackageCartridgeRecipe(models.Model):
 
     class Meta:
         ordering = ('id',)
-        verbose_name = 'Receta del Dabba'
-        verbose_name_plural = 'Recetas de Dabbas'
+        verbose_name = 'Receta del Paquete'
+        verbose_name_plural = 'Recetas de Paquetes'

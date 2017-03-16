@@ -3,7 +3,8 @@ from __future__ import unicode_literals
 from django.contrib import admin
 
 from products.models import PackageCartridge, PackageCartridgeRecipe, \
-    CartridgeRecipe, Supply, SupplyLocation, SuppliesCategory, Cartridge
+    CartridgeRecipe, Supply, SupplyLocation, SuppliesCategory, Cartridge, \
+    ExtraIngredient
 
 
 @admin.register(SuppliesCategory)
@@ -29,12 +30,17 @@ class CartridgeRecipeInline(admin.TabularInline):
     extra = 0
 
 
+class ExtraIngredientInline(admin.TabularInline):
+    model = ExtraIngredient
+    extra = 0
+
+
 @admin.register(Cartridge)
 class AdminCartridge(admin.ModelAdmin):
     list_display = ('id', 'name', 'price', 'category', 'created_at', 'get_image', 'image')
     list_display_links = ('id', 'name')
     list_editable = ('price', 'image',)
-    inlines = [CartridgeRecipeInline, ]
+    inlines = [CartridgeRecipeInline, ExtraIngredientInline]
     ordering = ['name']
 
 
