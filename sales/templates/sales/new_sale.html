@@ -230,7 +230,7 @@
       }
 
       let ExtraIngredientsPackage = {
-        packages : {{ extra_ingredients_packages|safe }},
+        packages : {{ extra_ingredients_packages_list |safe }},
       }
 
       function get_cookie(name) {
@@ -289,7 +289,6 @@
       $(this).on('click', '.product-img', function(event) {
         var product_type = $(this).attr('id');
         var element = $(this)
-        console.log({{ extra_ingredients_packages|safe }});
         function addObjectToJSON(id, quantity, price, type_object) {
           if (type_object == 'cartridge') {
             if (id.indexOf('cartridge') >= 0) {
