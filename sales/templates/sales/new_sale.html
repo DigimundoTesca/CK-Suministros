@@ -12,6 +12,7 @@
 {% endblock link %}
 
 {% block content %}
+
   <!-- Container -->
   <div class="container-fluid container-sales">
     <div class="row">
@@ -78,6 +79,9 @@
                       <div class="text-xs-right content-price">
                         <span class="font-weight-bold">$ </span><span class="product-cost font-weight-bold">{{ cartridge.price }}</span>
                       </div>
+                      <div class="extra-ingredients-cont">
+                        <button class="btn btn-outline-primary btn-extra-ing" data-toggle="modal" data-target="#exampleModal">Ingrediente Extra</button>
+                      </div>
                     </div>
                   {% endif %}
                 {% endfor %}
@@ -132,11 +136,8 @@
                   <img src="{% static 'images/dabbawala_black.jpg' %}" alt="logo-dabbawala">
                 </figure>
                 <div class="ticket-order-container text-xs-center">
-                  <!-- TODO added actions in views-->
-                  <!--
                   <span>ORDEN</span>
                   <span id="ticket-order"></span>
-                -->
                 </div>
                 <div class="ticket-address">
                   <p class="text-xs-center">
@@ -180,12 +181,32 @@
     </div>
   </div>
 
-  <!-- Floating Action Button -->
-  <div class="popout">
-    <div class="FAB">
-      <i class="material-icons">motorcycle</i>
+  <!-- Extra Ingredients Modals -->
+    <!-- Button trigger modal -->
+    <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#exampleModal">
+      Launch demo modal
+    </button>
+
+    <!-- Modal -->
+    <div class="modal fade" id="exampleModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+      <div class="modal-dialog" role="document">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h5 class="modal-title" id="exampleModalLabel">Modal title</h5>
+            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+              <span aria-hidden="true">&times;</span>
+            </button>
+          </div>
+          <div class="modal-body">
+            ...
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+            <button type="button" class="btn btn-primary">Save changes</button>
+          </div>
+        </div>
+      </div>
     </div>
-  </div>
 
 {% endblock content %}
 {% block javascript %}
@@ -201,6 +222,10 @@
       let PackageProduct = {
         id: [],
         cost: null,
+      }
+
+      let ExtraIngredientsPackage = {
+        packages : {{ extra_ingredients_packages|safe }},
       }
 
       function get_cookie(name) {
@@ -249,7 +274,8 @@
           );
       }
 
-      function get_type(large_type_id){
+      /** Returns the product type initials */
+      function get_type_product(large_type_id){
         large_type_id = large_type_id.substring(3,7);
         return large_type_id;
       }
@@ -258,7 +284,7 @@
       $(this).on('click', '.product-img', function(event) {
         var product_type = $(this).attr('id');
         var element = $(this)
-
+        console.log({{ extra_ingredients_packages|safe }});
         function addObjectToJSON(id, quantity, price, type_object) {
           if (type_object == 'cartridge') {
             if (id.indexOf('cartridge') >= 0) {
@@ -415,7 +441,7 @@
           }
 
         try {
-          var short_type_id = get_type(large_type_id);
+          var short_type_id = get_type_product(large_type_id);
           
           if(short_type_id == 'cart'){
             Ticket.cartuchos.forEach(function(cartridge_object, index) {
@@ -537,7 +563,7 @@
           StopIteration = new Error("StopIteration");
         }
         try {
-          var short_type_id = get_type(large_type_id);
+          var short_type_id = get_type_product(large_type_id);
           
           if(short_type_id == 'cart'){
             Ticket.cartuchos.forEach(function(cartridge_object, index) {
@@ -594,8 +620,6 @@
          
         set_total_ticket();
       });
-
-      
 
       /** Added the package to modal */
       $(this).on('click', '#btn-add-package', function(event) {

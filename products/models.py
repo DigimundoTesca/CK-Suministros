@@ -8,7 +8,6 @@ from django.db import models
 
 from branchoffices.models import BranchOffice, Supplier
 
-
 class SuppliesCategory(models.Model):
     name = models.CharField(validators=[MinLengthValidator(4)], max_length=125, unique=True)
     image = models.ImageField(blank=False, upload_to='supplies-categories')
@@ -155,8 +154,9 @@ class ExtraIngredient(models.Model):
     """
     Description: Extra ingredients that could have the cartridges in a new sale
     """
-    ingredient = models.ForeignKey(Supply)
     cartridge = models.ForeignKey(Cartridge)
+    ingredient = models.ForeignKey(Supply)
+    cost = models.DecimalField(default=0, max_digits=12, decimal_places=2)
 
     def __str__(self):
         return '%s' % self.cartridge

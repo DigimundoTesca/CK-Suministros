@@ -14,7 +14,8 @@ from django.db.models import Max
 
 from branchoffices.models import CashRegister
 from cloudkitchen.settings.base import PAGE_TITLE
-from products.models import Cartridge, PackageCartridge, PackageCartridgeRecipe
+from products.models import Cartridge, PackageCartridge, PackageCartridgeRecipe, \
+                            ExtraIngredient
 from sales.models import Ticket, TicketDetail
 from users.models import User as UserProfile
 
@@ -365,13 +366,34 @@ def new_sale(request):
     else:
         cartridges_list = Cartridge.objects.all().order_by('name')
         package_cartridges = PackageCartridge.objects.all().order_by('name')
+        extra_ingredients = ExtraIngredient.objects.all().prefetch_related('ingredient');
         template = 'sales/new_sale.html'
         title = 'Nueva venta'
+        extra_ingredients_packages = []
+
+        for cartridge in cartridges_list:
+            cartridge_object = {
+                'name': cartridge.name,
+                'extra_ingredients': [],
+            }
+            for ingredient in extra_ingredients:
+                if cartridge == ingredient.cartridge:
+                    ingredient_object = {
+                        'ingredient': ingredient.ingredient.name,
+                        'cost': str(ingredient.cost),
+                    }
+                    cartridge_object['extra_ingredients'].append(ingredient_object)
+
+            extra_ingredients_packages.append(cartridge_object)
+
         context = {
             'page_title': PAGE_TITLE,
             'title': title,
             'cartridges': cartridges_list,
-            'package_cartridges': package_cartridges
+            'package_cartridges': package_cartridges,
+            'extra_ingredients': extra_ingredients,
+            'extra_ingredients_packages': extra_ingredients_packages,
+            'extra_ingredients_packages_json': json.dumps(extra_ingredients_packages),
         }
         return render(request, template, context)
 

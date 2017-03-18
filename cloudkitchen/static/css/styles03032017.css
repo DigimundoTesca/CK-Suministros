@@ -199,6 +199,21 @@ small {
   background-color: #26a978;
   color: #fefefe;
 }
+.btn-extra-ing {
+  width: 100%;
+  text-overflow:ellipsis;
+  white-space:nowrap; 
+  overflow:hidden;
+  border-radius: 18px;
+  background-color: #0275d8;
+  color: white;
+}
+.btn-extra-ing:hover {
+  transition: all 0.3s ease;
+  background: white;
+  color: #0275d8;
+  border: 1px solid #0275d8;
+}
 .card-scroll {
   overflow-y: scroll;
 }
@@ -416,7 +431,7 @@ transition: all 1s ease;
 }
 .container-sales .group-sales .product-container img  {
   max-height: 220px;
-  border-radius: 3px;
+  border-radius: 8px;
   cursor: pointer;
   max-width: 100%;
   align-self: center;
@@ -426,6 +441,7 @@ transition: all 1s ease;
 }
 .container-sales .group-sales .product-container img:hover  {
   opacity: 0.8;
+  box-shadow: 0px 0px 10px #939393; 
 }
 .container-sales .group-sales .card-block img:active {
   opacity: 0.5;
