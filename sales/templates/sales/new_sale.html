@@ -46,7 +46,7 @@
       <div class="group-sales col-xs-12 col-lg-9">
         <div class="row">
           <div class="col-xs-12 col-md-4 col-lg-4">
-            <div class="card card-block card-product-title">
+            <div class="card card-block card-product-title card-outline-info">
               <h3>Complementos</h3>
             </div>
             <div class="card col-xs-12 card-scroll card-outline-info" id="group-complements">
@@ -59,6 +59,9 @@
                       <div class="text-xs-right content-price">
                         <span class="font-weight-bold">$ </span><span class="product-cost font-weight-bold">{{ cartridge.price }}</span>
                       </div>
+                      <div class="extra-ingredients-cont">
+                        <button id="btn-ing-extra-{{ cartridge.id }}" class="btn btn-outline-primary btn-extra-ing" data-toggle="modal" data-target="#exampleModal">Ingrediente Extra</button>
+                      </div>
                     </div>
                   {% endif %}
                 {% endfor %}
@@ -66,7 +69,7 @@
             </div>
           </div>
           <div class="col-xs-12 col-md-4 col-lg-4">
-            <div class="card card-block card-product-title">
+            <div class="card card-block card-product-title card-outline-info">
               <h3>Platillos</h3>
             </div>
             <div class="card col-xs-12 card-scroll card-outline-info" id="group-dishes">
@@ -80,7 +83,7 @@
                         <span class="font-weight-bold">$ </span><span class="product-cost font-weight-bold">{{ cartridge.price }}</span>
                       </div>
                       <div class="extra-ingredients-cont">
-                        <button class="btn btn-outline-primary btn-extra-ing" data-toggle="modal" data-target="#exampleModal">Ingrediente Extra</button>
+                        <button id="btn-ing-extra-{{ cartridge.id }}" class="btn btn-outline-primary btn-extra-ing" data-toggle="modal" data-target="#exampleModal">Ingrediente Extra</button>
                       </div>
                     </div>
                   {% endif %}
@@ -92,7 +95,7 @@
             <div class="row">
               <div class=" col-xs-12">
                 <button type="button" id="btn-order" class="btn col-xs-12 btn-lg" data-toggle="modal" data-target="#modal-order">Realizar venta</button>
-                <div class="card col-xs-12 card-block card-package-title">
+                <div class="card col-xs-12 card-block card-package-title card-outline-info">
                   <h3>Paquetes</h3>
                 </div>
                 <div class="card col-xs-12 card-scroll packages-block card-outline-info" id="group-dishes">
