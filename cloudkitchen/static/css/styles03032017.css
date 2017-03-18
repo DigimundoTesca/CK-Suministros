@@ -190,15 +190,6 @@ small {
   background-color: #eaeaea;
   color: #1e3c50;
 }
-.btn-green {
-  background-color: #2ed698;
-  color: #fefefe;
-  transition: all 0.3s ease;
-}
-.btn-green:hover {
-  background-color: #26a978;
-  color: #fefefe;
-}
 .btn-extra-ing {
   width: 100%;
   text-overflow:ellipsis;
@@ -311,11 +302,19 @@ transition: all 1s ease;
 .container-sales .group-sales button#btn-orders-reset{
   height: 4rem;
   margin-bottom: 1rem;
+  transition: all 0.3s ease;
 }
 .container-sales .group-sales button#btn-order{
+  background-color: #0bc8ad;
+  color: #fefefe;
   font-size: 1.5em;
   height: 4rem;
   margin-bottom: 1rem;
+  transition: all 0.3s ease;
+}
+.container-sales .group-sales button#btn-order:hover {
+  background-color: #43afa0;
+  color: #fefefe;
 }
 .container-sales .group-sales .card-scroll {
   min-height: calc(100vh - 16rem);
