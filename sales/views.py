@@ -369,7 +369,7 @@ def new_sale(request):
         extra_ingredients = ExtraIngredient.objects.all().prefetch_related('ingredient');
         template = 'sales/new_sale.html'
         title = 'Nueva venta'
-        extra_ingredients_packages = []
+        extra_ingredients_packages_list = []
 
         for cartridge in cartridges_list:
             cartridge_object = {
@@ -383,8 +383,9 @@ def new_sale(request):
                         'cost': str(ingredient.cost),
                     }
                     cartridge_object['extra_ingredients'].append(ingredient_object)
+            if len(cartridge_object['extra_ingredients']) > 0:
+                extra_ingredients_packages_list.append(cartridge_object)
 
-            extra_ingredients_packages.append(cartridge_object)
 
         context = {
             'page_title': PAGE_TITLE,
@@ -392,8 +393,8 @@ def new_sale(request):
             'cartridges': cartridges_list,
             'package_cartridges': package_cartridges,
             'extra_ingredients': extra_ingredients,
-            'extra_ingredients_packages': extra_ingredients_packages,
-            'extra_ingredients_packages_json': json.dumps(extra_ingredients_packages),
+            'extra_ingredients_packages_list': extra_ingredients_packages_list,
+            'extra_ingredients_packages_list_json': json.dumps(extra_ingredients_packages_list),
         }
         return render(request, template, context)
 
