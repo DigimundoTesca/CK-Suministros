@@ -62,7 +62,7 @@
                       {% for extra in extra_ingredients_packages_list %}
                         {% if extra.name == cartridge.name %}
                           <div class="extra-ingredients-cont">
-                            <button id="btn-extra-ing-{{ cartridge.id }}" class="btn btn-outline-primary btn-extra-ing" data-toggle="modal" data-target="#exampleModal">Ingrediente Extra</button>
+                            <button id="btn-extra-ing-{{ cartridge.id }}" class="btn btn-outline-primary btn-extra-ing" data-toggle="modal" data-target="#extra-ingredient-modal">Ingrediente Extra</button>
                           </div>
                         {% endif %}
                       {% endfor %}
@@ -86,13 +86,7 @@
                       <div class="text-xs-right content-price">
                         <span class="font-weight-bold">$ </span><span class="product-cost font-weight-bold">{{ cartridge.price }}</span>
                       </div>
-                      {% for extra in extra_ingredients_packages_list %}
-                        {% if extra.name == cartridge.name %}
-                          <div class="extra-ingredients-cont">
-                            <button id="btn-extra-ing-{{ cartridge.id }}" class="btn btn-outline-primary btn-extra-ing" data-toggle="modal" data-target="#exampleModal">Ingrediente Extra</button>
-                          </div>
-                        {% endif %}
-                      {% endfor %}
+                      
                     </div>
                   {% endif %}
                 {% endfor %}
@@ -111,11 +105,6 @@
                     {% for package in package_cartridges %}
                       <div class="card-block product-container" id="package-{{ package.pk }}">
                         <h6 class="product-name">{{ package.name }}</h6>
-                        {% if package.image %}
-                          <img src="{{ package.image.url }}" class="product-img" alt="Paquete" id="package-img-{{ package.pk }}">
-                        {% else %}
-                          <img src="{% static 'images/pack_dabba.jpg' %}" class="product-img" alt="Paquete" id="package-img-{{ package.pk }}">
-                        {% endif %}
                         <div class="text-xs-right content-price">
                           <span class="font-weight-bold">$ </span><span class="product-cost font-weight-bold">{{ package.price }}</span>
                         </div>
@@ -144,7 +133,8 @@
             <div class="card card-scroll col-xs-4" id="printer-container">
               <div id="printer" style="margin: 0 auto">
                 <figure class="content-img">
-                  <img src="{% static 'images/dabbawala_black.jpg' %}" alt="logo-dabbawala">
+                  <!--<img src="{% static 'images/dabbawala_black.jpg' %}" alt="logo-dabbawala">-->
+                  <h2>Suministros Integrales</h2>
                 </figure>
                 <div class="ticket-order-container text-xs-center">
                   <span>ORDEN</span>
@@ -152,7 +142,7 @@
                 </div>
                 <div class="ticket-address">
                   <p class="text-xs-center">
-                    20 de Noviembre #32, San Lucas Tepetlacalco, Tlanepantla Edo. De México CP 54055
+                    DIRECCION
                   </p>
                 </div>
                 <div class="container ticket-datetime-container">
@@ -171,7 +161,7 @@
                   <span>ID: </span><span class="ticket-id"></span>
                 </div>
                 <div class="ticket-celphone">
-                  <span>Whatsapp: 55 42 46 73 60</span>
+                  <span>CONTACTO</span>
                 </div>
               </div>
             </div>
@@ -193,17 +183,25 @@
   </div>
 
   <!-- Extra Ingredients Modals -->
-    <div class="modal fade" id="exampleModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal fade" id="extra-ingredient-modal" tabindex="-1" role="dialog" aria-labelledby="extra-ingredient-modalLabel" aria-hidden="true">
       <div class="modal-dialog" role="document">
         <div class="modal-content">
           <div class="modal-header">
-            <h5 class="modal-title" id="exampleModalLabel">Modal title</h5>
+            <h5 class="modal-title" id="extra-ingredient-modalLabel">Ingredientes Extra</h5>
             <button type="button" class="close" data-dismiss="modal" aria-label="Close">
               <span aria-hidden="true">&times;</span>
             </button>
           </div>
           <div class="modal-body">
-            ...
+            <ul class="list-unstyled list-group">
+              <li class="media list-group-item list-group-item-action row">
+                <img class="img-extra-ing col-xs-4" src="/media/supplies/huevos.png" alt="Generic placeholder image">
+                <div class="media-body col-xd-6">
+                  <h5 class="mt-0 mb-1">Huevos</h5>
+                  <h3>$50.00</h3>
+                </div>
+              </li>
+            </ul>
           </div>
           <div class="modal-footer">
             <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
