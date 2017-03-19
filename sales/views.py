@@ -4,13 +4,13 @@ import time as python_time
 
 from decimal import Decimal
  
-from django.contrib.auth.decorators import login_required,permission_required
+from django.contrib.auth.decorators import login_required, permission_required
 from django.http import JsonResponse
-from django.shortcuts import render, get_object_or_404
+from django.shortcuts import render, get_object_or_404, redirect
 from django.views.decorators.csrf import csrf_protect, requires_csrf_token
 from django.middleware.csrf import get_token
 from django.utils import timezone
-from django.db.models import Max
+from django.db.models import Max, Min
 
 from branchoffices.models import CashRegister
 from cloudkitchen.settings.base import PAGE_TITLE
@@ -111,9 +111,31 @@ def sales(request):
     all_tickets = Ticket.objects.all()
     all_ticket_details = TicketDetail.objects.all()
 
-    def get_sales_week():
+    def get_dates_range():
         """
-        1. Gets the following properties for the day: Name, Date and Earnings
+        Returns a JSON with a years list.
+        The years list contains years objects that contains a weeks list
+            and the Weeks list contains a weeks objects with two attributes: 
+            start date and final date. Ranges of each week.
+        """
+        min_year = all_tickets.aggregate(Min('created_at'))['created_at__min'].year
+        max_year = all_tickets.aggregate(Max('created_at'))['created_at__max'].year
+        years_object = {
+            'year': []
+        }
+        while min_year <= max_year:
+            years_object['year'].append(min_year)
+            min_year += 1
+
+        return years_object
+
+    def get_sales_range(start_date, final_date):
+        
+        return json.dumps({'hola': 'ajajja'})
+
+    def get_sales_actual_week():
+        """
+        Gets the following properties for each week's day: Name, Date and Earnings
         """
         week_sales_list = []
         total_earnings = 0
@@ -270,17 +292,23 @@ def sales(request):
 
             return JsonResponse({'ticket': tickets_objects_list})
 
+        if request.POST['type'] == 'sales_week':
+            dt_year = request.POST['dt_year']
+            dt_week = request.POST['dt_week']
+            return JsonResponse({'hola':'jajajja'})
+
     # Any other request method:
     template = 'sales/sales.html'
     title = 'Ventas'
     context = {
         'page_title': PAGE_TITLE,
         'title': title,
-        'sales_week': get_sales_week(),
+        'sales_week': get_sales_actual_week(),
         'today_name': get_name_day(datetime.now()),
         'today_number': get_number_day(),
         'week_number': get_week_number(),
         'tickets': get_tickets(),
+        'dates_range': get_dates_range(),
     }
     return render(request, template, context)
 
