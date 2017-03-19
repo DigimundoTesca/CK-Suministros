@@ -20,8 +20,8 @@
       <div class="text-xs-right">
         <form class="form-inline">
           <select class="custom-select" id="dt-year">
-            {% for year in dates_range.year %}
-              <option value="{{ year }}">{{ year }}</option>
+            {% for year in dates_range %}
+              <option value="{{ year.year }}">{{ year.year }}</option>
             {% endfor %}
           </select>
           <select class="custom-select" id="dt-week">

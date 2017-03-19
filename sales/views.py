@@ -120,14 +120,19 @@ def sales(request):
         """
         min_year = all_tickets.aggregate(Min('created_at'))['created_at__min'].year
         max_year = all_tickets.aggregate(Max('created_at'))['created_at__max'].year
-        years_object = {
-            'year': []
-        }
-        while min_year <= max_year:
-            years_object['year'].append(min_year)
-            min_year += 1
+        years_list = []
 
-        return years_object
+        while max_year >= min_year:
+            year_object = {
+                'year' : max_year,
+                'weeks_list' : []
+            }
+
+            years_list.append(year_object)
+
+            max_year -= 1
+
+        return years_list
 
     def get_sales_range(start_date, final_date):
         
