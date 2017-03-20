@@ -17,15 +17,21 @@
   <div class="container-fluid container-sales-reports">
   <div class="row">
     <div class="col-xs-12">
-      <div class="text-xs-right">
+      <div class="text-xs-right mb-2">
         <form class="form-inline">
           <select class="custom-select" id="dt-year">
-            {% for year in dates_range %}
-              <option value="{{ year.year }}">{{ year.year }}</option>
+            {% for year_object in dates_range %}
+              <option value="{{ year_object.year }}">{{ year_object.year }}</option>
             {% endfor %}
           </select>
           <select class="custom-select" id="dt-week">
-            <option value="1">Semana 1</option>
+            {% for year_object in dates_range %}
+              {% if year_object.year ==  actual_year %}
+                {% for week in  year_object.weeks_list %}
+                  <option value="{{ week.week_number }}">Semana {{ week.week_number }}</option>
+                {% endfor %}
+              {% endif %}
+            {% endfor %}
           </select>
           <button id="btn-set-new-range" type="button" class="btn btn-outline-primary">Actualizar</button>
         </form>
@@ -133,7 +139,7 @@
         <div class="printer-container">
           <div id="printer">
             <figure class="content-img">
-              Suministros Integrales
+              <img src="{% static 'images/si_black.jpg' %}" alt="logo-dabbawala">
             </figure>
             <div class="ticket-order-container text-xs-center">
               <span>ORDEN</span>
@@ -363,9 +369,9 @@
         },
         success: function(result) {
           var sales_day_earnings_list = [];
-          var initial_hour = '05:00',
-              final_hour = '13:00',
-              separation_time = 30; // In minutes
+          var initial_hour = '08:00',
+              final_hour = '22:00',
+              separation_time = 60; // In minutes
           var sales_day_object_list = result['sales_day_list'];
           var total_datas = sales_day_object_list.length;
 
@@ -447,8 +453,8 @@
       data: {
         labels: [
         "Out",
-        "12:30 - 13:00", "12:00 - 12:30", "11:30 - 12:00", "11:00 - 11:30", "10:30 - 11:00", "10:00 - 10:30", "09:30 - 10:00", "09:00 - 09:30",
-        "08:30 - 09:00", "08:00 - 08:30", "07:30 - 08:00", "07:00 - 07:30", "06:30 - 07:00", "06:00 - 06:30", "05:30 - 06:00", "05:00 - 05:30",
+        "21:00 - 22:00", "20:00 - 21:00", "19:00 - 20:00", "18:00 - 19:00", "17:00 - 18:00", "16:00 - 17:00",
+        "15:00 - 16:00", "14:00 - 15:00", "13:00 - 14:00", "12:00 - 13:00", "11:00 - 12:00", "10:00 - 11:00", "09:00 - 10:00", "08:00 - 09:00",
         ],
         datasets: [{
           label: 'Ventas en este horario',

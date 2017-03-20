@@ -86,7 +86,6 @@
                       <div class="text-xs-right content-price">
                         <span class="font-weight-bold">$ </span><span class="product-cost font-weight-bold">{{ cartridge.price }}</span>
                       </div>
-                      
                     </div>
                   {% endif %}
                 {% endfor %}
@@ -133,8 +132,7 @@
             <div class="card card-scroll col-xs-4" id="printer-container">
               <div id="printer" style="margin: 0 auto">
                 <figure class="content-img">
-                  <!--<img src="{% static 'images/dabbawala_black.jpg' %}" alt="logo-dabbawala">-->
-                  <h2>Suministros Integrales</h2>
+                  <img src="{% static 'images/si_black.jpg' %}" alt="logo-dabbawala">
                 </figure>
                 <div class="ticket-order-container text-xs-center">
                   <span>ORDEN</span>
@@ -816,53 +814,74 @@
 
         if (payment_type == 'btn-pago-efectivo') {
           Ticket['payment_type'] = 'CA';  // Cash Payment
+          make_a_sale();
         } else {
           Ticket['payment_type'] = 'CR'; // Credit Payment
+
+          var creedit_sale = new Promise(function (resolve) {
+            setTimeout(function () {
+              make_a_sale();
+            }, 20000)
+          })
+
+
+          swal({
+            title: 'Esperando Aprobación de la terminal',
+            inputOptions: creedit_sale,
+          }).then(function (result) {
+            swal({
+              type: 'Venta Procesada',
+            })
+          });
+          swal.enableLoading();
         }
 
         function rel() {
           location.reload();
         }
 
-        if (ticket_list.length > 2) {
-          JSONTicket = JSON.stringify(Ticket);
-          $.ajax({
-            url: '{% url "sales:new_sale" %}',
-            type: 'POST',
-            data: {
-              'ticket': JSONTicket,
-              csrfmiddlewaretoken: csrf_token,
-            },
-            traditional: true,
-            datatype: 'jsonp',
-            success: function(result) {
-              swal({
-                title: "Éxito",
-                text: "Venta realizada",
-                type: "success",
-                showConfirmButton: false,
-              });
-              $('#btn-pago-efectivo').attr('disabled', 'true');
-              $('#btn-pago-tarjeta').attr('disabled', 'true');
-              $('.ticket-id-container').find('.ticket-id').text(result.ticket_id);
-              var options = {
-                mode: 'iframe',
-                popClose: true,
-              };
-              $("#printer").printArea(options);
-              setTimeout(rel, 1500);
-            },
-            error: function(result, jqXHR, textStatus, errorThrown) {
-              swal({
-                title: "Venta no realizada!",
-                text: 'Contacte a soporte!\n ' + 'Errores: ' + textStatus + ', ' + jqXHR,
-                type: "error",
-                showConfirmButton: false
-              });
-              setTimeout(rel, 3000);
-            },
-          });
-        };
+        function make_a_sale() {
+          if (ticket_list.length > 2) {
+            JSONTicket = JSON.stringify(Ticket);
+            $.ajax({
+              url: '{% url "sales:new_sale" %}',
+              type: 'POST',
+              data: {
+                'ticket': JSONTicket,
+                csrfmiddlewaretoken: csrf_token,
+              },
+              traditional: true,
+              datatype: 'jsonp',
+              success: function(result) {
+                swal({
+                  title: "Éxito",
+                  text: "Venta realizada",
+                  type: "success",
+                  showConfirmButton: false,
+                });
+                $('#btn-pago-efectivo').attr('disabled', 'true');
+                $('#btn-pago-tarjeta').attr('disabled', 'true');
+                $('.ticket-id-container').find('.ticket-id').text(result.ticket_id);
+                var options = {
+                  mode: 'iframe',
+                  popClose: true,
+                };
+                $("#printer").printArea(options);
+                setTimeout(rel, 1500);
+              },
+              error: function(result, jqXHR, textStatus, errorThrown) {
+                swal({
+                  title: "Venta no realizada!",
+                  text: 'Contacte a soporte!\n ' + 'Errores: ' + textStatus + ', ' + jqXHR,
+                  type: "error",
+                  showConfirmButton: false
+                });
+                setTimeout(rel, 3000);
+              },
+            });
+          };
+        }
+        
       });
 
       /** Cancelar Venta - Resetear ticket */

@@ -159,7 +159,7 @@ class ExtraIngredient(models.Model):
     cost = models.DecimalField(default=0, max_digits=12, decimal_places=2)
 
     def __str__(self):
-        return '%s' % self.cartridge
+        return '%s' % self.ingredient
 
     class Meta:
         ordering = ('cartridge', 'ingredient')

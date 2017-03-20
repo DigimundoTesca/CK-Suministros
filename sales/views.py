@@ -120,18 +120,63 @@ def sales(request):
         """
         min_year = all_tickets.aggregate(Min('created_at'))['created_at__min'].year
         max_year = all_tickets.aggregate(Max('created_at'))['created_at__max'].year
-        years_list = []
+        years_list = [] # [2015:object, 2016:object, 2017:object, ...]
 
         while max_year >= min_year:
-            year_object = {
+            year_object = { # 2015:object or 2016:object or 2017:object ...
                 'year' : max_year,
                 'weeks_list' : []
             }
 
+            tickets_per_year = all_tickets.filter(
+                created_at__range=[naive_to_datetime(date(max_year,1,1)),naive_to_datetime(date(max_year,12,31))])
+            
+            for ticket in tickets_per_year:
+                if len(year_object['weeks_list']) == 0: 
+                    """
+                    Creates a new week_object in the weeks_list of the actual year_object
+                    """
+                    week_object = { 
+                        'week_number': ticket.created_at.isocalendar()[1],
+                        'start_date': ticket.created_at.date(),
+                        'end_date': ticket.created_at.date(),
+                    }
+                    year_object['weeks_list'].append(week_object)
+                    # End if
+                else: 
+                    """
+                    Validates if exists some week with an indentical week_number of the actual year
+                    If exists a same week in the list validates the start_date and the end_date,
+                    In each case valid if there is an older start date or a more current end date 
+                        if it is the case, update the values.
+                    Else creates a new week_object with the required week number
+                    """
+                    existing_week = False
+                    for week_object in year_object['weeks_list']:
+                        if week_object['week_number'] == ticket.created_at.isocalendar()[1]:
+                            # There's a same week number
+                            existing_week = True
+                            if week_object['start_date'] > ticket.created_at.date():
+                                exists = True
+                                week_object['start_date'] = ticket.created_at.date()
+                            elif week_object['end_date'] < ticket.created_at.date():
+                                week_object['end_date'] = ticket.created_at.date()
+                            existing_week = True
+                            break
+
+                    if not existing_week:
+                        # There's a different week number
+                        week_object = { 
+                            'week_number': ticket.created_at.isocalendar()[1],
+                            'start_date': ticket.created_at.date(),
+                            'end_date': ticket.created_at.date(),
+                        }
+                        year_object['weeks_list'].append(week_object)
+
+                    #End else
             years_list.append(year_object)
-
             max_year -= 1
-
+        # End while
         return years_list
 
     def get_sales_range(start_date, final_date):
@@ -308,12 +353,14 @@ def sales(request):
     context = {
         'page_title': PAGE_TITLE,
         'title': title,
+        'actual_year': datetime.now().year,
         'sales_week': get_sales_actual_week(),
         'today_name': get_name_day(datetime.now()),
         'today_number': get_number_day(),
         'week_number': get_week_number(),
         'tickets': get_tickets(),
         'dates_range': get_dates_range(),
+
     }
     return render(request, template, context)
 

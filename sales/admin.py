@@ -16,6 +16,7 @@ class TicketAdmin(admin.ModelAdmin):
     list_filter = ('seller', 'created_at', 'payment_type',)
     list_display_links = ('id', 'seller',)
     list_editable = ('created_at',)
+    ordering = ('-created_at', )
     date_hierarchy = 'created_at'
     inlines = [TicketDetailInline, ]
     actions = (export_as_excel,)
