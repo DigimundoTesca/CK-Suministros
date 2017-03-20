@@ -18,7 +18,7 @@
   <div class="row">
     <div class="col-xs-12">
       <div class="text-xs-right mb-2">
-        <form class="form-inline">
+        <form class="form-inline" id="dates-range-form">
           <select class="custom-select" id="dt-year">
           </select>
           <select class="custom-select" id="dt-week">
@@ -193,9 +193,11 @@
     var ctx_week = document.getElementById("canvas-week-sales"),
         ctx_day = document.getElementById("canvas-day-sales");
     var today_number = {{ today_number }};
-    var sales_week = JSON.parse('{{ sales_week|safe }}');
+    var sales_week = JSON.parse('{{ sales_week | safe }}');
     var earnings_week_chart,
         earnings_day_chart;
+    var dates_range = JSON.parse('{{ dates_range | safe }}');
+    console.log(dates_range);
 
     /**
      * returns a list with the earnings of the week per day
@@ -394,6 +396,41 @@
       });
     }
 
+    function convert_date_to_str(date) {
+      months = {
+        1: 'Ene', 2: 'Feb', 3: 'Mar', 4: 'Abr', 5: 'May', 6: 'Jun',
+        7: 'Jul', 8: 'Ago', 9: 'Sep', 10: 'Oct', 11: 'Nov', 12: 'Dic', 
+      }
+      date = date.split('-')
+      fdate = date[0] + " " + months[parseInt(date[1])] + " " + date[2];
+      return fdate;
+    }
+    function fill_dates_range_form() {
+      var dates_range_form = $(this).find('#dt-year');
+      var selected_year;
+      $.each(dates_range, function(index, item) {
+         $('#dates-range-form').find('#dt-year').append(
+            "<option value=" + item.year + ">" + item.year + "</option>"
+          );
+      });;
+
+      selected_year = $('#dates-range-form').find('#dt-year').val();
+      
+      $.each(dates_range, function(index, item) {
+        if (dates_range[index].year ==  selected_year) {
+          $.each(dates_range[index].weeks_list, function(index, item) { 
+            $('#dates-range-form').find('#dt-week').append(
+              "<option value=" + item.week_number + ">" + 
+              "Semana " + item.week_number + ": " + 
+              convert_date_to_str(item.start_date) +
+              " - " + convert_date_to_str(item.end_date) +
+              "</option>"
+            );
+          });
+          return false;
+        }
+      });      
+    }
     /**
      * Draws the chart of sales of the week
      */
@@ -827,6 +864,7 @@
     /**
      * Functions to initialize the graphs
      */
+    fill_dates_range_form();
     set_total_earnings();
     get_sales_day(today_number);
   });
