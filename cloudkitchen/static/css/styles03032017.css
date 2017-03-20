@@ -44,6 +44,9 @@ body {
   flex-direction: column;
   min-height: 100vh;
 }
+button {
+  transition: all 0.3s ease;
+}
 footer.footer {
   background: #131313;
 }
@@ -135,7 +138,11 @@ footer .footer-header .row figure .tesca-logo {
 footer .footer-header .info-container {
   margin: 0.5rem 0;
 }
-
+.custom-select {
+  height: 2.5em !important;
+  scroll: no !important;
+  overflow-y: hidden !important; 
+}
 
 /* CloudKitchen styles
 -------------------------------------------------------- */

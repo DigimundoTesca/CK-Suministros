@@ -21,7 +21,7 @@
         <form class="form-inline" id="dates-range-form">
           <select class="custom-select" id="dt-year">
           </select>
-          <select class="custom-select" id="dt-week">
+          <select class="custom-select" id="dt-week" >
           </select>
           <button id="btn-set-new-range" type="button" class="btn btn-outline-primary">Actualizar</button>
         </form>
@@ -197,7 +197,6 @@
     var earnings_week_chart,
         earnings_day_chart;
     var dates_range = JSON.parse('{{ dates_range | safe }}');
-    console.log(dates_range);
 
     /**
      * returns a list with the earnings of the week per day
@@ -405,6 +404,7 @@
       fdate = date[0] + " " + months[parseInt(date[1])] + " " + date[2];
       return fdate;
     }
+
     function fill_dates_range_form() {
       var dates_range_form = $(this).find('#dt-year');
       var selected_year;
@@ -420,7 +420,7 @@
         if (dates_range[index].year ==  selected_year) {
           $.each(dates_range[index].weeks_list, function(index, item) { 
             $('#dates-range-form').find('#dt-week').append(
-              "<option value=" + item.week_number + ">" + 
+              "<option value=" + item.start_date + "," + item.end_date + ">" + 
               "Semana " + item.week_number + ": " + 
               convert_date_to_str(item.start_date) +
               " - " + convert_date_to_str(item.end_date) +

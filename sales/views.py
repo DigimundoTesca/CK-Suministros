@@ -71,6 +71,19 @@ def end_datetime(back_days):
     return naive_to_datetime(end_date)
 
 
+def get_end_week_day(day):
+    pass
+
+def get_start_week_day(day):
+    format = "%w"
+    number_day = int(naive_to_datetime(day).strftime(format))
+    if number_day ==  0:
+        number_day = 7
+    else:
+        day = naive_to_datetime(day) - timedelta(days=number_day-1)
+        print('new day: ', day)
+
+
 def items_list_to_int(list_to_cast):
     """
     Evaluates each of the elements of the list received and casts them to integers
@@ -110,7 +123,6 @@ Start of views
 def sales(request):
     all_tickets = Ticket.objects.all()
     all_ticket_details = TicketDetail.objects.all()
-
     def get_dates_range():
         """
         Returns a JSON with a years list.
@@ -136,6 +148,7 @@ def sales(request):
                     """
                     Creates a new week_object in the weeks_list of the actual year_object
                     """
+                    start_week_day = get_start_week_day(ticket.created_at.date())
                     week_object = { 
                         'week_number': ticket.created_at.isocalendar()[1],
                         'start_date': ticket.created_at.date().strftime("%d-%m-%Y"),
