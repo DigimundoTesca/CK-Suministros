@@ -322,24 +322,33 @@ def sales(request):
                 for ticket_detail in all_ticket_details:
                     if ticket_detail.ticket == ticket:
                         ticket_object = {
-                            'ticket_id': ticket.id,
-                            'created_at': ticket.created_at,
-                            'seller': ticket.seller.username,
-                            'payment_type': ticket.payment_type,
+                            'ID': ticket.id,
+                            'Fecha': ticket.created_at.date(),
+                            'Hora': ticket.created_at.time(),
+                            'Vendedor': ticket.seller.username,
                         }
+                        if ticket.payment_type == 'CA':
+                            ticket_object['Tipo de Pago'] = 'Efectivo'
+                        else:
+                            ticket_object['Tipo de Pago'] = 'Crédito'
                         if ticket_detail.cartridge:
-                            ticket_object['cartridge'] =  ticket_detail.cartridge.name
+                            ticket_object['Producto'] =  ticket_detail.cartridge.name
                         else:
-                            ticket_object['cartridge'] =  None
+                            ticket_object['Producto'] =  None
                         if ticket_detail.package_cartridge:
-                            ticket_object['package_cartridge'] = ticket_detail.package_cartridge.name
+                            ticket_object['Paquete'] = ticket_detail.package_cartridge.name
                         else:
-                            ticket_object['package_cartridge'] = None
-                        ticket_object['quantity'] = ticket_detail.quantity
-                        ticket_object['price'] = ticket_detail.price
+                            ticket_object['Paquete'] = None
+                        if ticket_detail.extra_ingredient:
+                            ticket_object['Ingrediente Extra'] = ticket_detail.extra_ingredient.ingredient.name
+                        else:
+                            ticket_object['Ingrediente Extra'] = None
+                        ticket_object['Cantidad'] = ticket_detail.quantity
+                        ticket_object['Total'] = ticket_detail.price
+                        ticket_object['Precio Unitario'] = ticket_detail.price / ticket_detail.quantity
 
                         tickets_objects_list.append(ticket_object)
-
+            
             return JsonResponse({'ticket': tickets_objects_list})
 
         if request.POST['type'] == 'sales_week':
