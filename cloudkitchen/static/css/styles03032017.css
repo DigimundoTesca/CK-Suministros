@@ -37,6 +37,11 @@
 }
 /* Sticky footer styles
 -------------------------------------------------- */
+a.link {
+  color: #fefefe;
+  font-weight: 500;
+  text-decoration: underline;
+}
 body {
   display: flex;
   font-family: 'Open Sans', sans-serif;

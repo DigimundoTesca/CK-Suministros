@@ -157,6 +157,7 @@ class ExtraIngredient(models.Model):
     cartridge = models.ForeignKey(Cartridge)
     ingredient = models.ForeignKey(Supply)
     cost = models.DecimalField(default=0, max_digits=12, decimal_places=2)
+    image = models.ImageField(blank=False, upload_to='extra-ingredients')
 
     def __str__(self):
         return '%s' % self.ingredient
