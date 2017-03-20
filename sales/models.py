@@ -3,7 +3,7 @@ from django.db.models import Avg, Sum
 from django.utils import timezone
 
 from branchoffices.models import CashRegister
-from products.models import Cartridge, PackageCartridge
+from products.models import Cartridge, PackageCartridge, ExtraIngredient
 from users.models import User as UserProfile
 
 
@@ -25,7 +25,7 @@ class Ticket(models.Model):
     payment_type = models.CharField(
         choices=PAYMENT_TYPE, default=CASH, max_length=2)
     order_number = models.IntegerField(
-        null=True)
+        null=True, blank=True)
 
     def __str__(self):
         return '%s' % self.id
@@ -71,6 +71,8 @@ class TicketDetail(models.Model):
         Cartridge, on_delete=models.CASCADE, blank=True, null=True)
     package_cartridge = models.ForeignKey(
         PackageCartridge, on_delete=models.CASCADE, blank=True, null=True)
+    extra_ingredient = models.ForeignKey(
+        ExtraIngredient, on_delete=models.CASCADE, blank=True, null=True)
     quantity = models.IntegerField(default=0)
     price = models.DecimalField(default=0, max_digits=12, decimal_places=2)
 

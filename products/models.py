@@ -8,7 +8,6 @@ from django.db import models
 
 from branchoffices.models import BranchOffice, Supplier
 
-
 class SuppliesCategory(models.Model):
     name = models.CharField(validators=[MinLengthValidator(4)], max_length=125, unique=True)
     image = models.ImageField(blank=False, upload_to='supplies-categories')
@@ -147,8 +146,25 @@ class CartridgeRecipe(models.Model):
 
     class Meta:
         ordering = ('id',)
-        verbose_name = 'Receta de Productos'
-        verbose_name_plural = 'Recetas de Cartuchos'
+        verbose_name = 'Receta del Producto'
+        verbose_name_plural = 'Recetas de Productos'
+
+
+class ExtraIngredient(models.Model):
+    """
+    Description: Extra ingredients that could have the cartridges in a new sale
+    """
+    cartridge = models.ForeignKey(Cartridge)
+    ingredient = models.ForeignKey(Supply)
+    cost = models.DecimalField(default=0, max_digits=12, decimal_places=2)
+
+    def __str__(self):
+        return '%s' % self.ingredient
+
+    class Meta:
+        ordering = ('cartridge', 'ingredient')
+        verbose_name = 'Ingrediente Extra'
+        verbose_name_plural = 'Ingredientes Extra'
 
 
 class PackageCartridge(models.Model):
@@ -190,5 +206,5 @@ class PackageCartridgeRecipe(models.Model):
 
     class Meta:
         ordering = ('id',)
-        verbose_name = 'Receta del Dabba'
-        verbose_name_plural = 'Recetas de Dabbas'
+        verbose_name = 'Receta del Paquete'
+        verbose_name_plural = 'Recetas de Paquetes'

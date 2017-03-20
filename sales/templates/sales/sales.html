@@ -4,6 +4,9 @@
 
 {% block link %}
   <link rel="stylesheet" type="text/css" href="https://cdnjs.cloudflare.com/ajax/libs/limonte-sweetalert2/6.3.8/sweetalert2.min.css">
+  <!--
+  <link rel="stylesheet" href="{% static 'css/sweetalert.css' %}">
+  -->
 {% endblock link %}
 
 {% block page_title %}
@@ -14,17 +17,13 @@
   <div class="container-fluid container-sales-reports">
   <div class="row">
     <div class="col-xs-12">
-      <div class="text-xs-right">
-        <form class="form-inline">
-          <select class="custom-select" id="select-year">
-            <option Selected="2017">2017</option>
-            <option value="2016">2016</option>
+      <div class="text-xs-right mb-2">
+        <form class="form-inline" id="dates-range-form">
+          <select class="custom-select" id="dt-year">
           </select>
-          <select class="custom-select" id="select-week">
-            <option Selected="1">Semana 1</option>
-            <option value="2">Semana 2</option>
+          <select class="custom-select" id="dt-week" >
           </select>
-          <button type="button" class="btn btn-outline-primary">Actualizar</button>
+          <button id="btn-set-new-range" type="button" class="btn btn-outline-primary">Actualizar</button>
         </form>
       </div>
     </div>
@@ -130,7 +129,7 @@
         <div class="printer-container">
           <div id="printer">
             <figure class="content-img">
-              <img src="{% static 'images/dabbawala_black.jpg' %}" alt="logo-dabbawala">
+              <img src="{% static 'images/si_black.jpg' %}" alt="logo-dabbawala">
             </figure>
             <div class="ticket-order-container text-xs-center">
               <span>ORDEN</span>
@@ -138,7 +137,8 @@
             </div>
             <div class="ticket-address">
               <p class="text-xs-center">
-                20 de Noviembre #32, San Lucas Tepetlacalco, Tlanepantla Edo. De México CP 54055
+                Suministros integrales de insumos SA de CV 
+                AV insurgentes 1647 Col. San José Insurgentes Del . Benito Juárez Cp: 03900
               </p>
             </div>
             <div class="container ticket-datetime-container">
@@ -156,8 +156,15 @@
             <div class="ticket-id-container">
               <span>ID: </span><span id="ticket-id"></span>
             </div>
-            <div class="ticket-celphone">
-              <span>Whatsapp: 55 42 46 73 60</span>
+            <div class="ticket-contact">
+              <p class="text-xs-center">
+                Contacto:<br>
+                (55) 41 22 69 00 <br>
+                contacto@suministrosintegrales.mx <br>
+              </p>
+              <p class="text-xs-center mt-1">
+                <strong>¡GRACIAS POR SONREIR! <span class="smile">😊</span></strong> <br>
+              </p>
             </div>
           </div>
         </div>
@@ -172,6 +179,10 @@
 
 {% block javascript %}
 <script src="https://cdnjs.cloudflare.com/ajax/libs/limonte-sweetalert2/6.3.8/sweetalert2.min.js"></script>
+<!--
+<script src="{% static 'js/sweetalert.min.js' %}">
+-->
+</script>
 <script src="{% static 'js/Chart.bundle.min.js' %}" defer></script>
 <script src="{% static 'js/papaparse.min.js' %}" defer></script>
 <script src="{% static 'js/blob.js' %}" defer></script>
@@ -182,10 +193,10 @@
     var ctx_week = document.getElementById("canvas-week-sales"),
         ctx_day = document.getElementById("canvas-day-sales");
     var today_number = {{ today_number }};
-    var sales_week = JSON.parse('{{ sales_week|safe }}');
+    var sales_week = JSON.parse('{{ sales_week | safe }}');
     var earnings_week_chart,
         earnings_day_chart;
-
+    var dates_range = JSON.parse('{{ dates_range | safe }}');
 
     /**
      * returns a list with the earnings of the week per day
@@ -349,17 +360,17 @@
         traditional: true,
         datatype: 'jsonp',
         beforeSend: function(){
-          swal({
-              title: "Generando gráficas",
-              text: "Espere mientras se calculan los datos",
-            });
-          swal.enableLoading();
+          // swal({
+          //     title: "Generando gráficas",
+          //     text: "Espere mientras se calculan los datos",
+          //   });
+          // swal.enableLoading();
         },
         success: function(result) {
           var sales_day_earnings_list = [];
-          var initial_hour = '05:00',
-              final_hour = '13:00',
-              separation_time = 30; // In minutes
+          var initial_hour = '08:00',
+              final_hour = '22:00',
+              separation_time = 60; // In minutes
           var sales_day_object_list = result['sales_day_list'];
           var total_datas = sales_day_object_list.length;
 
@@ -384,6 +395,42 @@
       });
     }
 
+    function convert_date_to_str(date) {
+      months = {
+        1: 'Ene', 2: 'Feb', 3: 'Mar', 4: 'Abr', 5: 'May', 6: 'Jun',
+        7: 'Jul', 8: 'Ago', 9: 'Sep', 10: 'Oct', 11: 'Nov', 12: 'Dic', 
+      }
+      date = date.split('-')
+      fdate = date[0] + " " + months[parseInt(date[1])] + " " + date[2];
+      return fdate;
+    }
+
+    function fill_dates_range_form() {
+      var dates_range_form = $(this).find('#dt-year');
+      var selected_year;
+      $.each(dates_range, function(index, item) {
+         $('#dates-range-form').find('#dt-year').append(
+            "<option value=" + item.year + ">" + item.year + "</option>"
+          );
+      });;
+
+      selected_year = $('#dates-range-form').find('#dt-year').val();
+      
+      $.each(dates_range, function(index, item) {
+        if (dates_range[index].year ==  selected_year) {
+          $.each(dates_range[index].weeks_list, function(index, item) { 
+            $('#dates-range-form').find('#dt-week').append(
+              "<option value=" + item.start_date + "," + item.end_date + ">" + 
+              "Semana " + item.week_number + ": " + 
+              convert_date_to_str(item.start_date) +
+              " - " + convert_date_to_str(item.end_date) +
+              "</option>"
+            );
+          });
+          return false;
+        }
+      });      
+    }
     /**
      * Draws the chart of sales of the week
      */
@@ -441,8 +488,8 @@
       data: {
         labels: [
         "Out",
-        "12:30 - 13:00", "12:00 - 12:30", "11:30 - 12:00", "11:00 - 11:30", "10:30 - 11:00", "10:00 - 10:30", "09:30 - 10:00", "09:00 - 09:30",
-        "08:30 - 09:00", "08:00 - 08:30", "07:30 - 08:00", "07:00 - 07:30", "06:30 - 07:00", "06:00 - 06:30", "05:30 - 06:00", "05:00 - 05:30",
+        "21:00 - 22:00", "20:00 - 21:00", "19:00 - 20:00", "18:00 - 19:00", "17:00 - 18:00", "16:00 - 17:00",
+        "15:00 - 16:00", "14:00 - 15:00", "13:00 - 14:00", "12:00 - 13:00", "11:00 - 12:00", "10:00 - 11:00", "09:00 - 10:00", "08:00 - 09:00",
         ],
         datasets: [{
           label: 'Ventas en este horario',
@@ -524,6 +571,34 @@
       total_earnings = set_number_format(total_earnings, 2);
       $('#total-earnings-text').append(total_earnings);
     }
+
+    /** 
+     * Refresh the page with de dates of the year and week selected
+     */
+    $(this).on('click', '#btn-set-new-range', function(event) {
+      dt_year = $('#dt-year').val();
+      dt_week = $('#dt-week').val();
+      $.ajax({
+        url: "{% url 'sales:sales' %}",
+        type: 'POST',
+        data: {
+          csrfmiddlewaretoken: '{{ csrf_token }}',
+          'dt_year': dt_year,
+          'dt_week': dt_week,
+          'type': 'sales_week',
+        },
+        traditional: true,
+        datatype: 'jsonp',
+        success: function(result) {
+          console.log(result);
+        },
+
+        error: function(result, jqXHR, textStatus, errorThrown) {
+          console.log(result);
+        },
+      });
+    });
+
 
     /**
      * Get's the ticket id for printer-icon selected 
@@ -789,6 +864,7 @@
     /**
      * Functions to initialize the graphs
      */
+    fill_dates_range_form();
     set_total_earnings();
     get_sales_day(today_number);
   });

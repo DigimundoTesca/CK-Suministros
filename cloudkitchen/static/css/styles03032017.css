@@ -44,6 +44,9 @@ body {
   flex-direction: column;
   min-height: 100vh;
 }
+button {
+  transition: all 0.3s ease;
+}
 footer.footer {
   background: #131313;
 }
@@ -135,7 +138,11 @@ footer .footer-header .row figure .tesca-logo {
 footer .footer-header .info-container {
   margin: 0.5rem 0;
 }
-
+.custom-select {
+  height: 2.5em !important;
+  scroll: no !important;
+  overflow-y: hidden !important; 
+}
 
 /* CloudKitchen styles
 -------------------------------------------------------- */
@@ -190,14 +197,20 @@ small {
   background-color: #eaeaea;
   color: #1e3c50;
 }
-.btn-green {
-  background-color: #2ed698;
-  color: #fefefe;
-  transition: all 0.3s ease;
+.btn-extra-ing {
+  width: 100%;
+  text-overflow:ellipsis;
+  white-space:nowrap; 
+  overflow:hidden;
+  border-radius: 18px;
+  background-color: #0275d8;
+  color: white;
 }
-.btn-green:hover {
-  background-color: #26a978;
-  color: #fefefe;
+.btn-extra-ing:hover {
+  transition: all 0.3s ease;
+  background: white;
+  color: #0275d8;
+  border: 1px solid #0275d8;
 }
 .card-scroll {
   overflow-y: scroll;
@@ -296,11 +309,19 @@ transition: all 1s ease;
 .container-sales .group-sales button#btn-orders-reset{
   height: 4rem;
   margin-bottom: 1rem;
+  transition: all 0.3s ease;
 }
 .container-sales .group-sales button#btn-order{
+  background-color: #0bc8ad;
+  color: #fefefe;
   font-size: 1.5em;
   height: 4rem;
   margin-bottom: 1rem;
+  transition: all 0.3s ease;
+}
+.container-sales .group-sales button#btn-order:hover {
+  background-color: #43afa0;
+  color: #fefefe;
 }
 .container-sales .group-sales .card-scroll {
   min-height: calc(100vh - 16rem);
@@ -365,7 +386,7 @@ transition: all 1s ease;
   text-align: center;
   display: none;
 }
-.container-sales .group-sales .card-scroll-orders ul.list-group  span.cant-li {
+.container-sales .group-sales .card-scroll-orders ul.list-group  span.quantity-li {
   min-width: 10%;
   max-width: 10%;
   text-align: center;
@@ -416,7 +437,7 @@ transition: all 1s ease;
 }
 .container-sales .group-sales .product-container img  {
   max-height: 220px;
-  border-radius: 3px;
+  border-radius: 8px;
   cursor: pointer;
   max-width: 100%;
   align-self: center;
@@ -425,7 +446,7 @@ transition: all 1s ease;
   -o-transition: all 0.3s ease;
 }
 .container-sales .group-sales .product-container img:hover  {
-  opacity: 0.8;
+  opacity: 0.75;
 }
 .container-sales .group-sales .card-block img:active {
   opacity: 0.5;
@@ -509,6 +530,17 @@ transition: all 1s ease;
 }
 .map-container {
   margin-top: 2rem;
+}
+.modal#extra-ingredient-modal .img-extra-ing {
+  max-height: 124px;
+}
+.modal#extra-ingredient-modal ul.list-group {
+  width: 100%;
+}
+.modal#extra-ingredient-modal ul.list-group li.list-group-item {
+  border: none;
+  margin-left: auto;
+  margin-right: auto;
 }
 .modal#modal-ticket .printer-container {
   border: 1px solid #dadade;
@@ -744,7 +776,7 @@ transition: all 1s ease;
  max-width: 25%;
  text-align: right;
 } 
-#printer ul li span.cant-li-modal{
+#printer ul li span.quantity-li-modal{
   min-width: 15%;
   max-width: 15%;
   text-align: center;
@@ -763,7 +795,7 @@ transition: all 1s ease;
   min-width: 25%;
   max-width: 25%;
 }
-#printer ul li span.cant-li-title-modal {
+#printer ul li span.quantity-li-title-modal {
   /*font-family: 'Dosis-SemiBold';*/
   font-family: 'Dosis-Bold';
   text-align: center;
@@ -780,7 +812,9 @@ transition: all 1s ease;
   font-family: 'Dosis-SemiBold';
 }
 #printer .ticket-order-container {
-  font-size: 1rem;
+  font-family: 'Dosis-Bold';
+  font-size: 1.5rem;
+  font-weight: bold;
 }
 #printer .ticket-order-container span {
   margin-right: 0.5rem;
@@ -792,10 +826,12 @@ transition: all 1s ease;
 #printer .ticket-id-container {
   margin-top: 1rem;
 }
-#printer .ticket-celphone {
+#printer .ticket-contact {
   margin-top: 0.5rem;
 }
-
+#printer .ticket-contact .smile {
+  font-size: 1.2rem;
+}
 @media (min-width: 1024px) { 
   .container-new-customers table {
     display: table;

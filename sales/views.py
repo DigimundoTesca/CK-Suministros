@@ -3,17 +3,19 @@ from datetime import datetime, date, timedelta, time
 import time as python_time
 
 from decimal import Decimal
-
-from django.contrib.auth.decorators import login_required,permission_required
+ 
+from django.contrib.auth.decorators import login_required, permission_required
 from django.http import JsonResponse
-from django.shortcuts import render, get_object_or_404
+from django.shortcuts import render, get_object_or_404, redirect
 from django.views.decorators.csrf import csrf_protect, requires_csrf_token
 from django.middleware.csrf import get_token
 from django.utils import timezone
+from django.db.models import Max, Min
 
 from branchoffices.models import CashRegister
 from cloudkitchen.settings.base import PAGE_TITLE
-from products.models import Cartridge, PackageCartridge, PackageCartridgeRecipe
+from products.models import Cartridge, PackageCartridge, PackageCartridgeRecipe, \
+                            ExtraIngredient
 from sales.models import Ticket, TicketDetail
 from users.models import User as UserProfile
 
@@ -69,6 +71,19 @@ def end_datetime(back_days):
     return naive_to_datetime(end_date)
 
 
+def get_end_week_day(day):
+    pass
+
+def get_start_week_day(day):
+    format = "%w"
+    number_day = int(naive_to_datetime(day).strftime(format))
+    if number_day ==  0:
+        number_day = 7
+    else:
+        day = naive_to_datetime(day) - timedelta(days=number_day-1)
+        print('new day: ', day)
+
+
 def items_list_to_int(list_to_cast):
     """
     Evaluates each of the elements of the list received and casts them to integers
@@ -108,10 +123,82 @@ Start of views
 def sales(request):
     all_tickets = Ticket.objects.all()
     all_ticket_details = TicketDetail.objects.all()
-
-    def get_sales_week():
+    def get_dates_range():
         """
-        1. Gets the following properties for the day: Name, Date and Earnings
+        Returns a JSON with a years list.
+        The years list contains years objects that contains a weeks list
+            and the Weeks list contains a weeks objects with two attributes: 
+            start date and final date. Ranges of each week.
+        """
+        min_year = all_tickets.aggregate(Min('created_at'))['created_at__min'].year
+        max_year = all_tickets.aggregate(Max('created_at'))['created_at__max'].year
+        years_list = [] # [2015:object, 2016:object, 2017:object, ...]
+
+        while max_year >= min_year:
+            year_object = { # 2015:object or 2016:object or 2017:object ...
+                'year' : max_year,
+                'weeks_list' : []
+            }
+
+            tickets_per_year = all_tickets.filter(
+                created_at__range=[naive_to_datetime(date(max_year,1,1)),naive_to_datetime(date(max_year,12,31))])
+            
+            for ticket in tickets_per_year:
+                if len(year_object['weeks_list']) == 0: 
+                    """
+                    Creates a new week_object in the weeks_list of the actual year_object
+                    """
+                    start_week_day = get_start_week_day(ticket.created_at.date())
+                    week_object = { 
+                        'week_number': ticket.created_at.isocalendar()[1],
+                        'start_date': ticket.created_at.date().strftime("%d-%m-%Y"),
+                        'end_date': ticket.created_at.date().strftime("%d-%m-%Y"),
+                    }
+                    year_object['weeks_list'].append(week_object)
+                    # End if
+                else: 
+                    """
+                    Validates if exists some week with an indentical week_number of the actual year
+                    If exists a same week in the list validates the start_date and the end_date,
+                    In each case valid if there is an older start date or a more current end date 
+                        if it is the case, update the values.
+                    Else creates a new week_object with the required week number
+                    """
+                    existing_week = False
+                    for week_object in year_object['weeks_list']:
+                        if week_object['week_number'] == ticket.created_at.isocalendar()[1]:
+                            # There's a same week number
+                            existing_week = True
+                            if datetime.strptime(week_object['start_date'], "%d-%m-%Y").date() > ticket.created_at.date():
+                                exists = True
+                                week_object['start_date'] = ticket.created_at.date().strftime("%d-%m-%Y")
+                            elif datetime.strptime(week_object['end_date'], "%d-%m-%Y").date() < ticket.created_at.date():
+                                week_object['end_date'] = ticket.created_at.date().strftime("%d-%m-%Y")
+                            existing_week = True
+                            break
+
+                    if not existing_week:
+                        # There's a different week number
+                        week_object = { 
+                            'week_number': ticket.created_at.isocalendar()[1],
+                            'start_date': ticket.created_at.date().strftime("%d-%m-%Y"),
+                            'end_date': ticket.created_at.date().strftime("%d-%m-%Y"),
+                        }
+                        year_object['weeks_list'].append(week_object)
+
+                    #End else
+            years_list.append(year_object)
+            max_year -= 1
+        # End while
+        return json.dumps(years_list)
+
+    def get_sales_range(start_date, final_date):
+        
+        return json.dumps({'hola': 'ajajja'})
+
+    def get_sales_actual_week():
+        """
+        Gets the following properties for each week's day: Name, Date and Earnings
         """
         week_sales_list = []
         total_earnings = 0
@@ -248,25 +335,39 @@ def sales(request):
                 for ticket_detail in all_ticket_details:
                     if ticket_detail.ticket == ticket:
                         ticket_object = {
-                            'ticket_id': ticket.id,
-                            'created_at': ticket.created_at,
-                            'seller': ticket.seller.username,
-                            'payment_type': ticket.payment_type,
+                            'ID': ticket.id,
+                            'Fecha': ticket.created_at.date(),
+                            'Hora': ticket.created_at.time(),
+                            'Vendedor': ticket.seller.username,
                         }
+                        if ticket.payment_type == 'CA':
+                            ticket_object['Tipo de Pago'] = 'Efectivo'
+                        else:
+                            ticket_object['Tipo de Pago'] = 'Crédito'
                         if ticket_detail.cartridge:
-                            ticket_object['cartridge'] =  ticket_detail.cartridge.name
+                            ticket_object['Producto'] =  ticket_detail.cartridge.name
                         else:
-                            ticket_object['cartridge'] =  None
+                            ticket_object['Producto'] =  None
                         if ticket_detail.package_cartridge:
-                            ticket_object['package_cartridge'] = ticket_detail.package_cartridge.name
+                            ticket_object['Paquete'] = ticket_detail.package_cartridge.name
                         else:
-                            ticket_object['package_cartridge'] = None
-                        ticket_object['quantity'] = ticket_detail.quantity
-                        ticket_object['price'] = ticket_detail.price
+                            ticket_object['Paquete'] = None
+                        if ticket_detail.extra_ingredient:
+                            ticket_object['Ingrediente Extra'] = ticket_detail.extra_ingredient.ingredient.name
+                        else:
+                            ticket_object['Ingrediente Extra'] = None
+                        ticket_object['Cantidad'] = ticket_detail.quantity
+                        ticket_object['Total'] = ticket_detail.price
+                        ticket_object['Precio Unitario'] = ticket_detail.price / ticket_detail.quantity
 
                         tickets_objects_list.append(ticket_object)
 
             return JsonResponse({'ticket': tickets_objects_list})
+
+        if request.POST['type'] == 'sales_week':
+            dt_year = request.POST['dt_year']
+            dt_week = request.POST['dt_week']
+            return JsonResponse({'hola':'jajajja'})
 
     # Any other request method:
     template = 'sales/sales.html'
@@ -274,11 +375,14 @@ def sales(request):
     context = {
         'page_title': PAGE_TITLE,
         'title': title,
-        'sales_week': get_sales_week(),
+        'actual_year': datetime.now().year,
+        'sales_week': get_sales_actual_week(),
         'today_name': get_name_day(datetime.now()),
         'today_number': get_number_day(),
         'week_number': get_week_number(),
         'tickets': get_tickets(),
+        'dates_range': get_dates_range(),
+
     }
     return render(request, template, context)
 
@@ -301,8 +405,7 @@ def new_sale(request):
             cash_register = CashRegister.objects.first()
             ticket_detail_json_object = json.loads(request.POST.get('ticket'))
             payment_type = ticket_detail_json_object['payment_type']
-            new_ticket_object = Ticket(
-                cash_register=cash_register, seller=user_profile_object, payment_type=payment_type)
+            max_value = 0
 
             """ 
             Gets the tickets in the week and returns n + 1 
@@ -313,6 +416,14 @@ def new_sale(request):
             3. save the 'new_ticket_object' with the new atribute (n + 1)
             4. Save the new object
             """
+
+            tickets = Ticket.objects.filter(created_at__gte=datetime.now() - timedelta(days=get_number_day()))
+
+            for ticket in tickets:
+                max_value = max_value + 1
+            new_ticket_object = Ticket(
+                cash_register=cash_register, seller=user_profile_object, 
+                payment_type=payment_type, order_number=max_value)
             new_ticket_object.save()
 
             """
@@ -357,13 +468,35 @@ def new_sale(request):
     else:
         cartridges_list = Cartridge.objects.all().order_by('name')
         package_cartridges = PackageCartridge.objects.all().order_by('name')
+        extra_ingredients = ExtraIngredient.objects.all().prefetch_related('ingredient');
         template = 'sales/new_sale.html'
         title = 'Nueva venta'
+        extra_ingredients_packages_list = []
+
+        for cartridge in cartridges_list:
+            cartridge_object = {
+                'name': cartridge.name,
+                'extra_ingredients': [],
+            }
+            for ingredient in extra_ingredients:
+                if cartridge == ingredient.cartridge:
+                    ingredient_object = {
+                        'ingredient': ingredient.ingredient.name,
+                        'cost': str(ingredient.cost),
+                    }
+                    cartridge_object['extra_ingredients'].append(ingredient_object)
+            if len(cartridge_object['extra_ingredients']) > 0:
+                extra_ingredients_packages_list.append(cartridge_object)
+
+
         context = {
             'page_title': PAGE_TITLE,
             'title': title,
             'cartridges': cartridges_list,
-            'package_cartridges': package_cartridges
+            'package_cartridges': package_cartridges,
+            'extra_ingredients': extra_ingredients,
+            'extra_ingredients_packages_list': extra_ingredients_packages_list,
+            'extra_ingredients_packages_list_json': json.dumps(extra_ingredients_packages_list),
         }
         return render(request, template, context)
 
