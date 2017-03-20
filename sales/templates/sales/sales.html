@@ -20,18 +20,8 @@
       <div class="text-xs-right mb-2">
         <form class="form-inline">
           <select class="custom-select" id="dt-year">
-            {% for year_object in dates_range %}
-              <option value="{{ year_object.year }}">{{ year_object.year }}</option>
-            {% endfor %}
           </select>
           <select class="custom-select" id="dt-week">
-            {% for year_object in dates_range %}
-              {% if year_object.year ==  actual_year %}
-                {% for week in  year_object.weeks_list %}
-                  <option value="{{ week.week_number }}">Semana {{ week.week_number }}</option>
-                {% endfor %}
-              {% endif %}
-            {% endfor %}
           </select>
           <button id="btn-set-new-range" type="button" class="btn btn-outline-primary">Actualizar</button>
         </form>

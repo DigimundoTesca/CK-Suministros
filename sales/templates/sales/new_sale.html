@@ -86,6 +86,13 @@
                       <div class="text-xs-right content-price">
                         <span class="font-weight-bold">$ </span><span class="product-cost font-weight-bold">{{ cartridge.price }}</span>
                       </div>
+                      {% for extra in extra_ingredients_packages_list %}
+                        {% if extra.name == cartridge.name %}
+                          <div class="extra-ingredients-cont">
+                            <button id="btn-extra-ing-{{ cartridge.id }}" class="btn btn-outline-primary btn-extra-ing" data-toggle="modal" data-target="#extra-ingredient-modal">Ingrediente Extra</button>
+                          </div>
+                        {% endif %}
+                      {% endfor %}
                     </div>
                   {% endif %}
                 {% endfor %}

@@ -138,8 +138,8 @@ def sales(request):
                     """
                     week_object = { 
                         'week_number': ticket.created_at.isocalendar()[1],
-                        'start_date': ticket.created_at.date(),
-                        'end_date': ticket.created_at.date(),
+                        'start_date': ticket.created_at.date().strftime("%d-%m-%Y"),
+                        'end_date': ticket.created_at.date().strftime("%d-%m-%Y"),
                     }
                     year_object['weeks_list'].append(week_object)
                     # End if
@@ -156,11 +156,11 @@ def sales(request):
                         if week_object['week_number'] == ticket.created_at.isocalendar()[1]:
                             # There's a same week number
                             existing_week = True
-                            if week_object['start_date'] > ticket.created_at.date():
+                            if datetime.strptime(week_object['start_date'], "%d-%m-%Y").date() > ticket.created_at.date():
                                 exists = True
-                                week_object['start_date'] = ticket.created_at.date()
-                            elif week_object['end_date'] < ticket.created_at.date():
-                                week_object['end_date'] = ticket.created_at.date()
+                                week_object['start_date'] = ticket.created_at.date().strftime("%d-%m-%Y")
+                            elif datetime.strptime(week_object['end_date'], "%d-%m-%Y").date() < ticket.created_at.date():
+                                week_object['end_date'] = ticket.created_at.date().strftime("%d-%m-%Y")
                             existing_week = True
                             break
 
@@ -168,8 +168,8 @@ def sales(request):
                         # There's a different week number
                         week_object = { 
                             'week_number': ticket.created_at.isocalendar()[1],
-                            'start_date': ticket.created_at.date(),
-                            'end_date': ticket.created_at.date(),
+                            'start_date': ticket.created_at.date().strftime("%d-%m-%Y"),
+                            'end_date': ticket.created_at.date().strftime("%d-%m-%Y"),
                         }
                         year_object['weeks_list'].append(week_object)
 
@@ -177,7 +177,7 @@ def sales(request):
             years_list.append(year_object)
             max_year -= 1
         # End while
-        return years_list
+        return json.dumps(years_list)
 
     def get_sales_range(start_date, final_date):
         
@@ -348,7 +348,7 @@ def sales(request):
                         ticket_object['Precio Unitario'] = ticket_detail.price / ticket_detail.quantity
 
                         tickets_objects_list.append(ticket_object)
-            
+
             return JsonResponse({'ticket': tickets_objects_list})
 
         if request.POST['type'] == 'sales_week':
