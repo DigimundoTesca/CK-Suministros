@@ -195,26 +195,26 @@
   </div>
 
   <!-- Extra Ingredients Modals -->
-    <div class="modal fade" id="extra-ingredient-modal" tabindex="-1" role="dialog" aria-labelledby="extra-ingredient-modal-label" aria-hidden="true">
-      <div class="modal-dialog" role="document">
-        <div class="modal-content">
-          <div class="modal-header">
-            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-              <span aria-hidden="true">&times;</span>
-            </button>
-            <h3 class="modal-title" id="extra-ingredient-modal-label">Ingredientes Extra</h3>
-          </div>
-          <div class="modal-body">
-            <ul class="list-unstyled list-group">
-            </ul>
-          </div>
-          <div class="modal-footer">
-            <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancelar</button>
-            <button id="btn-add-extra-ingredient" type="button" class="btn btn-primary">Agregar Ingredientes</button>
-          </div>
+  <div class="modal fade" id="extra-ingredient-modal" tabindex="-1" role="dialog" aria-labelledby="extra-ingredient-modal-label" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+      <div class="modal-content">
+        <div class="modal-header">
+          <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+          </button>
+          <h3 class="modal-title" id="extra-ingredient-modal-label">Ingredientes Extra</h3>
+        </div>
+        <div class="modal-body">
+          <ul class="list-unstyled list-group">
+          </ul>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancelar</button>
+          <button id="btn-add-extra-ingredient" type="button" class="btn btn-primary">Agregar Ingredientes</button>
         </div>
       </div>
     </div>
+  </div>
 
 {% endblock content %}
 {% block javascript %}
@@ -238,6 +238,7 @@
 
       let ExtraIngredientObject = {
         'product_id': null,
+        'name': null,
         'ingredients': [],
       }
 
@@ -298,8 +299,11 @@
        * for each product that has them
        */
       $(this).on('click', '.btn-extra-ing', function(event) {
-        element_id = $(this).attr('id').substring(14);
-        products_list = ExtraIngredientsProducts['extra_ingredients_products_list'];
+        var id = $(this).parents('.product-container').attr('id');
+        var element_id = $(this).attr('id').substring(14);
+        var element_name = $(this).parent().siblings('.product-name').text();
+        var element_cost_base = $(this).parent().siblings('.content-price').find('.product-cost').text();
+        var products_list = ExtraIngredientsProducts['extra_ingredients_products_list'];
         /**
          * Manages the extra ingredients modal buttons
          */
@@ -312,8 +316,11 @@
         /**
          * Resets the ExtraIngredientObject
          */
+        ExtraIngredientObject['large_id'] = id;
         ExtraIngredientObject['product_id'] = element_id;
         ExtraIngredientObject['ingredients'].length = 0;
+        ExtraIngredientObject['name'] = element_name;
+        ExtraIngredientObject['cost_base'] = element_cost_base;
 
         for (var i = 0; i < products_list.length; i++) {
           if (element_id == products_list[i].id) {
@@ -337,7 +344,6 @@
             break;
           }
         };
-         console.log(ExtraIngredientObject);
       });
 
       /**
@@ -388,10 +394,132 @@
         console.log(ExtraIngredientObject);        
       });
 
-      /** Agrega un producto al carrito del ticket */
+      /** 
+       * Adds the product with the extra ingredients to the list
+       */
+      $(this).on('click', '#btn-add-extra-ingredient', function(event) {
+        var element = $(this);
+
+        function addObjectToJSON(id, quantity, price, type_object) {
+          if (type_object == 'cartridge') {
+            if (id.indexOf('cartridge') >= 0) {
+              id = id.replace('cartridge-', '');
+
+              /** Itera la lista de cartuchos */
+              function findIdCartucho(cartucho) {
+                return cartucho.id == id;
+              }
+              if (!Ticket.cartuchos.find(findIdCartucho)) { // Si no existe
+                nuevo_cartucho = {}
+                nuevo_cartucho.id = id;
+                nuevo_cartucho.quantity = quantity;
+                nuevo_cartucho.price = price;
+                Ticket.cartuchos.push(nuevo_cartucho);
+
+              } else {
+                mi_cartucho = Ticket.cartuchos.find(findIdCartucho);
+                mi_cartucho.quantity = quantity;
+                mi_cartucho.price = price;
+              }
+            }
+          } else if (type_object == 'package'){
+            if (id.indexOf('package') >= 0) {
+              id = id.replace('package-', '');
+
+              /** Itera la lista de paquetes */
+              function findIdPaquete(paquete) {
+                return paquete.id == id;
+              }
+              if (!Ticket.paquetes.find(findIdPaquete)) { // Si no existe
+                nuevo_paquete = {}
+                nuevo_paquete.id = id;
+                nuevo_paquete.quantity = quantity;
+                nuevo_paquete.price = price;
+                Ticket.paquetes.push(nuevo_paquete);
+
+              } else {
+                mi_paquete = Ticket.paquetes.find(findIdPaquete);
+                mi_paquete.quantity = quantity;
+                mi_paquete.price = price;
+              }
+            }
+          }
+        }
+
+        function addObjectToTicket(){
+          var name = ExtraIngredientObject['name'];
+          var cost_base = parseFloat(ExtraIngredientObject['cost_base']);
+          var cost = cost_base;
+          var id = ExtraIngredientObject['large_id'];
+          var li_id = ('li-' + id).toString();
+          var quantity = $('ul#sales-list').find('#' + li_id + ' .quantity-li').text();
+          var type_object = ExtraIngredientObject['large_id'].split('-')[0];
+          
+          if ($('#' + li_id + '').length != 0) {
+            quantity++;
+            console.log("YA HAY!");
+            cost = cost * quantity;
+            
+            if (cost % 2 != 0) {
+              cost = cost.toFixed(2);
+            } else {
+              cost += '.00';
+            }
+
+            $('ul#sales-list').find('#' + li_id + ' span.quantity-li').text(quantity);
+            $('ul#sales-list').find('#' + li_id + ' span.total-li').text(cost);
+
+          } else {
+            quantity = 1;
+            
+            if (cost % 2 != 0){
+              cost = cost.toFixed(2);
+            } else {
+              cost += '.00';
+            }
+
+            if (cost_base % 2 != 0) {
+              cost_base = cost_base.toFixed(2);
+            } else {
+              cost_base += '.00';
+            }
+
+            var name_with_ingredients = name;
+
+            for (var i = 0; i < ExtraIngredientObject['ingredients'].length; i++) {
+              name_with_ingredients += ' - ' + ExtraIngredientObject['ingredients'][i].name;
+            };
+            console.log(name_with_ingredients);
+
+            nuevo_li = $("" +
+              "<li id='" + li_id + "' class='list-group-item'>" +
+              "<span class='name-li text-uppercase'>" + name_with_ingredients + "</span> " +
+              "<span class='cost-base-li'>" + cost_base + "</span>" +
+              "<span class='remove-icon-li'><i class='material-icons'>remove</i></span>" +
+              "<span class='quantity-li'>" + quantity + "</span>" +
+              "<span class='add-icon-li'><i class='material-icons'>add</i></span>" +
+              "<span class='font-weight-bold s-li'>$ </span>" +
+              "<span class='total-li font-weight-bold'>" + cost + "</span> " +
+              "</li>");
+            nuevo_li.appendTo('#sales-list').fadeTo('slow', 1);
+
+          }
+
+          /** Modificacion del total general */
+          set_total_ticket();
+
+          //addObjectToJSON(id, quantity, cost, type_object);
+        }
+
+        addObjectToTicket();
+       $('#extra-ingredient-modal').modal('hide');
+      });
+
+      /** Adds a product to ticket list */
       $(this).on('click', '.product-img', function(event) {
         var product_type = $(this).attr('id');
         var element = $(this)
+
         function addObjectToJSON(id, quantity, price, type_object) {
           if (type_object == 'cartridge') {
             if (id.indexOf('cartridge') >= 0) {
@@ -446,26 +574,35 @@
           let li_id = ('li-' + id).toString();
           let quantity = $('ul#sales-list').find('#' + li_id + ' .quantity-li').text();
           let type_object = element.parent().attr('id').split('-')[0];
+
           if ($('#' + li_id + '').length != 0) {
             quantity++;
 
             cost = cost * quantity;
             if (cost % 2 != 0) {
               cost = cost.toFixed(2);
-            } else 
+            } else {
               cost += '.00';
+            }
+
             $('ul#sales-list').find('#' + li_id + ' span.quantity-li').text(quantity);
             $('ul#sales-list').find('#' + li_id + ' span.total-li').text(cost);
+
           } else {
             quantity = 1;
-            if (cost % 2 != 0)
+
+            if (cost % 2 != 0) {
               cost = cost.toFixed(2);
-            else
+            } else {
               cost += '.00';
-            if (cost_base % 2 != 0)
+            } 
+
+            if (cost_base % 2 != 0) {
               cost_base = cost_base.toFixed(2);
-            else
+            } else {
               cost_base += '.00';
+            }
+
             $nuevo_li = $("" +
               "<li id='" + li_id + "' class='list-group-item'>" +
               "<span class='name-li text-uppercase'>" + name + "</span> " +
@@ -476,7 +613,9 @@
               "<span class='font-weight-bold s-li'>$ </span>" +
               "<span class='total-li font-weight-bold'>" + cost + "</span> " +
               "</li>");
+            
             $nuevo_li.appendTo('#sales-list').fadeTo('slow', 1);
+
           }
 
           /** Modificacion del total general */
@@ -728,7 +867,7 @@
         set_total_ticket();
       });
 
-      /** Added the package to modal */
+      /** Adds the package to modal */
       $(this).on('click', '#btn-add-package', function(event) {
 
         var product_type = $(this).attr('id');
