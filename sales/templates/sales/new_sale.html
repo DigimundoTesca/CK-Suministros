@@ -59,7 +59,7 @@
                       <div class="text-xs-right content-price">
                         <span class="font-weight-bold">$ </span><span class="product-cost font-weight-bold">{{ cartridge.price }}</span>
                       </div>
-                      {% for extra in extra_ingredients_packages_list %}
+                      {% for extra in extra_ingredients_products_list %}
                         {% if extra.name == cartridge.name %}
                           <div class="extra-ingredients-cont">
                             <button id="btn-extra-ing-{{ cartridge.id }}" class="btn btn-outline-primary btn-extra-ing" data-toggle="modal" data-target="#extra-ingredient-modal">Ingrediente Extra</button>
@@ -86,7 +86,7 @@
                       <div class="text-xs-right content-price">
                         <span class="font-weight-bold">$ </span><span class="product-cost font-weight-bold">{{ cartridge.price }}</span>
                       </div>
-                      {% for extra in extra_ingredients_packages_list %}
+                      {% for extra in extra_ingredients_products_list %}
                         {% if extra.name == cartridge.name %}
                           <div class="extra-ingredients-cont">
                             <button id="btn-extra-ing-{{ cartridge.id }}" class="btn btn-outline-primary btn-extra-ing" data-toggle="modal" data-target="#extra-ingredient-modal">Ingrediente Extra</button>
@@ -109,12 +109,12 @@
                 <div class="card col-xs-12 card-scroll packages-block card-outline-info" id="group-dishes">
                   <div class="card-block">
                     {% for package in package_cartridges %}
-                      <div class="card-block product-container" id="package-{{ package.pk }}">
-                        <h6 class="product-name">{{ package.name }}</h6>
-                        <div class="text-xs-right content-price">
-                          <span class="font-weight-bold">$ </span><span class="product-cost font-weight-bold">{{ package.price }}</span>
-                        </div>
+                    <div class="card-block product-container" id="package-{{ package.pk }}">
+                      <h6 class="product-name">{{ package.name }}</h6>
+                      <div class="text-xs-right content-price">
+                        <span class="font-weight-bold">$ </span><span class="product-cost font-weight-bold">{{ package.price }}</span>
                       </div>
+                    </div>
                     {% endfor %}
                   </div>
                 </div>
@@ -239,8 +239,8 @@
         cost: null,
       }
 
-      let ExtraIngredientsPackage = {
-        packages : {{ extra_ingredients_packages_list |safe }},
+      let ExtraIngredientsProducts = {
+        products : {{ extra_ingredients_products_list |safe }},
       }
 
       function get_cookie(name) {
@@ -295,6 +295,14 @@
         return large_type_id;
       }
 
+      /** 
+       * Displays the modal of the extra ingredients 
+       * for each product that has them
+       */
+      $(this).on('click', '.btn-extra-ing', function(event) {
+        element_id = $(this).attr('id').substring(14);
+        console.log(element_id);
+      });
       /** Agrega un producto al carrito del ticket */
       $(this).on('click', '.product-img', function(event) {
         var product_type = $(this).attr('id');

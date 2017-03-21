@@ -548,11 +548,17 @@ transition: all 1s ease;
 }
 .modal#extra-ingredient-modal ul.list-group {
   width: 100%;
+  user-select: none;
+  cursor: pointer;
 }
 .modal#extra-ingredient-modal ul.list-group li.list-group-item {
   border: none;
   margin-left: auto;
   margin-right: auto;
+  transition: all 0.3s ease;
+}
+.modal#extra-ingredient-modal ul.list-group li.list-group-item:hover {
+  background: #E3F2FD;
 }
 .modal#modal-ticket .printer-container {
   border: 1px solid #dadade;
