@@ -312,7 +312,6 @@
         /**
          * Resets the ExtraIngredientObject
          */
-         console.log(ExtraIngredientObject);
         ExtraIngredientObject['product_id'] = element_id;
         ExtraIngredientObject['ingredients'].length = 0;
 
@@ -337,8 +336,8 @@
             };
             break;
           }
-
         };
+         console.log(ExtraIngredientObject);
       });
 
       /**
@@ -370,7 +369,7 @@
               ExtraIngredientObject['ingredients'].splice(i,1);
               element_exists = true;
             }
-          }
+          };
           if (!element_exists) {
             var IngredientObject = {
               'id': element_id,
@@ -380,6 +379,12 @@
             ExtraIngredientObject['ingredients'].push(IngredientObject);
           }
         }
+
+        if (ExtraIngredientObject['ingredients'].length >0) {
+          $('#btn-add-extra-ingredient').attr('disabled',false);
+        } else {
+          $('#btn-add-extra-ingredient').attr('disabled',true);
+        };
         console.log(ExtraIngredientObject);        
       });
 
