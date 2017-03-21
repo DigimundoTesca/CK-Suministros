@@ -90,7 +90,7 @@ def login(request):
 
     context = {
         'tab': tab,
-        'title': 'Bienvenido a Dabbanet. Inicia Sesión o registrate.',
+        'title': 'Bienvenido a CloudKitchen. Inicia Sesión o registrate.',
         'error_message': error_message,
         'success_message': success_message,
         'form_user': form_user,

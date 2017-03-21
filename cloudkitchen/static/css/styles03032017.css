@@ -39,8 +39,12 @@
 -------------------------------------------------- */
 a.link {
   color: #fefefe;
-  font-weight: 500;
-  text-decoration: underline;
+  font-weight: 300;
+  transition: all 0.3s ease;
+}
+a.link:hover {
+  text-decoration: none;
+  color: #a0a0a0;
 }
 body {
   display: flex;
@@ -273,8 +277,11 @@ transition: all 1s ease;
 .container-sales-reports .sales-graphics .canvas-holder{
   margin-bottom: 2rem;
 }
+.container-sales-reports .sales-details {
+  max-height: 40vh;
+}
 .container-sales-reports .sales-details .card {
-  max-height: 45vh;
+  max-height: 40vh;
 }
 .container-sales-reports .sales-details span.btn-reports {
   display: flex;

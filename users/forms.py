@@ -1,5 +1,5 @@
 from django import forms
-
+from django.forms import ValidationError
 from users.models import User as UserProfile, CustomerProfile
 
 
@@ -15,10 +15,9 @@ class UserForm(forms.ModelForm):
         cleaned_data = super(UserForm, self).clean()
         password = cleaned_data.get("password")
         password_confirm = cleaned_data.get("password_confirm")
-
         if password != password_confirm:
-            raise forms.ValidationError(
-                "password and password_confirm does not match")
+            msg = 'Las contraseñas no coinciden'
+            self.add_error('password_confirm', msg)
 
 
 class CustomerProfileForm(forms.ModelForm):
