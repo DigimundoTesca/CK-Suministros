@@ -543,6 +543,9 @@ transition: all 1s ease;
 .map-container {
   margin-top: 2rem;
 }
+.modal#extra-ingredient-modal .modal-header {
+  height: 4rem;
+}
 .modal#extra-ingredient-modal .img-extra-ing {
   max-height: 124px;
 }
@@ -558,6 +561,9 @@ transition: all 1s ease;
   transition: all 0.3s ease;
 }
 .modal#extra-ingredient-modal ul.list-group li.list-group-item:hover {
+  background: #E3F2FD;
+}
+.modal#extra-ingredient-modal ul.list-group li.list-group-item.selected-li {
   background: #E3F2FD;
 }
 .modal#modal-ticket .printer-container {
@@ -761,8 +767,8 @@ transition: all 1s ease;
   color: #000000;
   font-size: 0.8rem;
   font-family: 'Dosis-Regular', serif;
-  min-width: 56mm;
-  max-width: 56mm;
+  min-width: 58mm;
+  max-width: 58mm;
   margin: 0 auto;
 }
 #printer .modal-body { 

@@ -475,13 +475,16 @@ def new_sale(request):
 
         for cartridge in cartridges_list:
             cartridge_object = {
+                'id': cartridge.id,
                 'name': cartridge.name,
                 'extra_ingredients': [],
             }
             for ingredient in extra_ingredients:
                 if cartridge == ingredient.cartridge:
                     ingredient_object = {
-                        'ingredient': ingredient.ingredient.name,
+                        'id': ingredient.id,
+                        'name': ingredient.ingredient.name,
+                        'image': ingredient.image.url,
                         'cost': str(ingredient.cost),
                     }
                     cartridge_object['extra_ingredients'].append(ingredient_object)

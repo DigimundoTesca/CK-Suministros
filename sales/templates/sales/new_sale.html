@@ -195,29 +195,22 @@
   </div>
 
   <!-- Extra Ingredients Modals -->
-    <div class="modal fade" id="extra-ingredient-modal" tabindex="-1" role="dialog" aria-labelledby="extra-ingredient-modalLabel" aria-hidden="true">
+    <div class="modal fade" id="extra-ingredient-modal" tabindex="-1" role="dialog" aria-labelledby="extra-ingredient-modal-label" aria-hidden="true">
       <div class="modal-dialog" role="document">
         <div class="modal-content">
           <div class="modal-header">
-            <h5 class="modal-title" id="extra-ingredient-modalLabel">Ingredientes Extra</h5>
             <button type="button" class="close" data-dismiss="modal" aria-label="Close">
               <span aria-hidden="true">&times;</span>
             </button>
+            <h3 class="modal-title" id="extra-ingredient-modal-label">Ingredientes Extra</h3>
           </div>
           <div class="modal-body">
             <ul class="list-unstyled list-group">
-              <li class="media list-group-item list-group-item-action row">
-                <img class="img-extra-ing col-xs-4" src="/media/supplies/huevos.png" alt="Generic placeholder image">
-                <div class="media-body col-xd-6">
-                  <h5 class="mt-0 mb-1">Huevos</h5>
-                  <h3>$50.00</h3>
-                </div>
-              </li>
             </ul>
           </div>
           <div class="modal-footer">
-            <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
-            <button type="button" class="btn btn-primary">Save changes</button>
+            <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancelar</button>
+            <button id="btn-add-extra-ingredient" type="button" class="btn btn-primary">Agregar Ingredientes</button>
           </div>
         </div>
       </div>
@@ -240,7 +233,12 @@
       }
 
       let ExtraIngredientsProducts = {
-        products : {{ extra_ingredients_products_list |safe }},
+        extra_ingredients_products_list : {{ extra_ingredients_products_list |safe }},
+      }
+
+      let ExtraIngredientObject = {
+        'product_id': null,
+        'ingredients': [],
       }
 
       function get_cookie(name) {
@@ -301,8 +299,90 @@
        */
       $(this).on('click', '.btn-extra-ing', function(event) {
         element_id = $(this).attr('id').substring(14);
-        console.log(element_id);
+        products_list = ExtraIngredientsProducts['extra_ingredients_products_list'];
+        /**
+         * Manages the extra ingredients modal buttons
+         */
+        if (ExtraIngredientObject['ingredients'].length == 0) {
+          $('#btn-add-extra-ingredient').attr('disabled', true);
+        } else {
+          $('#btn-add-extra-ingredient').attr('disabled', false);
+        }
+
+        /**
+         * Resets the ExtraIngredientObject
+         */
+         console.log(ExtraIngredientObject);
+        ExtraIngredientObject['product_id'] = element_id;
+        ExtraIngredientObject['ingredients'].length = 0;
+
+        for (var i = 0; i < products_list.length; i++) {
+          if (element_id == products_list[i].id) {
+            var list_group = $('#extra-ingredient-modal .modal-body').find('.list-group');
+            var extra_ingredients_object = products_list[i];
+            list_group.empty();
+
+            for (var j = 0; j < extra_ingredients_object['extra_ingredients'].length; j++) {
+              extra_ingredient = extra_ingredients_object['extra_ingredients'][j];
+              var new_ingredient = $("" +
+                "<li id='extra-ingredient-id-" + extra_ingredient.id + "' class='media list-group-item list-group-item-action row extra-ingredient-li'>" +
+                " <img class='img-extra-ing col-xs-4' src='"+extra_ingredient.image+"' alt='Extra Ingredient Image'>" +
+                " <div class='media-body col-xd-6'>" +
+                " <h5 class='mt-0 mb-1 ingredient-name'>" + extra_ingredient.name + "</h5>" +
+                " <h3><span class='cost-simbol'>$ </span><span class='number-cost'>" + extra_ingredient.cost + "</span></h3>" +
+                " </div>" +
+                "</li> " +
+                "")
+              new_ingredient.appendTo(list_group);
+            };
+            break;
+          }
+
+        };
       });
+
+      /**
+       * Manipulates the extra ingredients list in ExtraIngredientObject
+       */
+      $(this).on('click', '.extra-ingredient-li', function(event) {
+        var element  = $(this);
+        var element_id = element.attr('id').substring(20);
+        var element_name = element.find('.ingredient-name').text();
+        var element_cost = element.find('.number-cost').text();
+
+        if (element.hasClass('selected-li')) {
+          element.removeClass('selected-li');
+        } else {
+          element.addClass('selected-li');
+        }
+        if (ExtraIngredientObject['ingredients'].length == 0) {
+          var IngredientObject = {
+            'id': element_id,
+            'name': element_name,
+            'cost': element_cost,
+          }
+          ExtraIngredientObject['ingredients'].push(IngredientObject);
+        } else {
+          var element_exists = false;
+          for (var i = 0; i < ExtraIngredientObject['ingredients'].length; i++) {
+            var ingredient_object = ExtraIngredientObject['ingredients'][i];
+            if (ingredient_object.id == element_id) {
+              ExtraIngredientObject['ingredients'].splice(i,1);
+              element_exists = true;
+            }
+          }
+          if (!element_exists) {
+            var IngredientObject = {
+              'id': element_id,
+              'name': element_name,
+              'cost': element_cost,
+            }
+            ExtraIngredientObject['ingredients'].push(IngredientObject);
+          }
+        }
+        console.log(ExtraIngredientObject);        
+      });
+
       /** Agrega un producto al carrito del ticket */
       $(this).on('click', '.product-img', function(event) {
         var product_type = $(this).attr('id');
