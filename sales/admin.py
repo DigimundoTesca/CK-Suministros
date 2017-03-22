@@ -1,7 +1,7 @@
 from django.contrib import admin
 from django.db.models import Sum
 
-from sales.models import TicketDetail, Ticket
+from sales.models import TicketDetail, Ticket, TicketExtraIngredient
 from actions import export_as_excel
 
 
@@ -22,11 +22,19 @@ class TicketAdmin(admin.ModelAdmin):
     actions = (export_as_excel,)
 
 
+class TicketExtraIngredientInline(admin.TabularInline):
+    model = TicketExtraIngredient
+    extra = 0
+
+
 @admin.register(TicketDetail)
 class TicketDetailAdmin(admin.ModelAdmin):
     list_display = ('id', 'ticket', 'created_at', 'cartridge', \
-        'package_cartridge', 'extra_ingredient', 'quantity', 'price',)
-    list_display_links = ('id', 'ticket', )
+        'package_cartridge', 'extra_ingredients', 'quantity', 'price',)
+    list_display_links = ('id', 'ticket', 'created_at')
     list_filter = ('ticket',)
+    ordering = ('-ticket__created_at', )
     search_fields = ('ticket__created_at',)
     actions = (export_as_excel,)
+    inlines = [TicketExtraIngredientInline, ]
+

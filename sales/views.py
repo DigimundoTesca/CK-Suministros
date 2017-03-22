@@ -429,7 +429,7 @@ def new_sale(request):
             """
             Saves the tickets details for cartridges
             """
-            for ticket_detail in ticket_detail_json_ocbject['cartridges']:
+            for ticket_detail in ticket_detail_json_object['cartridges']:
                 cartridge_object = get_object_or_404(Cartridge, id=ticket_detail['id'])
                 quantity = ticket_detail['quantity']
                 price = ticket_detail['price']
@@ -444,16 +444,15 @@ def new_sale(request):
             for ticket_detail in ticket_detail_json_object['extra_ingredients_cartridges']:
                 quantity = ticket_detail['quantity']
                 price = ticket_detail['price']
-
-                for ingredient in ticket_detail:
-                    ingredient_object = get_object_or_404(ExtraIngredient, id=ingredient['id'])
+                for ingredient in ticket_detail['extra_ingredients']:
+                    ingredient_object = get_object_or_404(ExtraIngredient, id=int(ingredient['id']))
                     new_ticket_detail_object = TicketDetail(
                         ticket=new_ticket_object,
                         extra_ingredient=ingredient_object,
                         quantity=quantity,
                         price=price
                     )
-                    #new_ticket_detail_object.save()
+                    new_ticket_detail_object.save()
 
             for ticket_detail_package in ticket_detail_json_object['packages']:               
                 """
