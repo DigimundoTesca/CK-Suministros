@@ -21,10 +21,6 @@ from cloudkitchen.settings.base import PAGE_TITLE
 
 # -------------------------------------  Index -------------------------------------
 
-def arduino(request):
-    print(request)
-    return HttpResponse('HOLA')
-
 def test(request):
     form_customer = CustomerProfileForm(request.POST, request.FILES)
     if request.method == 'POST':

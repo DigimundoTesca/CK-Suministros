@@ -15,17 +15,14 @@ def RFID(request):
         rfid = request.POST['rfid']
         
         if rfid is None:
-            print('No hay RFID: ', rfid)
+            return HttpResponse('No se recibió RFID\n')
         else:
-            print('RECIBIDO EL RFID: ', rfid)
             try:
                 diner = Diner.objects.get(RFID=rfid)
                 new_access_log = AccessLog(diner=diner)
                 new_access_log.save()    
             except Diner.DoesNotExist:
-                diner = None
-            print('DINER:::', diner)
-
+                new_access_log = AccessLog(diner=null, rfid =rfid)
         return HttpResponse('Operacion Terminada\n')
 
     else:

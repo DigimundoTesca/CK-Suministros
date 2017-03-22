@@ -403,7 +403,6 @@
         } else {
           $('#btn-add-extra-ingredient').attr('disabled',true);
         };
-        console.log(ExtraIngredientObject);        
       });
 
       /** 
@@ -419,22 +418,25 @@
 
               /** Iterates the cartridges list */
               function findIdCartridge(cartridge) {
-                return cartridge.id == id;
+                return cartridge['id'] == id;
               }
-              console.log(Ticket);
               if (!Ticket.cartridges.find(findIdCartridge)) { // Si no existe
-                new_cartridge = {}
-                new_cartridge.id = id;
-                new_cartridge.quantity = quantity;
-                new_cartridge.price = price;
-                Ticket.cartridges.push(new_cartridge);
+                new_cartridge = {
+                  'id': id,
+                  'quantity': quantity,
+                  'price': price,
+                  'extra_ingredients': ExtraIngredientObject['ingredients'],
+                }
+
+                Ticket['cartridges'].push(new_cartridge);
 
               } else {
-                cartridge = Ticket.cartridges.find(findIdCartridge);
-                cartridge.quantity = quantity;
-                cartridge.price = price;
+                cartridge = Ticket['cartridges'].find(findIdCartridge);
+                cartridge['quantity'] = quantity;
+                cartridge['price'] = price;
               }
             }
+            console.log(Ticket);
           } else if (type_object == 'package'){
 
             if (id.indexOf('package') >= 0) {
@@ -442,19 +444,19 @@
 
               /** Iterates the packages list*/
               function findIdPackage(package) {
-                return package.id == id;
+                return package['id'] == id;
               }
-              if (!Ticket.packages.find(findIdPackage)) { // Si no existe
+              if (!Ticket['packages'].find(findIdPackage)) { // Si no existe
                 nuevo_package = {}
-                nuevo_package.id = id;
-                nuevo_package.quantity = quantity;
-                nuevo_package.price = price;
-                Ticket.packages.push(nuevo_package);
+                nuevo_package['id'] = id;
+                nuevo_package['quantity'] = quantity;
+                nuevo_package['price'] = price;
+                Ticket['packages'].push(nuevo_package);
 
               } else {
-                mi_package = Ticket.packages.find(findIdPackage);
-                mi_package.quantity = quantity;
-                mi_package.price = price;
+                mi_package = Ticket['packages'].find(findIdPackage);
+                mi_package['quantity'] = quantity;
+                mi_package['price'] = price;
               }
             }
           }

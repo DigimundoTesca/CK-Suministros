@@ -18,7 +18,6 @@ urlpatterns = [
     url(r'^register/$', views.new_customer, name='new_customer'),
     url(r'^register/thanks/$', views.thanks, name='thanks'),
     url(r'^customers/register/list/$', views.customers_list, name='customers_list'),
-    url(r'^hola/', views.arduino, name='arduino'),
     
 
     # profile
