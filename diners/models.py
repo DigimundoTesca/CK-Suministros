@@ -15,7 +15,7 @@ class Diner(models.Model):
 
 class AccessLog(models.Model):
     diner = models.ForeignKey(Diner, null=True)
-    RFID = models.IntegerField(default=0)
+    RFID = models.CharField(default=0)
     access_to_room = models.DateTimeField(auto_now_add=True)
 
     class Meta:
@@ -23,4 +23,4 @@ class AccessLog(models.Model):
         verbose_name_plural = 'Control de Accesos'
 
     def __str__(self):
-        return %s % self.RFID
+        return self.RFID
