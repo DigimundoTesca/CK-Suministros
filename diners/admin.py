@@ -6,8 +6,8 @@ from diners.models import Diner, AccessLog
 class DinerAdmin(admin.ModelAdmin):
     list_display = ('id', 'name', 'RFID', 'created_at',)    
     ordering = ('created_at', 'name') 
-    list_editable = ('RFID',)
-
+    list_editable = ('name', 'RFID',)
+    search_fields = ('name', 'RFID')
 
 @admin.register(AccessLog)
 class AccessLogAdmin(admin.ModelAdmin):
@@ -15,6 +15,5 @@ class AccessLogAdmin(admin.ModelAdmin):
     ordering = ('access_to_room',) 
     list_filter = ('diner', 'RFID', 'access_to_room')
     search_fields = ('diner', 'RFID')
-    list_display_links = ('id', 'diner', 'RFID')
 
 
