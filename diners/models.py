@@ -4,7 +4,7 @@ from django.db import models
 class Diner(models.Model):
     created_at = models.DateTimeField(auto_now_add=True)
     name = models.CharField(max_length=120, default='')
-    RFID = models.IntegerField(null=True)
+    RFID = models.IntegerField()
 
     class Meta:
         verbose_name = 'Comensal'
