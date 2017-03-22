@@ -11,6 +11,10 @@ class DinerAdmin(admin.ModelAdmin):
 
 @admin.register(AccessLog)
 class AccessLogAdmin(admin.ModelAdmin):
-    list_display = ('id', 'diner', 'RFID', 'access_to_room', )
+    list_display = ('id', 'RFID', 'diner', 'access_to_room', )
     ordering = ('access_to_room',) 
+    list_filter = ('diner', 'RFID', 'access_to_room')
+    search_fields = ('diner', 'RFID')
+    list_display_links = ('id', 'diner', 'RFID')
+
 
