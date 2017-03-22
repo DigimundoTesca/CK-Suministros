@@ -447,7 +447,7 @@
         }
 
         function addObjectToTicket(){
-          var name = ExtraIngredientObject['name'];
+          var name_with_ingredients = ExtraIngredientObject['name'];
           var cost_base = parseFloat(ExtraIngredientObject['cost_base']);
           var cost = cost_base;
           var id = ExtraIngredientObject['large_id'];
@@ -455,9 +455,16 @@
           var quantity = $('ul#sales-list').find('#' + li_id + ' .quantity-li').text();
           var type_object = ExtraIngredientObject['large_id'].split('-')[0];
           
-          if ($('#' + li_id + '').length != 0) {
+          for (var i = 0; i < ExtraIngredientObject['ingredients'].length; i++) {
+            name_with_ingredients += ' - ' + ExtraIngredientObject['ingredients'][i].name;
+          };
+
+          for (var i = 0; i < ExtraIngredientObject['ingredients'].length; i++) {
+            li_id += '-' + ExtraIngredientObject['ingredients'][i].id;
+          };
+          
+          if ($('#' + li_id + '').length != 0) { // If exists
             quantity++;
-            console.log("YA HAY!");
             cost = cost * quantity;
             
             if (cost % 2 != 0) {
@@ -469,7 +476,7 @@
             $('ul#sales-list').find('#' + li_id + ' span.quantity-li').text(quantity);
             $('ul#sales-list').find('#' + li_id + ' span.total-li').text(cost);
 
-          } else {
+          } else { // If not exists
             quantity = 1;
             
             if (cost % 2 != 0){
@@ -483,13 +490,6 @@
             } else {
               cost_base += '.00';
             }
-
-            var name_with_ingredients = name;
-
-            for (var i = 0; i < ExtraIngredientObject['ingredients'].length; i++) {
-              name_with_ingredients += ' - ' + ExtraIngredientObject['ingredients'][i].name;
-            };
-            console.log(name_with_ingredients);
 
             nuevo_li = $("" +
               "<li id='" + li_id + "' class='list-group-item'>" +
