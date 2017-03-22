@@ -111,7 +111,7 @@
                     {% for package in package_cartridges %}
                     <div class="card-block product-container" id="package-{{ package.pk }}">
                       <h6 class="product-name">{{ package.name }}</h6>
-                      <img src="{{ package.image.url }}" id="package-img-{{ package.pk }}" class="package-img" alt="Imagen del Paquete">
+                      <img src="{{ package.image.url }}" id="package-img-{{ package.pk }}" class="product-img" alt="Imagen del Paquete">
                       <div class="text-xs-right content-price">
                         <span class="font-weight-bold">$ </span><span class="product-cost font-weight-bold">{{ package.price }}</span>
                       </div>

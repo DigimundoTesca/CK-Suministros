@@ -280,9 +280,6 @@ transition: all 1s ease;
 .container-sales-reports .sales-graphics .canvas-holder{
   margin-bottom: 2rem;
 }
-.container-sales-reports .sales-details {
-  max-height: 40vh;
-}
 .container-sales-reports .sales-details .card {
   max-height: 40vh;
 }
