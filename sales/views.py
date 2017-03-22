@@ -309,7 +309,6 @@ def sales(request):
             for ticket_detail in all_ticket_details:
                 if ticket_detail.ticket.id == ticket_id:
                     ticket_object['ticket_order'] = ticket_detail.ticket.order_number;
-                    print(ticket_object['ticket_order'])
 
                     if ticket_detail.cartridge:
                         cartridge_object = {
@@ -332,6 +331,7 @@ def sales(request):
                             'total': ticket_detail.price
                         }
                         ticket_object['packages'].append(package_cartridge_object)
+                    
             return JsonResponse({'ticket_details': ticket_object})
             
         if request.POST['type'] == 'tickets':
