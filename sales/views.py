@@ -81,7 +81,6 @@ def get_start_week_day(day):
         number_day = 7
     else:
         day = naive_to_datetime(day) - timedelta(days=number_day-1)
-        print('new day: ', day)
 
 
 def items_list_to_int(list_to_cast):

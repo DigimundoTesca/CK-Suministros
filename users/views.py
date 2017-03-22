@@ -25,7 +25,6 @@ def test(request):
     form_customer = CustomerProfileForm(request.POST, request.FILES)
     if request.method == 'POST':
         if form_customer.is_valid():
-            print('IS VALID!!!')
             customer = form_customer.save(commit=False)
             customer.save()
             return redirect('users:thanks')

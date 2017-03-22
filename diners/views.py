@@ -21,11 +21,9 @@ def RFID(request):
                 diner = Diner.objects.get(RFID=rfid)
                 new_access_log = AccessLog(diner=diner, RFID=rfid)
                 new_access_log.save()    
-                print('ACA MERO')
             except Diner.DoesNotExist:
                 new_access_log = AccessLog(diner=None, RFID=rfid)
                 new_access_log.save()
-                print('EL OTRO XD')
         return HttpResponse('Operacion Terminada\n')
 
     else:
