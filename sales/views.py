@@ -5,7 +5,7 @@ import time as python_time
 from decimal import Decimal
  
 from django.contrib.auth.decorators import login_required, permission_required
-from django.http import JsonResponse
+from django.http import JsonResponse, HttpResponse
 from django.shortcuts import render, get_object_or_404, redirect
 from django.views.decorators.csrf import csrf_protect, requires_csrf_token
 from django.middleware.csrf import get_token
@@ -129,10 +129,13 @@ def sales(request):
             and the Weeks list contains a weeks objects with two attributes: 
             start date and final date. Ranges of each week.
         """
-        min_year = all_tickets.aggregate(Min('created_at'))['created_at__min'].year
-        max_year = all_tickets.aggregate(Max('created_at'))['created_at__max'].year
-        years_list = [] # [2015:object, 2016:object, 2017:object, ...]
-
+        try:
+            min_year = all_tickets.aggregate(Min('created_at'))['created_at__min'].year
+            max_year = all_tickets.aggregate(Max('created_at'))['created_at__max'].year
+            years_list = [] # [2015:object, 2016:object, 2017:object, ...]
+        except:
+            return HttpResponse('Necesitas crear ventas para ver esta pantalla <a href="sales:new">Nueva Venta</a>')
+            
         while max_year >= min_year:
             year_object = { # 2015:object or 2016:object or 2017:object ...
                 'year' : max_year,

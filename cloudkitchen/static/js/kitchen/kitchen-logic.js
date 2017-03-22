@@ -9,7 +9,7 @@ $(function() {
     let list_aux = [];
     let list_color = [];
     let color = [];
-    let the_color=['#FFAB77','#5CB28D','#75E3B3'];
+    let the_color=['#4DD0E1','#2196F3','#BBDEFB'];
     let a = 0;
     let b = 0;
     let c = 1;

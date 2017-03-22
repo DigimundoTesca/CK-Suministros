@@ -18,7 +18,6 @@ from users.models import UserMovements
 from cloudkitchen.settings.base import PAGE_TITLE
 
 
-
 # -------------------------------------  Index -------------------------------------
 
 def test(request):
