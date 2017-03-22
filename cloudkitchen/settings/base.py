@@ -15,7 +15,7 @@ import os
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
-PAGE_TITLE = 'CloudKitchen'
+PAGE_TITLE = 'CloudKitchen - Suministros Integrales'
 
 # SECURITY WARNING: keep the secret key used in production secret!
 SECRET_KEY = os.getenv('CLOUDKITCHEN_SECRET_KEY')

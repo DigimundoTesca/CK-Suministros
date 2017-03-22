@@ -361,6 +361,7 @@
         } else {
           element.addClass('selected-li');
         }
+
         if (ExtraIngredientObject['ingredients'].length == 0) {
           var IngredientObject = {
             'id': element_id,
@@ -451,12 +452,19 @@
           var name = ExtraIngredientObject['name'];
           var extra_ingredients_name = 'Extra:';
           var cost_base = parseFloat(ExtraIngredientObject['cost_base']);
-          var cost;;
+          var cost = cost_base;
+          var quantity;
           var id = ExtraIngredientObject['large_id'];
           var li_id = ('li-' + id).toString();
-          var quantity = $('ul#sales-list').find('#' + li_id + ' .quantity-li').text();
           var type_object = ExtraIngredientObject['large_id'].split('-')[0];
-          
+
+          /**
+           * Concatenates the id's of the extra ingredients
+           */
+          for (var i = 0; i < ExtraIngredientObject['ingredients'].length; i++) {
+            li_id += '-' + ExtraIngredientObject['ingredients'][i].id;
+          };
+
           /**
            * Calculates all extra ingredients names
            */
@@ -467,25 +475,14 @@
             };
           };
 
-          /**
-           * Concatenates the id's of the extra ingredients
-           */
-          for (var i = 0; i < ExtraIngredientObject['ingredients'].length; i++) {
-            li_id += '-' + ExtraIngredientObject['ingredients'][i].id;
-          };
-
-          /**
-           * Calculates the cost_base of the product with extra ingredients
-           */
-          for (var i = 0; i < ExtraIngredientObject['ingredients'].length; i++) {
-            cost_base += parseFloat(ExtraIngredientObject['ingredients'][i].cost);
-          };
-          cost = cost_base;
-
+          quantity = $('ul#sales-list').find('#' + li_id + ' .quantity-li').text();
           if ($('#' + li_id + '').length != 0) { // If exists
             quantity++;
-            cost = cost * quantity;
-            
+            for (var i = 0; i < ExtraIngredientObject['ingredients'].length; i++) {
+              cost_base += parseFloat(ExtraIngredientObject['ingredients'][i].cost);
+            };
+            cost = cost_base * quantity;
+
             if (cost % 2 != 0) {
               cost = cost.toFixed(2);
             } else {
@@ -497,12 +494,10 @@
 
           } else { // If not exists
             quantity = 1;
-            
-            if (cost % 2 != 0){
-              cost = cost.toFixed(2);
-            } else {
-              cost += '.00';
-            }
+
+            for (var i = 0; i < ExtraIngredientObject['ingredients'].length; i++) {
+                cost_base += parseFloat(ExtraIngredientObject['ingredients'][i].cost);
+            };
 
             if (cost_base % 2 != 0) {
               cost_base = cost_base.toFixed(2);
@@ -518,11 +513,10 @@
               "<span class='quantity-li'>" + quantity + "</span>" +
               "<span class='add-icon-li'><i class='material-icons'>add</i></span>" +
               "<span class='font-weight-bold s-li'>$ </span>" +
-              "<span class='total-li font-weight-bold'>" + cost + "</span>" +
+              "<span class='total-li font-weight-bold'>" + cost_base + "</span>" +
               "<span class='extra-ingredients-name-li'>" + extra_ingredients_name + "</span>" +
               "</li>");
             nuevo_li.appendTo('#sales-list').fadeTo('slow', 1);
-
           }
 
           /** Modificacion del total general */
@@ -538,7 +532,7 @@
       /** Adds a product to ticket list */
       $(this).on('click', '.product-img', function(event) {
         var product_type = $(this).attr('id');
-        var element = $(this)
+        var element = $(this);
 
         function addObjectToJSON(id, quantity, price, type_object) {
           if (type_object == 'cartridge') {
