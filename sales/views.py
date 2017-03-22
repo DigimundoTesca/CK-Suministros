@@ -16,7 +16,7 @@ from branchoffices.models import CashRegister
 from cloudkitchen.settings.base import PAGE_TITLE
 from products.models import Cartridge, PackageCartridge, PackageCartridgeRecipe, \
                             ExtraIngredient
-from sales.models import Ticket, TicketDetail
+from sales.models import Ticket, TicketDetail, TicketExtraIngredient
 from users.models import User as UserProfile
 
 """
@@ -442,17 +442,25 @@ def new_sale(request):
                 new_ticket_detail_object.save()
 
             for ticket_detail in ticket_detail_json_object['extra_ingredients_cartridges']:
+                cartridge_object = get_object_or_404(Cartridge, id=ticket_detail['cartridge_id'])
                 quantity = ticket_detail['quantity']
                 price = ticket_detail['price']
+                new_ticket_detail_object = TicketDetail(
+                    ticket=new_ticket_object,
+                    cartridge=cartridge_object,
+                    quantity=quantity,
+                    price=price
+                )
+                new_ticket_detail_object.save()
+
                 for ingredient in ticket_detail['extra_ingredients']:
-                    ingredient_object = get_object_or_404(ExtraIngredient, id=int(ingredient['id']))
-                    new_ticket_detail_object = TicketDetail(
-                        ticket=new_ticket_object,
-                        extra_ingredient=ingredient_object,
-                        quantity=quantity,
-                        price=price
-                    )
-                    new_ticket_detail_object.save()
+                    extra_ingredient_object = ExtraIngredient.objects.get(id=ingredient['id'])
+                    new_extra_ingredient_object = TicketExtraIngredient(
+                        ticket_detail=new_ticket_detail_object,
+                        extra_ingredient=extra_ingredient_object,
+                        price=ingredient['cost']
+                        )
+                    new_extra_ingredient_object.save()
 
             for ticket_detail_package in ticket_detail_json_object['packages']:               
                 """
