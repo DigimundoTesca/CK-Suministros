@@ -215,6 +215,9 @@ small {
   background-color: #0275d8;
   color: white;
 }
+.btn-extra-ing:focus {
+  outline: none !important;
+}
 .btn-extra-ing:hover {
   transition: all 0.3s ease;
   background: white;

@@ -111,6 +111,7 @@
                     {% for package in package_cartridges %}
                     <div class="card-block product-container" id="package-{{ package.pk }}">
                       <h6 class="product-name">{{ package.name }}</h6>
+                      <img src="{{ package.image.url }}" id="package-img-{{ package.pk }}" class="package-img" alt="Imagen del Paquete">
                       <div class="text-xs-right content-price">
                         <span class="font-weight-bold">$ </span><span class="product-cost font-weight-bold">{{ package.price }}</span>
                       </div>
@@ -457,7 +458,7 @@
           var type_object = ExtraIngredientObject['large_id'].split('-')[0];
           
           /**
-           * Caluclates all extra ingredients names
+           * Calculates all extra ingredients names
            */
           for (var i = 0; i < ExtraIngredientObject['ingredients'].length; i++) {
             extra_ingredients_name += ExtraIngredientObject['ingredients'][i].name;
