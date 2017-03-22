@@ -135,9 +135,7 @@ def kitchen(request):
                                 except Exception as e:
                                     cartridge['name'] = ticket_detail.cartridge.name
                                     cartridge['name'] += ' con ' + extra_ingredient.extra_ingredient.ingredient.name
-                        print(cartridge)
                         processed_product_object['cartridges'].append(cartridge)
-                        print(cartridge)
 
                     elif ticket_detail.package_cartridge:
                         package = {

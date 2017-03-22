@@ -117,6 +117,7 @@ class Cartridge(models.Model):
     category = models.CharField(choices=CATEGORIES, default=FOOD_DISHES, max_length=2)
     created_at = models.DateTimeField(auto_now=True)
     image = models.ImageField(blank=False, upload_to='cartridges')
+    is_active = models.BooleanField(default=True)
 
     def __str__(self):
         return self.name
@@ -171,7 +172,7 @@ class ExtraIngredient(models.Model):
 class PackageCartridge(models.Model):
     name = models.CharField(max_length=90)
     price = models.DecimalField(default=0, max_digits=12, decimal_places=2)
-    package_active = models.BooleanField(default=False)
+    is_active = models.BooleanField(default=True)
     created_at = models.DateTimeField(auto_now=True)
     image = models.ImageField(blank=False, upload_to='cartridges', default='')
 
