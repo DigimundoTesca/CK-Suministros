@@ -172,7 +172,7 @@
                     contacto@suministrosintegrales.mx <br>
                   </p>
                   <p class="text-xs-center mt-1">
-                    <strong>¡GRACIAS POR SONREIR! <span class="smile">😊</span></strong> <br>
+                    <strong>¡GRACIAS POR SONREIR! <span class="smile">☺</span></strong> <br>
                   </p>
                 </div>
               </div>
@@ -447,22 +447,40 @@
         }
 
         function addObjectToTicket(){
-          var name_with_ingredients = ExtraIngredientObject['name'];
+          var name = ExtraIngredientObject['name'];
+          var extra_ingredients_name = 'Extra:';
           var cost_base = parseFloat(ExtraIngredientObject['cost_base']);
-          var cost = cost_base;
+          var cost;;
           var id = ExtraIngredientObject['large_id'];
           var li_id = ('li-' + id).toString();
           var quantity = $('ul#sales-list').find('#' + li_id + ' .quantity-li').text();
           var type_object = ExtraIngredientObject['large_id'].split('-')[0];
           
+          /**
+           * Caluclates all extra ingredients names
+           */
           for (var i = 0; i < ExtraIngredientObject['ingredients'].length; i++) {
-            name_with_ingredients += ' - ' + ExtraIngredientObject['ingredients'][i].name;
+            extra_ingredients_name += ExtraIngredientObject['ingredients'][i].name;
+            if (i != ExtraIngredientObject['ingredients'].length - 1) {
+              extra_ingredients_name += ' - ';
+            };
           };
 
+          /**
+           * Concatenates the id's of the extra ingredients
+           */
           for (var i = 0; i < ExtraIngredientObject['ingredients'].length; i++) {
             li_id += '-' + ExtraIngredientObject['ingredients'][i].id;
           };
-          
+
+          /**
+           * Calculates the cost_base of the product with extra ingredients
+           */
+          for (var i = 0; i < ExtraIngredientObject['ingredients'].length; i++) {
+            cost_base += parseFloat(ExtraIngredientObject['ingredients'][i].cost);
+          };
+          cost = cost_base;
+
           if ($('#' + li_id + '').length != 0) { // If exists
             quantity++;
             cost = cost * quantity;
@@ -492,14 +510,15 @@
             }
 
             nuevo_li = $("" +
-              "<li id='" + li_id + "' class='list-group-item'>" +
-              "<span class='name-li text-uppercase'>" + name_with_ingredients + "</span> " +
+              "<li id='" + li_id + "' class='list-group-item extra-ingredient-li-ticket'>" +
+              "<span class='name-li text-uppercase'>" + name + "</span> " +
               "<span class='cost-base-li'>" + cost_base + "</span>" +
               "<span class='remove-icon-li'><i class='material-icons'>remove</i></span>" +
               "<span class='quantity-li'>" + quantity + "</span>" +
               "<span class='add-icon-li'><i class='material-icons'>add</i></span>" +
               "<span class='font-weight-bold s-li'>$ </span>" +
-              "<span class='total-li font-weight-bold'>" + cost + "</span> " +
+              "<span class='total-li font-weight-bold'>" + cost + "</span>" +
+              "<span class='extra-ingredients-name-li'>" + extra_ingredients_name + "</span>" +
               "</li>");
             nuevo_li.appendTo('#sales-list').fadeTo('slow', 1);
 
@@ -1129,7 +1148,6 @@
             });
           };
         }
-        
       });
 
       /** Cancelar Venta - Resetear ticket */

@@ -379,6 +379,9 @@ transition: all 1s ease;
   -ms-user-select: none;
   width: 100%;
 }
+.container-sales .group-sales .card-scroll-orders ul.list-group li.extra-ingredient-li-ticket {
+  text-transform: uppercase;
+}
 .container-sales .group-sales .card-scroll-orders ul.list-group li span{
   flex: 1;
   font-size: 1.2rem;
@@ -388,6 +391,10 @@ transition: all 1s ease;
   text-overflow: ellipsis;
   white-space: nowrap;
   word-spacing: normal;
+}
+.container-sales .group-sales .card-scroll-orders ul.list-group  li {
+  display: flex;
+  flex-wrap: wrap;
 }
 .container-sales .group-sales .card-scroll-orders ul.list-group  span.name-li {
   min-width: 40%;
@@ -436,6 +443,9 @@ transition: all 1s ease;
 }
 .container-sales .group-sales .card-scroll-orders ul.list-group  span.remove-icon-li i:active {
   color: #c9302c;
+}
+.container-sales .group-sales .card-scroll-orders ul.list-group  span.extra-ingredients-name-li {
+  display: flex;
 }
 .container-sales .group-sales .card-block>.card-block{
   border-bottom: #ffeac4 solid 1px;  
