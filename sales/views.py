@@ -300,6 +300,7 @@ def sales(request):
             ticket_id = int(request.POST['ticket_id'])
             ticket_object = {
                 'ticket_id': ticket_id,
+                'ticket_order': '',
                 'cartridges': [],
                 'packages': [],
             }
@@ -307,6 +308,9 @@ def sales(request):
             # Get cartridges details
             for ticket_detail in all_ticket_details:
                 if ticket_detail.ticket.id == ticket_id:
+                    ticket_object['ticket_order'] = ticket_detail.ticket.order_number;
+                    print(ticket_object['ticket_order'])
+
                     if ticket_detail.cartridge:
                         cartridge_object = {
                             'name': ticket_detail.cartridge.name,

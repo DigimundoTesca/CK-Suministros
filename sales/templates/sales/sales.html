@@ -621,7 +621,7 @@
         "<li>" +
         "<span class='name-li-title-modal'>Nombre</span> " +
         "<span class='cost-li-title-modal'>Cost</span>" +
-        "<span class='cant-li-title-modal'>Cant</span>" +
+        "<span class='quantity-li-title-modal'>Cant</span>" +
         "<span class='total-li-title-modal'>Total</span> " +
         "</li>");
 
@@ -649,7 +649,7 @@
             "<li class='list-group-item'>" +
             "<span class='name-li-modal text-uppercase'>" + name + "</span> " +
             "<span class='cost-li-modal'>" + '$ ' + cost_base + "</span>" +
-            "<span class='cant-li-modal'>" + quantity + "</span>" +
+            "<span class='quantity-li-modal'>" + quantity + "</span>" +
             "<span class='total-li-modal'>" + '$ ' + total + "</span> " +
             "</li>");
 
@@ -684,7 +684,7 @@
             "<li class='list-group-item'>" +
             "<span class='name-li-modal text-uppercase'>" + name + "</span> " +
             "<span class='cost-li-modal'>" + '$ ' + cost_base + "</span>" +
-            "<span class='cant-li-modal'>" + quantity + "</span>" +
+            "<span class='quantity-li-modal'>" + quantity + "</span>" +
             "<span class='total-li-modal'>" + '$ ' + total + "</span> " +
             "</li>");
 
@@ -732,7 +732,7 @@
         },
         complete: function(result){
           ticket_details = result.responseJSON.ticket_details;
-
+          $('.ticket-order-container').find('#ticket-order').text(ticket_details.ticket_order);
           setTimeout(function() {
             show_modal(ticket_details)
           }, 750);
