@@ -223,9 +223,10 @@
   <script type="text/javascript" charset="utf-8">
     $(document).ready(function() {
       let Ticket = {
-        cartridges: [],
-        packages: [],
-        payment_type: 'cash', 
+        'cartridges': [],
+        'extra_ingredients_cartridges': [],
+        'packages': [],
+        'payment_type': 'cash', 
       }
 
       let PackageProduct = {
@@ -234,7 +235,7 @@
       }
 
       let ExtraIngredientsProducts = {
-        extra_ingredients_products_list : {{ extra_ingredients_products_list |safe }},
+        'extra_ingredients_products_list' : {{ extra_ingredients_products_list |safe }},
       }
 
       let ExtraIngredientObject = {
@@ -410,53 +411,54 @@
        */
       $(this).on('click', '#btn-add-extra-ingredient', function(event) {
         var element = $(this);
-
         function addObjectToJSON(id, quantity, price, type_object) {
           if (type_object == 'cartridge') {
             if (id.indexOf('cartridge') >= 0) {
-              id = id.replace('cartridge-', '');
-
+              var id = id.replace('li-cartridge-', '');
+              var cartridge_id = id.split('-')[0];
               /** Iterates the cartridges list */
               function findIdCartridge(cartridge) {
                 return cartridge['id'] == id;
               }
-              if (!Ticket.cartridges.find(findIdCartridge)) { // Si no existe
+              if (!Ticket['extra_ingredients_cartridges'].find(findIdCartridge)) { // Si no existe
                 new_cartridge = {
                   'id': id,
+                  'cartridge_id': cartridge_id,
                   'quantity': quantity,
                   'price': price,
                   'extra_ingredients': ExtraIngredientObject['ingredients'],
                 }
 
-                Ticket['cartridges'].push(new_cartridge);
+                Ticket['extra_ingredients_cartridges'].push(new_cartridge);
 
-              } else {
-                cartridge = Ticket['cartridges'].find(findIdCartridge);
+              } else { // Si ya existe
+                cartridge = Ticket['extra_ingredients_cartridges'].find(findIdCartridge);
                 cartridge['quantity'] = quantity;
                 cartridge['price'] = price;
+                console.log(cartridge);
               }
+
             }
-            console.log(Ticket);
           } else if (type_object == 'package'){
 
             if (id.indexOf('package') >= 0) {
-              id = id.replace('package-', '');
+              id = id.replace('li-package-', '');
 
               /** Iterates the packages list*/
               function findIdPackage(package) {
                 return package['id'] == id;
               }
               if (!Ticket['packages'].find(findIdPackage)) { // Si no existe
-                nuevo_package = {}
-                nuevo_package['id'] = id;
-                nuevo_package['quantity'] = quantity;
-                nuevo_package['price'] = price;
-                Ticket['packages'].push(nuevo_package);
+                new_package = {}
+                new_package['id'] = id;
+                new_package['quantity'] = quantity;
+                new_package['price'] = price;
+                Ticket['packages'].push(new_package);
 
               } else {
-                mi_package = Ticket['packages'].find(findIdPackage);
-                mi_package['quantity'] = quantity;
-                mi_package['price'] = price;
+                package_cartridge = Ticket['packages'].find(findIdPackage);
+                package_cartridge['quantity'] = quantity;
+                package_cartridge['price'] = price;
               }
             }
           }
@@ -468,6 +470,7 @@
           var base_cost = parseFloat(ExtraIngredientObject['base_cost']);
           var cost = base_cost;
           var quantity;
+          var complete_id = ExtraIngredientObject['id'];
           var id = ExtraIngredientObject['large_id'];
           var li_id = ('li-' + id).toString();
           var type_object = ExtraIngredientObject['large_id'].split('-')[0];
@@ -536,7 +539,7 @@
           /** Modificacion del total general */
           set_total_ticket();
 
-          addObjectToJSON(id, quantity, cost, type_object);
+          addObjectToJSON(li_id, quantity, cost, type_object);
         }
 
         addObjectToTicket();
@@ -560,16 +563,17 @@
                 return cartridge.id == id;
               }
               if (!Ticket.cartridges.find(findIdCartridge)) { // Si no existe
-                nuevo_cartridge = {}
-                nuevo_cartridge.id = id;
-                nuevo_cartridge.quantity = quantity;
-                nuevo_cartridge.price = price;
-                Ticket.cartridges.push(nuevo_cartridge);
+                var new_cartridge = {
+                  'id': id,
+                  'quantity': quantity,
+                  'price': price,
+                }
+                Ticket.cartridges.push(new_cartridge);
 
               } else {
-                mi_cartridge = Ticket.cartridges.find(findIdCartridge);
-                mi_cartridge.quantity = quantity;
-                mi_cartridge.price = price;
+                var cartridge = Ticket['cartridges'].find(findIdCartridge);
+                cartridge['quantity'] = quantity;
+                cartridge['price'] = price;
               }
             }
           } else if (type_object == 'package'){
@@ -580,17 +584,18 @@
               function findIdPackage(package) {
                 return package.id == id;
               }
-              if (!Ticket.packages.find(findIdPackage)) { // Si no existe
-                nuevo_package = {}
-                nuevo_package.id = id;
-                nuevo_package.quantity = quantity;
-                nuevo_package.price = price;
-                Ticket.packages.push(nuevo_package);
+              if (!Ticket['packages'].find(findIdPackage)) { // Si no existe
+                new_package = {
+                  'id': id,
+                  'quantity': quantity,
+                  'price': price,
+                }
+                Ticket.packages.push(new_package);
 
               } else {
-                mi_package = Ticket.packages.find(findIdPackage);
-                mi_package.quantity = quantity;
-                mi_package.price = price;
+                var package_cartridge = Ticket.packages.find(findIdPackage);
+                package_cartridge['quantity'] = quantity;
+                package_cartridge['price'] = price;
               }
             }
           }
@@ -652,8 +657,8 @@
 
           addObjectToJSON(id, quantity, cost, type_object);
         }
-
         addObjectToTicket();
+        console.log(Ticket);
       });
 
       /** 
@@ -1143,7 +1148,6 @@
                 $('#btn-pago-tarjeta').attr('disabled', 'true');
                 $('.ticket-id-container').find('span#ticket-id').text(result.ticket_id);
                 $('.ticket-order-container').find('#ticket-order').text(result.ticket_order);
-                console.log($('.ticket-id-container').find('span#ticket-order').text());
                 var options = {
                   mode: 'iframe',
                   popClose: true,

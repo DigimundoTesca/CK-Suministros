@@ -23,4 +23,4 @@ class AccessLog(models.Model):
         verbose_name_plural = 'Control de Accesos'
 
     def __str__(self):
-        return self.diner.name
+        return self.RFID
