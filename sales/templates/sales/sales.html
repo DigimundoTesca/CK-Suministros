@@ -100,7 +100,7 @@
                     {% endfor %}
                   </td>
                   <td>{{ ticket.ticket_parent.seller }}</td>
-                  <td>
+                  <td class="td-total">
                     {{ ticket.total }}
                   </td>
                   <td class="header-actions">
@@ -610,6 +610,7 @@
       var btn_printer = $('.btn-printer');
       var ticket_details;
       var sales_list_modal = $('#sales-list-modal');
+      var total = $(this).parent().siblings('.td-total').text();
 
       function show_modal(dataResponse) {
         var nuevo_li;
@@ -693,8 +694,16 @@
 
         ticket_details.cartridges.forEach(iterate_cartridges);
         ticket_details.packages.forEach(iterate_packages);
-        $("#ticket-id").text(id_element)
+        $("#ticket-id").text(id_element);
         
+        var nuevo_li = $("" +
+          "<li class='total-ticket-container mt-1'>" +
+          " <span id='total-ticket'>$ <span class='total-ticket-cant'> " +
+          " " + total +"</span></span> " +
+          "</li>" +
+          "");
+
+            sales_list_modal.append(nuevo_li);
         $('#modal-ticket').modal('show');
       }
 
