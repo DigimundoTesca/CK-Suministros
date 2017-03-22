@@ -223,8 +223,8 @@
   <script type="text/javascript" charset="utf-8">
     $(document).ready(function() {
       let Ticket = {
-        cartuchos: [],
-        paquetes: [],
+        cartridges: [],
+        packages: [],
         payment_type: 'cash', 
       }
 
@@ -243,6 +243,9 @@
         'ingredients': [],
       }
 
+      /** 
+       * Gets the csrf cookie from cache
+       */ 
       function get_cookie(name) {
         var cookie_value = null;
         if (document.cookie && document.cookie !== '') {
@@ -258,6 +261,9 @@
         return cookie_value;
       }
 
+      /** 
+       * Converts an integer to a number with decimals
+       */
       function set_number_format(amount, decimals) {
         amount = parseFloat(amount);
 
@@ -273,7 +279,9 @@
         return amount;
       }
 
-      /** Suma los totales en la lista y los envía al total general */
+      /** 
+       * Sums the total in the list and sends them to the grand total
+       */
       function set_total_ticket(){
         let total = 0;
 
@@ -289,7 +297,9 @@
           );
       }
 
-      /** Returns the product type initials */
+      /** 
+       * Returns the product type initials 
+       */
       function get_type_product(large_type_id){
         large_type_id = large_type_id.substring(3,7);
         return large_type_id;
@@ -303,7 +313,7 @@
         var id = $(this).parents('.product-container').attr('id');
         var element_id = $(this).attr('id').substring(14);
         var element_name = $(this).parent().siblings('.product-name').text();
-        var element_cost_base = $(this).parent().siblings('.content-price').find('.product-cost').text();
+        var element_base_cost = $(this).parent().siblings('.content-price').find('.product-cost').text();
         var products_list = ExtraIngredientsProducts['extra_ingredients_products_list'];
         /**
          * Manages the extra ingredients modal buttons
@@ -321,7 +331,7 @@
         ExtraIngredientObject['product_id'] = element_id;
         ExtraIngredientObject['ingredients'].length = 0;
         ExtraIngredientObject['name'] = element_name;
-        ExtraIngredientObject['cost_base'] = element_cost_base;
+        ExtraIngredientObject['base_cost'] = element_base_cost;
 
         for (var i = 0; i < products_list.length; i++) {
           if (element_id == products_list[i].id) {
@@ -347,7 +357,7 @@
         };
       });
 
-      /**
+      /** 
        * Manipulates the extra ingredients list in ExtraIngredientObject
        */
       $(this).on('click', '.extra-ingredient-li', function(event) {
@@ -407,42 +417,44 @@
             if (id.indexOf('cartridge') >= 0) {
               id = id.replace('cartridge-', '');
 
-              /** Itera la lista de cartuchos */
-              function findIdCartucho(cartucho) {
-                return cartucho.id == id;
+              /** Iterates the cartridges list */
+              function findIdCartridge(cartridge) {
+                return cartridge.id == id;
               }
-              if (!Ticket.cartuchos.find(findIdCartucho)) { // Si no existe
-                nuevo_cartucho = {}
-                nuevo_cartucho.id = id;
-                nuevo_cartucho.quantity = quantity;
-                nuevo_cartucho.price = price;
-                Ticket.cartuchos.push(nuevo_cartucho);
+              console.log(Ticket);
+              if (!Ticket.cartridges.find(findIdCartridge)) { // Si no existe
+                new_cartridge = {}
+                new_cartridge.id = id;
+                new_cartridge.quantity = quantity;
+                new_cartridge.price = price;
+                Ticket.cartridges.push(new_cartridge);
 
               } else {
-                mi_cartucho = Ticket.cartuchos.find(findIdCartucho);
-                mi_cartucho.quantity = quantity;
-                mi_cartucho.price = price;
+                cartridge = Ticket.cartridges.find(findIdCartridge);
+                cartridge.quantity = quantity;
+                cartridge.price = price;
               }
             }
           } else if (type_object == 'package'){
+
             if (id.indexOf('package') >= 0) {
               id = id.replace('package-', '');
 
-              /** Itera la lista de paquetes */
-              function findIdPaquete(paquete) {
-                return paquete.id == id;
+              /** Iterates the packages list*/
+              function findIdPackage(package) {
+                return package.id == id;
               }
-              if (!Ticket.paquetes.find(findIdPaquete)) { // Si no existe
-                nuevo_paquete = {}
-                nuevo_paquete.id = id;
-                nuevo_paquete.quantity = quantity;
-                nuevo_paquete.price = price;
-                Ticket.paquetes.push(nuevo_paquete);
+              if (!Ticket.packages.find(findIdPackage)) { // Si no existe
+                nuevo_package = {}
+                nuevo_package.id = id;
+                nuevo_package.quantity = quantity;
+                nuevo_package.price = price;
+                Ticket.packages.push(nuevo_package);
 
               } else {
-                mi_paquete = Ticket.paquetes.find(findIdPaquete);
-                mi_paquete.quantity = quantity;
-                mi_paquete.price = price;
+                mi_package = Ticket.packages.find(findIdPackage);
+                mi_package.quantity = quantity;
+                mi_package.price = price;
               }
             }
           }
@@ -451,8 +463,8 @@
         function addObjectToTicket(){
           var name = ExtraIngredientObject['name'];
           var extra_ingredients_name = 'Extra:';
-          var cost_base = parseFloat(ExtraIngredientObject['cost_base']);
-          var cost = cost_base;
+          var base_cost = parseFloat(ExtraIngredientObject['base_cost']);
+          var cost = base_cost;
           var quantity;
           var id = ExtraIngredientObject['large_id'];
           var li_id = ('li-' + id).toString();
@@ -479,9 +491,9 @@
           if ($('#' + li_id + '').length != 0) { // If exists
             quantity++;
             for (var i = 0; i < ExtraIngredientObject['ingredients'].length; i++) {
-              cost_base += parseFloat(ExtraIngredientObject['ingredients'][i].cost);
+              base_cost += parseFloat(ExtraIngredientObject['ingredients'][i].cost);
             };
-            cost = cost_base * quantity;
+            cost = base_cost * quantity;
 
             if (cost % 2 != 0) {
               cost = cost.toFixed(2);
@@ -496,24 +508,24 @@
             quantity = 1;
 
             for (var i = 0; i < ExtraIngredientObject['ingredients'].length; i++) {
-                cost_base += parseFloat(ExtraIngredientObject['ingredients'][i].cost);
+                base_cost += parseFloat(ExtraIngredientObject['ingredients'][i].cost);
             };
 
-            if (cost_base % 2 != 0) {
-              cost_base = cost_base.toFixed(2);
+            if (base_cost % 2 != 0) {
+              base_cost = base_cost.toFixed(2);
             } else {
-              cost_base += '.00';
+              base_cost += '.00';
             }
 
             nuevo_li = $("" +
               "<li id='" + li_id + "' class='list-group-item extra-ingredient-li-ticket'>" +
               "<span class='name-li text-uppercase'>" + name + "</span> " +
-              "<span class='cost-base-li'>" + cost_base + "</span>" +
+              "<span class='base-cost-li'>" + base_cost + "</span>" +
               "<span class='remove-icon-li'><i class='material-icons'>remove</i></span>" +
               "<span class='quantity-li'>" + quantity + "</span>" +
               "<span class='add-icon-li'><i class='material-icons'>add</i></span>" +
               "<span class='font-weight-bold s-li'>$ </span>" +
-              "<span class='total-li font-weight-bold'>" + cost_base + "</span>" +
+              "<span class='total-li font-weight-bold'>" + base_cost + "</span>" +
               "<span class='extra-ingredients-name-li'>" + extra_ingredients_name + "</span>" +
               "</li>");
             nuevo_li.appendTo('#sales-list').fadeTo('slow', 1);
@@ -522,14 +534,16 @@
           /** Modificacion del total general */
           set_total_ticket();
 
-          //addObjectToJSON(id, quantity, cost, type_object);
+          addObjectToJSON(id, quantity, cost, type_object);
         }
 
         addObjectToTicket();
        $('#extra-ingredient-modal').modal('hide');
       });
 
-      /** Adds a product to ticket list */
+      /** 
+       * Adds a product to ticket list 
+       */
       $(this).on('click', '.product-img', function(event) {
         var product_type = $(this).attr('id');
         var element = $(this);
@@ -539,42 +553,42 @@
             if (id.indexOf('cartridge') >= 0) {
               id = id.replace('cartridge-', '');
 
-              /** Itera la lista de cartuchos */
-              function findIdCartucho(cartucho) {
-                return cartucho.id == id;
+              /** Iterates the cartridges list */
+              function findIdCartridge(cartridge) {
+                return cartridge.id == id;
               }
-              if (!Ticket.cartuchos.find(findIdCartucho)) { // Si no existe
-                nuevo_cartucho = {}
-                nuevo_cartucho.id = id;
-                nuevo_cartucho.quantity = quantity;
-                nuevo_cartucho.price = price;
-                Ticket.cartuchos.push(nuevo_cartucho);
+              if (!Ticket.cartridges.find(findIdCartridge)) { // Si no existe
+                nuevo_cartridge = {}
+                nuevo_cartridge.id = id;
+                nuevo_cartridge.quantity = quantity;
+                nuevo_cartridge.price = price;
+                Ticket.cartridges.push(nuevo_cartridge);
 
               } else {
-                mi_cartucho = Ticket.cartuchos.find(findIdCartucho);
-                mi_cartucho.quantity = quantity;
-                mi_cartucho.price = price;
+                mi_cartridge = Ticket.cartridges.find(findIdCartridge);
+                mi_cartridge.quantity = quantity;
+                mi_cartridge.price = price;
               }
             }
           } else if (type_object == 'package'){
             if (id.indexOf('package') >= 0) {
               id = id.replace('package-', '');
 
-              /** Itera la lista de paquetes */
-              function findIdPaquete(paquete) {
-                return paquete.id == id;
+              /** Iterates the packages list*/
+              function findIdPackage(package) {
+                return package.id == id;
               }
-              if (!Ticket.paquetes.find(findIdPaquete)) { // Si no existe
-                nuevo_paquete = {}
-                nuevo_paquete.id = id;
-                nuevo_paquete.quantity = quantity;
-                nuevo_paquete.price = price;
-                Ticket.paquetes.push(nuevo_paquete);
+              if (!Ticket.packages.find(findIdPackage)) { // Si no existe
+                nuevo_package = {}
+                nuevo_package.id = id;
+                nuevo_package.quantity = quantity;
+                nuevo_package.price = price;
+                Ticket.packages.push(nuevo_package);
 
               } else {
-                mi_paquete = Ticket.paquetes.find(findIdPaquete);
-                mi_paquete.quantity = quantity;
-                mi_paquete.price = price;
+                mi_package = Ticket.packages.find(findIdPackage);
+                mi_package.quantity = quantity;
+                mi_package.price = price;
               }
             }
           }
@@ -582,8 +596,8 @@
 
         function addObjectToTicket(){
           let name = element.siblings('.product-name').text();
-          let cost_base = parseFloat(element.siblings('.content-price').children('.product-cost').text());
-          let cost = cost_base;
+          let base_cost = parseFloat(element.siblings('.content-price').children('.product-cost').text());
+          let cost = base_cost;
           let id = element.parent().attr('id');
           let li_id = ('li-' + id).toString();
           let quantity = $('ul#sales-list').find('#' + li_id + ' .quantity-li').text();
@@ -611,16 +625,16 @@
               cost += '.00';
             } 
 
-            if (cost_base % 2 != 0) {
-              cost_base = cost_base.toFixed(2);
+            if (base_cost % 2 != 0) {
+              base_cost = base_cost.toFixed(2);
             } else {
-              cost_base += '.00';
+              base_cost += '.00';
             }
 
             $nuevo_li = $("" +
               "<li id='" + li_id + "' class='list-group-item'>" +
               "<span class='name-li text-uppercase'>" + name + "</span> " +
-              "<span class='cost-base-li'>" + cost_base + "</span>" +
+              "<span class='base-cost-li'>" + base_cost + "</span>" +
               "<span class='remove-icon-li'><i class='material-icons'>remove</i></span>" +
               "<span class='quantity-li'>" + quantity + "</span>" +
               "<span class='add-icon-li'><i class='material-icons'>add</i></span>" +
@@ -629,10 +643,9 @@
               "</li>");
             
             $nuevo_li.appendTo('#sales-list').fadeTo('slow', 1);
-
           }
 
-          /** Modificacion del total general */
+          /** Modification of the grand total */
           set_total_ticket();
 
           addObjectToJSON(id, quantity, cost, type_object);
@@ -641,11 +654,14 @@
         addObjectToTicket();
       });
 
+      /** 
+       * Controls the actions to the btn-remove icon
+       */
       $(this).on('click', '.remove-icon-li', function(event) {
         let element = $(this);
         let quantity_product = element.siblings('.quantity-li').text();
         let quantity_product_container = element.siblings('.quantity-li');
-        let cost_base_product = element.siblings('.cost-base-li').text();
+        let base_cost_product = element.siblings('.base-cost-li').text();
         let total_product = element.siblings('.total-li').text();
         let total_product_container = element.siblings('.total-li');
         let total_ticket = 0;
@@ -665,16 +681,16 @@
 
           /** Removes cartridge from ticket JSON */
 
-          Ticket.cartuchos.forEach(function(cartridge_object) {
+          Ticket.cartridges.forEach(function(cartridge_object) {
             if (cartridge_object.id == id_cartridge) {
-              Ticket.cartuchos.splice(count, 1);
+              Ticket.cartridges.splice(count, 1);
             };
             count += 1;
           });
          
-          Ticket.paquetes.forEach(function(package_object){
+          Ticket.packages.forEach(function(package_object){
             if (package_object.id == id_package){
-              Ticket.paquetes.splice(count, 1);
+              Ticket.packages.splice(count, 1);
             };
             count += 1;
           });
@@ -704,44 +720,44 @@
           var short_type_id = get_type_product(large_type_id);
           
           if(short_type_id == 'cart'){
-            Ticket.cartuchos.forEach(function(cartridge_object, index) {
+            Ticket.cartridges.forEach(function(cartridge_object, index) {
 
               if (cartridge_object.id == id_cartridge) {
 
-                var price_JSON = parseFloat(Ticket.cartuchos[index].price);
-                var quantity_JSON = parseFloat(Ticket.cartuchos[index].quantity);
+                var price_JSON = parseFloat(Ticket.cartridges[index].price);
+                var quantity_JSON = parseFloat(Ticket.cartridges[index].quantity);
 
                 // Modifies the ticket JSON               
-                Ticket.cartuchos[index].quantity -= 1;
-                Ticket.cartuchos[index].price = set_number_format(price_JSON - cost_base_product, 2);
+                Ticket.cartridges[index].quantity -= 1;
+                Ticket.cartridges[index].price = set_number_format(price_JSON - base_cost_product, 2);
 
                 // Modifies the Ticket DOM
                 var new_total_li = 0;
-                new_total_li = Ticket.cartuchos[index].price;
-                set_quantity_li(Ticket.cartuchos[index].quantity);
+                new_total_li = Ticket.cartridges[index].price;
+                set_quantity_li(Ticket.cartridges[index].quantity);
                 set_total_li(new_total_li);
                 throw  StopIteration;
               }
             });
           } else if(short_type_id == 'pack') {
 
-            Ticket.paquetes.forEach(function(package_object, index) {
+            Ticket.packages.forEach(function(package_object, index) {
 
                 if (package_object.id == id_package) {
 
 
-                  var price_JSON = parseFloat(Ticket.paquetes[index].price);
-                  var quantity_JSON = parseFloat(Ticket.paquetes[index].quantity);
+                  var price_JSON = parseFloat(Ticket.packages[index].price);
+                  var quantity_JSON = parseFloat(Ticket.packages[index].quantity);
 
                   // Modifies the ticket JSON               
-                  Ticket.paquetes[index].quantity -= 1;
-                  Ticket.paquetes[index].price = set_number_format(price_JSON - cost_base_product, 2);
+                  Ticket.packages[index].quantity -= 1;
+                  Ticket.packages[index].price = set_number_format(price_JSON - base_cost_product, 2);
 
                   // Modifies the Ticket DOM
                   var new_total_li = 0;
-                  new_total_li = Ticket.paquetes[index].price;
+                  new_total_li = Ticket.packages[index].price;
                   set_total_li(new_total_li);
-                  set_quantity_li(Ticket.paquetes[index].quantity);
+                  set_quantity_li(Ticket.packages[index].quantity);
 
                   throw  StopIteration;
                 }
@@ -768,9 +784,9 @@
             "<span class='text-price-decimal' id='dec-total-price'>" + total_array[1] + "</span>"
           );
 
-          /* Ticket.cartuchos.forEach(function(cartridge_object){
+          /* Ticket.cartridges.forEach(function(cartridge_object){
            if(cartridge_object.id == id_product){
-           Ticket.cartuchos.splice(count, 1);
+           Ticket.cartridges.splice(count, 1);
            };
            count += 1;
            }); */
@@ -788,12 +804,15 @@
          */
         set_total_ticket();
       });
-
+      
+      /** 
+       * Controls the actions to the btn-add icon
+       */
       $(this).on('click', '.add-icon-li', function(event) {
         let element = $(this);
         let quantity_product = element.siblings('span.quantity-li').text();
         let quantity_product_container = element.siblings('span.quantity-li');
-        let cost_base_product = parseFloat(element.siblings('span.cost-base-li').text());
+        let base_cost_product = parseFloat(element.siblings('span.base-cost-li').text());
         let total_product = element.siblings('span.total-li').text();
         let total_product_container = element.siblings('span.total-li');
         let total_ticket = 0;
@@ -826,21 +845,21 @@
           var short_type_id = get_type_product(large_type_id);
           
           if(short_type_id == 'cart'){
-            Ticket.cartuchos.forEach(function(cartridge_object, index) {
+            Ticket.cartridges.forEach(function(cartridge_object, index) {
 
               if (cartridge_object.id == id_cartridge) {
 
-                var price_JSON = parseFloat(Ticket.cartuchos[index].price);
-                var quantity_JSON = parseFloat(Ticket.cartuchos[index].quantity);
+                var price_JSON = parseFloat(Ticket.cartridges[index].price);
+                var quantity_JSON = parseFloat(Ticket.cartridges[index].quantity);
 
                 // Modifies the ticket JSON               
-                Ticket.cartuchos[index].quantity += 1;
-                Ticket.cartuchos[index].price = set_number_format(price_JSON + cost_base_product, 2);
+                Ticket.cartridges[index].quantity += 1;
+                Ticket.cartridges[index].price = set_number_format(price_JSON + base_cost_product, 2);
 
                 // Modifies the Ticket DOM
                 var new_total_li = 0;
-                new_total_li = Ticket.cartuchos[index].price;
-                set_quantity_li(Ticket.cartuchos[index].quantity);
+                new_total_li = Ticket.cartridges[index].price;
+                set_quantity_li(Ticket.cartridges[index].quantity);
                 set_total_li(new_total_li);
 
 
@@ -848,23 +867,23 @@
               }
             });
           } else if(short_type_id == 'pack') {
-            Ticket.paquetes.forEach(function(package_object, index) {
+            Ticket.packages.forEach(function(package_object, index) {
 
                 if (package_object.id == id_package) {
 
 
-                  var price_JSON = parseFloat(Ticket.paquetes[index].price);
-                  var quantity_JSON = parseFloat(Ticket.paquetes[index].quantity);
+                  var price_JSON = parseFloat(Ticket.packages[index].price);
+                  var quantity_JSON = parseFloat(Ticket.packages[index].quantity);
 
                   // Modifies the ticket JSON               
-                  Ticket.paquetes[index].quantity += 1;
-                  Ticket.paquetes[index].price = set_number_format(price_JSON + cost_base_product, 2);
+                  Ticket.packages[index].quantity += 1;
+                  Ticket.packages[index].price = set_number_format(price_JSON + base_cost_product, 2);
 
                   // Modifies the Ticket DOM
                   var new_total_li = 0;
-                  new_total_li = Ticket.paquetes[index].price;
+                  new_total_li = Ticket.packages[index].price;
                   set_total_li(new_total_li);
-                  set_quantity_li(Ticket.paquetes[index].quantity);
+                  set_quantity_li(Ticket.packages[index].quantity);
 
                   throw  StopIteration;
                 }
@@ -881,7 +900,9 @@
         set_total_ticket();
       });
 
-      /** Adds the package to modal */
+      /** 
+       * Adds the package to modal 
+       */
       $(this).on('click', '#btn-add-package', function(event) {
 
         var product_type = $(this).attr('id');
@@ -893,7 +914,7 @@
           new_package.quantity = quantity;
           new_package.price = price;
           new_package.name = name;
-          Ticket.paquetes.push(new_package);
+          Ticket.packages.push(new_package);
 
           id_list.forEach(function(element) {
             new_package.id_list.push(element);
@@ -925,8 +946,8 @@
             });
           });
 
-          let cost_base = PackageProduct.cost;
-          let cost = cost_base;
+          let base_cost = PackageProduct.cost;
+          let cost = base_cost;
           let id = element.parent().attr('id');
           let li_id = PackageProduct.id;
           let quantity = 1;
@@ -935,7 +956,7 @@
           $nuevo_li = $("" +
             "<li class='list-group-item'>" +
             "<span class='name-li text-uppercase'>" + package_name_list_string + "</span> " +
-            "<span class='cost-base-li'>" + cost_base + "</span>" +
+            "<span class='base-cost-li'>" + base_cost + "</span>" +
             "<span class='remove-icon-li'><i class='material-icons'>remove</i></span>" +
             "<span class='quantity-li'>" + quantity + "</span>" +
             "<span class='add-icon-li'><i class='material-icons'>add</i></span>" +
@@ -964,7 +985,9 @@
         addProductToTicket();
       });
 
-      /** Despliega el modal para realizar la venta */
+      /** 
+       * Shows the modal to do the sale 
+       */
       $(this).on('click', '#btn-order', function(event) {
         function getActualTime() {
           var datetime = new Date();
@@ -1012,7 +1035,7 @@
 
         $('#sales-list li').each(function() {
           let name = $(this).find('.name-li').text();
-          let cost_base = $(this).find('.cost-base-li').text();
+          let base_cost = $(this).find('.base-cost-li').text();
           let quantity = $(this).find('.quantity-li').text();
           let total = $(this).find('.total-li').text();
           let id = $(this).attr('id');
@@ -1030,7 +1053,7 @@
           $nuevo_li = $("" +
             "<li id='" + li_id + "' class='list-group-item'>" +
             "<span class='name-li-modal text-uppercase'>" + name + "</span> " +
-            "<span class='cost-li-modal'>" + '$ ' + cost_base + "</span>" +
+            "<span class='cost-li-modal'>" + '$ ' + base_cost + "</span>" +
             "<span class='quantity-li-modal'>" + quantity + "</span>" +
             "<span class='total-li-modal'>" + '$ ' + total + "</span> " +
             "</li>");
@@ -1059,14 +1082,9 @@
         setButtonStatus(size_tickets);
       });
 
-      /** Despliega el modal para realizar la venta */
-      $(this).on('click', '#package-img', function(event) {
-        element = $(this);
-        price = element.parent().find('span.product-cost').text();
-        PackageProduct.cost = price;
-      });
-
-      /** Realizar la venta e imprimir ticket */
+      /** 
+       * Sends the new sale and prints the ticket 
+       */
       $(this).on('click', '.btn-printer', function(event) {
         var payment_type = $(this).attr('id');
         var ticket_list = $('#sales-list-modal li');
@@ -1145,11 +1163,13 @@
         }
       });
 
-      /** Cancelar Venta - Resetear ticket */
+      /** 
+       * Cancels  the sale and resets the ticket object 
+       */
       $(this).on('click', '#btn-orders-reset', function(event) {
         function resetTicketObject() {
-          Ticket.cartuchos.length = 0;
-          Ticket.paquetes.length = 0;
+          Ticket.cartridges.length = 0;
+          Ticket.packages.length = 0;
           PackageProduct.id.length = 0;
         }
 

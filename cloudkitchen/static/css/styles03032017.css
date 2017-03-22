@@ -401,7 +401,7 @@ transition: all 1s ease;
   max-width: 40%;
   text-align: left;
 }
-.container-sales .group-sales .card-scroll-orders ul.list-group  span.cost-base-li {
+.container-sales .group-sales .card-scroll-orders ul.list-group  span.base-cost-li {
   text-align: center;
   display: none;
 }
