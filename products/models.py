@@ -112,12 +112,22 @@ class Cartridge(models.Model):
         (COMPLEMENTS, 'Complementos'),
     )
 
+    # Kinf of food
+    BREAKFAST = 'BF'
+    FOOD = 'FO'
+    
+    KIND_OF_FOOD = (
+        (BREAKFAST, 'Desayunos'),
+        (FOOD, 'Comidas'),
+    )
+
     name = models.CharField(max_length=128, default='')
     price = models.DecimalField(decimal_places=2, default=0, max_digits=12)
     category = models.CharField(choices=CATEGORIES, default=FOOD_DISHES, max_length=2)
     created_at = models.DateTimeField(auto_now=True)
     image = models.ImageField(blank=False, upload_to='cartridges')
     is_active = models.BooleanField(default=True)
+    kind_of_food = models.CharField(choices=KIND_OF_FOOD, default=BREAKFAST, max_length=2)
 
     def __str__(self):
         return self.name
@@ -170,12 +180,22 @@ class ExtraIngredient(models.Model):
 
 
 class PackageCartridge(models.Model):
+    # Kinf of food
+    BREAKFAST = 'BF'
+    FOOD = 'FO'
+    
+    KIND_OF_FOOD = (
+        (BREAKFAST, 'Desayunos'),
+        (FOOD, 'Comidas'),
+    )
+
     name = models.CharField(max_length=90)
     price = models.DecimalField(default=0, max_digits=12, decimal_places=2)
     is_active = models.BooleanField(default=True)
     created_at = models.DateTimeField(auto_now=True)
     image = models.ImageField(blank=False, upload_to='cartridges', default='')
-
+    kind_of_food = models.CharField(choices=KIND_OF_FOOD, default=BREAKFAST, max_length=2)
+    
     def __str__(self):
         return self.name
 
