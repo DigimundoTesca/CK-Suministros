@@ -412,7 +412,7 @@ def new_sale(request):
             ticket_detail_json_object = json.loads(request.POST.get('ticket'))
             payment_type = ticket_detail_json_object['payment_type']
             max_value = 0
-
+            order_number = 0
             """ 
             Gets the tickets in the week and returns n + 1 
             where n is the Ticket.order_number biggest for the current week
@@ -426,10 +426,13 @@ def new_sale(request):
             tickets = Ticket.objects.filter(created_at__gte=datetime.now() - timedelta(days=get_number_day()))
 
             for ticket in tickets:
-                max_value = max_value + 1
+                order_number_ticket = ticket.order_number
+                if order_number_ticket > order_number
+                    order_number = order_number_ticket
+
             new_ticket_object = Ticket(
                 cash_register=cash_register, seller=user_profile_object, 
-                payment_type=payment_type, order_number=max_value)
+                payment_type=payment_type, order_number=order_number_ticket)
             new_ticket_object.save()
 
             """
