@@ -8,7 +8,7 @@ app_name = 'sales'
 urlpatterns = [
     # sales
     url(r'^sales/$', views.sales, name='sales'),
-    url(r'^sales/new/lunch/$', views.new_sale, name='new_lunch'),
+    url(r'^sales/new/food/$', views.new_sale, name='new_food'),
     url(r'^sales/new/breakfast/$', views.new_sale, name='new_breakfast'),
     url(r'^sales/delete/$', views.delete_sale, name='delete-sale'),
 ]

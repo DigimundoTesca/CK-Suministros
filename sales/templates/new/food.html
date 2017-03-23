@@ -1135,7 +1135,7 @@
           if (ticket_list.length > 2) {
             JSONTicket = JSON.stringify(Ticket);
             $.ajax({
-              url: '{% url "sales:new_lunch" %}',
+              url: '{% url "sales:new_food" %}',
               type: 'POST',
               data: {
                 'ticket': JSONTicket,

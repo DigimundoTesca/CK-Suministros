@@ -500,7 +500,7 @@ def new_sale(request):
         if path == 'breakfast':
             template = 'new/breakfast.html'
         else:
-            template = 'new/lunch.html'
+            template = 'new/food.html'
 
         cartridges_list = Cartridge.objects.all().order_by('name')
         package_cartridges = PackageCartridge.objects.all().order_by('name')

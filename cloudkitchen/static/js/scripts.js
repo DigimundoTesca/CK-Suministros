@@ -8,8 +8,8 @@ $(function() {
   else if (path == '/sales/new/breakfast/') {
     $('#link-new-breakfast').addClass('active');
   }
-  else if (path == '/sales/new/lunch/') {
-    $('#link-new-lunch').addClass('active');
+  else if (path == '/sales/new/food/') {
+    $('#link-new-food').addClass('active');
   }
   else if (path == '/supplies/' || path == '/supplies/new/') {
     $('#link-warehouse').addClass('active');
