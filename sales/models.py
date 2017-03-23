@@ -71,8 +71,6 @@ class TicketDetail(models.Model):
         Cartridge, on_delete=models.CASCADE, blank=True, null=True)
     package_cartridge = models.ForeignKey(
         PackageCartridge, on_delete=models.CASCADE, blank=True, null=True)
-    extra_ingredient = models.ForeignKey(
-        ExtraIngredient, on_delete=models.CASCADE, blank=True, null=True)
     quantity = models.IntegerField(default=0)
     price = models.DecimalField(default=0, max_digits=12, decimal_places=2)
 
@@ -82,7 +80,27 @@ class TicketDetail(models.Model):
     def __str__(self):
         return '%s' % self.id
 
+    def extra_ingredients(self):
+        ingredients = TicketExtraIngredient.objects.filter(ticket_detail=self.id)
+        options = []
+
+        for ingredient in ingredients:
+            options.append(("<option value=%s selected>%s</option>" %
+                                (ingredient, ingredient)))
+        tag = """<select multiple disabled>%s</select>""" % str(options)
+        return tag
+
+    extra_ingredients.allow_tags = True
+    
     class Meta:
         ordering = ('id',)
         verbose_name = 'Ticket Details'
         verbose_name_plural = 'Tickets Details'
+
+class TicketExtraIngredient(models.Model):
+    ticket_detail = models.ForeignKey(TicketDetail, null=True)
+    extra_ingredient = models.ForeignKey(ExtraIngredient, on_delete=models.CASCADE, blank=True, null=True)
+    price = models.DecimalField(default=0, max_digits=12, decimal_places=2)
+
+    def __str__(self):
+        return '%s' % self.extra_ingredient

@@ -37,7 +37,6 @@ class CashRegister(models.Model):
         """
         office = BranchOffice.objects.get(id=instance.id)
         has_cash_registers = CashRegister.objects.filter(branch_office=office).exists()
-        print(has_cash_registers)
 
         if has_cash_registers is False:
             new_cash_register = CashRegister.objects.create(code='Cash_01', branch_office=office, is_active=True)

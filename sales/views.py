@@ -5,7 +5,7 @@ import time as python_time
 from decimal import Decimal
  
 from django.contrib.auth.decorators import login_required, permission_required
-from django.http import JsonResponse
+from django.http import JsonResponse, HttpResponse
 from django.shortcuts import render, get_object_or_404, redirect
 from django.views.decorators.csrf import csrf_protect, requires_csrf_token
 from django.middleware.csrf import get_token
@@ -16,7 +16,7 @@ from branchoffices.models import CashRegister
 from cloudkitchen.settings.base import PAGE_TITLE
 from products.models import Cartridge, PackageCartridge, PackageCartridgeRecipe, \
                             ExtraIngredient
-from sales.models import Ticket, TicketDetail
+from sales.models import Ticket, TicketDetail, TicketExtraIngredient
 from users.models import User as UserProfile
 
 """
@@ -81,7 +81,6 @@ def get_start_week_day(day):
         number_day = 7
     else:
         day = naive_to_datetime(day) - timedelta(days=number_day-1)
-        print('new day: ', day)
 
 
 def items_list_to_int(list_to_cast):
@@ -130,10 +129,13 @@ def sales(request):
             and the Weeks list contains a weeks objects with two attributes: 
             start date and final date. Ranges of each week.
         """
-        min_year = all_tickets.aggregate(Min('created_at'))['created_at__min'].year
-        max_year = all_tickets.aggregate(Max('created_at'))['created_at__max'].year
-        years_list = [] # [2015:object, 2016:object, 2017:object, ...]
-
+        try:
+            min_year = all_tickets.aggregate(Min('created_at'))['created_at__min'].year
+            max_year = all_tickets.aggregate(Max('created_at'))['created_at__max'].year
+            years_list = [] # [2015:object, 2016:object, 2017:object, ...]
+        except:
+            return HttpResponse('Necesitas crear ventas para ver esta pantalla <a href="sales:new">Nueva Venta</a>')
+            
         while max_year >= min_year:
             year_object = { # 2015:object or 2016:object or 2017:object ...
                 'year' : max_year,
@@ -298,6 +300,7 @@ def sales(request):
             ticket_id = int(request.POST['ticket_id'])
             ticket_object = {
                 'ticket_id': ticket_id,
+                'ticket_order': '',
                 'cartridges': [],
                 'packages': [],
             }
@@ -305,6 +308,8 @@ def sales(request):
             # Get cartridges details
             for ticket_detail in all_ticket_details:
                 if ticket_detail.ticket.id == ticket_id:
+                    ticket_object['ticket_order'] = ticket_detail.ticket.order_number;
+
                     if ticket_detail.cartridge:
                         cartridge_object = {
                             'name': ticket_detail.cartridge.name,
@@ -326,6 +331,7 @@ def sales(request):
                             'total': ticket_detail.price
                         }
                         ticket_object['packages'].append(package_cartridge_object)
+                    
             return JsonResponse({'ticket_details': ticket_object})
             
         if request.POST['type'] == 'tickets':
@@ -429,7 +435,7 @@ def new_sale(request):
             """
             Saves the tickets details for cartridges
             """
-            for ticket_detail in ticket_detail_json_object['cartuchos']:
+            for ticket_detail in ticket_detail_json_object['cartridges']:
                 cartridge_object = get_object_or_404(Cartridge, id=ticket_detail['id'])
                 quantity = ticket_detail['quantity']
                 price = ticket_detail['price']
@@ -441,7 +447,28 @@ def new_sale(request):
                 )
                 new_ticket_detail_object.save()
 
-            for ticket_detail_package in ticket_detail_json_object['paquetes']:               
+            for ticket_detail in ticket_detail_json_object['extra_ingredients_cartridges']:
+                cartridge_object = get_object_or_404(Cartridge, id=ticket_detail['cartridge_id'])
+                quantity = ticket_detail['quantity']
+                price = ticket_detail['price']
+                new_ticket_detail_object = TicketDetail(
+                    ticket=new_ticket_object,
+                    cartridge=cartridge_object,
+                    quantity=quantity,
+                    price=price
+                )
+                new_ticket_detail_object.save()
+
+                for ingredient in ticket_detail['extra_ingredients']:
+                    extra_ingredient_object = ExtraIngredient.objects.get(id=ingredient['id'])
+                    new_extra_ingredient_object = TicketExtraIngredient(
+                        ticket_detail=new_ticket_detail_object,
+                        extra_ingredient=extra_ingredient_object,
+                        price=ingredient['cost']
+                        )
+                    new_extra_ingredient_object.save()
+
+            for ticket_detail_package in ticket_detail_json_object['packages']:               
                 """
                 Saves the tickets details for package cartridges
                 """
@@ -471,22 +498,25 @@ def new_sale(request):
         extra_ingredients = ExtraIngredient.objects.all().prefetch_related('ingredient');
         template = 'sales/new_sale.html'
         title = 'Nueva venta'
-        extra_ingredients_packages_list = []
+        extra_ingredients_products_list = []
 
         for cartridge in cartridges_list:
             cartridge_object = {
+                'id': cartridge.id,
                 'name': cartridge.name,
                 'extra_ingredients': [],
             }
             for ingredient in extra_ingredients:
                 if cartridge == ingredient.cartridge:
                     ingredient_object = {
-                        'ingredient': ingredient.ingredient.name,
+                        'id': ingredient.id,
+                        'name': ingredient.ingredient.name,
+                        'image': ingredient.image.url,
                         'cost': str(ingredient.cost),
                     }
                     cartridge_object['extra_ingredients'].append(ingredient_object)
             if len(cartridge_object['extra_ingredients']) > 0:
-                extra_ingredients_packages_list.append(cartridge_object)
+                extra_ingredients_products_list.append(cartridge_object)
 
 
         context = {
@@ -495,8 +525,8 @@ def new_sale(request):
             'cartridges': cartridges_list,
             'package_cartridges': package_cartridges,
             'extra_ingredients': extra_ingredients,
-            'extra_ingredients_packages_list': extra_ingredients_packages_list,
-            'extra_ingredients_packages_list_json': json.dumps(extra_ingredients_packages_list),
+            'extra_ingredients_products_list': extra_ingredients_products_list,
+            'extra_ingredients_products_list_json': json.dumps(extra_ingredients_products_list),
         }
         return render(request, template, context)
 

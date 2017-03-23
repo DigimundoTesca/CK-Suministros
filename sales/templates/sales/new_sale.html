@@ -52,21 +52,23 @@
             <div class="card col-xs-12 card-scroll card-outline-info" id="group-complements">
               <div class="card-block products-block">
                 {% for cartridge in cartridges %}
-                  {% if cartridge.category == 'CO' %}
-                    <div class="card-block product-container" id="cartridge-{{ cartridge.pk }}">
-                      <h6 class="product-name">{{ cartridge.name }}</h6>
-                      <img src="{{ cartridge.image.url }}" id="cartridge-img-{{ cartridge.pk }}" class="product-img" alt="Nombre de la bebida">
-                      <div class="text-xs-right content-price">
-                        <span class="font-weight-bold">$ </span><span class="product-cost font-weight-bold">{{ cartridge.price }}</span>
+                  {% if cartridge.is_active %}
+                    {% if cartridge.category == 'CO' %}
+                      <div class="card-block product-container" id="cartridge-{{ cartridge.pk }}">
+                        <h6 class="product-name">{{ cartridge.name }}</h6>
+                        <img src="{{ cartridge.image.url }}" id="cartridge-img-{{ cartridge.pk }}" class="product-img" alt="Nombre de la bebida">
+                        <div class="text-xs-right content-price">
+                          <span class="font-weight-bold">$ </span><span class="product-cost font-weight-bold">{{ cartridge.price }}</span>
+                        </div>
+                        {% for extra in extra_ingredients_products_list %}
+                          {% if extra.name == cartridge.name %}
+                            <div class="extra-ingredients-cont">
+                              <button id="btn-extra-ing-{{ cartridge.id }}" class="btn btn-outline-primary btn-extra-ing" data-toggle="modal" data-target="#extra-ingredient-modal">Ingrediente Extra</button>
+                            </div>
+                          {% endif %}
+                        {% endfor %}
                       </div>
-                      {% for extra in extra_ingredients_packages_list %}
-                        {% if extra.name == cartridge.name %}
-                          <div class="extra-ingredients-cont">
-                            <button id="btn-extra-ing-{{ cartridge.id }}" class="btn btn-outline-primary btn-extra-ing" data-toggle="modal" data-target="#extra-ingredient-modal">Ingrediente Extra</button>
-                          </div>
-                        {% endif %}
-                      {% endfor %}
-                    </div>
+                    {% endif %}
                   {% endif %}
                 {% endfor %}
               </div>
@@ -79,6 +81,7 @@
             <div class="card col-xs-12 card-scroll card-outline-info" id="group-dishes">
               <div class="card-block products-block">
                 {% for cartridge in cartridges %}
+                {% if cartridge.is_active %}
                   {% if cartridge.category == 'FD' %}
                     <div class="card-block product-container" id="cartridge-{{ cartridge.pk }}">
                       <h6 class="product-name">{{ cartridge.name }}</h6>
@@ -86,7 +89,7 @@
                       <div class="text-xs-right content-price">
                         <span class="font-weight-bold">$ </span><span class="product-cost font-weight-bold">{{ cartridge.price }}</span>
                       </div>
-                      {% for extra in extra_ingredients_packages_list %}
+                      {% for extra in extra_ingredients_products_list %}
                         {% if extra.name == cartridge.name %}
                           <div class="extra-ingredients-cont">
                             <button id="btn-extra-ing-{{ cartridge.id }}" class="btn btn-outline-primary btn-extra-ing" data-toggle="modal" data-target="#extra-ingredient-modal">Ingrediente Extra</button>
@@ -95,6 +98,7 @@
                       {% endfor %}
                     </div>
                   {% endif %}
+                {% endif %}
                 {% endfor %}
               </div>
             </div>
@@ -109,12 +113,15 @@
                 <div class="card col-xs-12 card-scroll packages-block card-outline-info" id="group-dishes">
                   <div class="card-block">
                     {% for package in package_cartridges %}
-                      <div class="card-block product-container" id="package-{{ package.pk }}">
-                        <h6 class="product-name">{{ package.name }}</h6>
-                        <div class="text-xs-right content-price">
-                          <span class="font-weight-bold">$ </span><span class="product-cost font-weight-bold">{{ package.price }}</span>
+                      {% if package.is_active %}
+                        <div class="card-block product-container" id="package-{{ package.pk }}">
+                          <h6 class="product-name">{{ package.name }}</h6>
+                          <img src="{{ package.image.url }}" id="package-img-{{ package.pk }}" class="product-img" alt="Imagen del Paquete">
+                          <div class="text-xs-right content-price">
+                            <span class="font-weight-bold">$ </span><span class="product-cost font-weight-bold">{{ package.price }}</span>
+                          </div>
                         </div>
-                      </div>
+                      {% endif %}
                     {% endfor %}
                   </div>
                 </div>
@@ -172,7 +179,7 @@
                     contacto@suministrosintegrales.mx <br>
                   </p>
                   <p class="text-xs-center mt-1">
-                    <strong>¡GRACIAS POR SONREIR! <span class="smile">😊</span></strong> <br>
+                    <strong>¡GRACIAS POR SONREIR! <span class="smile">☺</span></strong> <br>
                   </p>
                 </div>
               </div>
@@ -195,33 +202,26 @@
   </div>
 
   <!-- Extra Ingredients Modals -->
-    <div class="modal fade" id="extra-ingredient-modal" tabindex="-1" role="dialog" aria-labelledby="extra-ingredient-modalLabel" aria-hidden="true">
-      <div class="modal-dialog" role="document">
-        <div class="modal-content">
-          <div class="modal-header">
-            <h5 class="modal-title" id="extra-ingredient-modalLabel">Ingredientes Extra</h5>
-            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-              <span aria-hidden="true">&times;</span>
-            </button>
-          </div>
-          <div class="modal-body">
-            <ul class="list-unstyled list-group">
-              <li class="media list-group-item list-group-item-action row">
-                <img class="img-extra-ing col-xs-4" src="/media/supplies/huevos.png" alt="Generic placeholder image">
-                <div class="media-body col-xd-6">
-                  <h5 class="mt-0 mb-1">Huevos</h5>
-                  <h3>$50.00</h3>
-                </div>
-              </li>
-            </ul>
-          </div>
-          <div class="modal-footer">
-            <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
-            <button type="button" class="btn btn-primary">Save changes</button>
-          </div>
+  <div class="modal fade" id="extra-ingredient-modal" tabindex="-1" role="dialog" aria-labelledby="extra-ingredient-modal-label" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+      <div class="modal-content">
+        <div class="modal-header">
+          <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+          </button>
+          <h3 class="modal-title" id="extra-ingredient-modal-label">Ingredientes Extra</h3>
+        </div>
+        <div class="modal-body">
+          <ul class="list-unstyled list-group">
+          </ul>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancelar</button>
+          <button id="btn-add-extra-ingredient" type="button" class="btn btn-primary">Agregar Ingredientes</button>
         </div>
       </div>
     </div>
+  </div>
 
 {% endblock content %}
 {% block javascript %}
@@ -229,9 +229,10 @@
   <script type="text/javascript" charset="utf-8">
     $(document).ready(function() {
       let Ticket = {
-        cartuchos: [],
-        paquetes: [],
-        payment_type: 'cash', 
+        'cartridges': [],
+        'extra_ingredients_cartridges': [],
+        'packages': [],
+        'payment_type': 'cash', 
       }
 
       let PackageProduct = {
@@ -239,10 +240,19 @@
         cost: null,
       }
 
-      let ExtraIngredientsPackage = {
-        packages : {{ extra_ingredients_packages_list |safe }},
+      let ExtraIngredientsProducts = {
+        'extra_ingredients_products_list' : {{ extra_ingredients_products_list |safe }},
       }
 
+      let ExtraIngredientObject = {
+        'product_id': null,
+        'name': null,
+        'ingredients': [],
+      }
+
+      /** 
+       * Gets the csrf cookie from cache
+       */ 
       function get_cookie(name) {
         var cookie_value = null;
         if (document.cookie && document.cookie !== '') {
@@ -258,6 +268,9 @@
         return cookie_value;
       }
 
+      /** 
+       * Converts an integer to a number with decimals
+       */
       function set_number_format(amount, decimals) {
         amount = parseFloat(amount);
 
@@ -273,7 +286,9 @@
         return amount;
       }
 
-      /** Suma los totales en la lista y los envía al total general */
+      /** 
+       * Sums the total in the list and sends them to the grand total
+       */
       function set_total_ticket(){
         let total = 0;
 
@@ -289,57 +304,304 @@
           );
       }
 
-      /** Returns the product type initials */
+      /** 
+       * Returns the product type initials 
+       */
       function get_type_product(large_type_id){
         large_type_id = large_type_id.substring(3,7);
         return large_type_id;
       }
 
-      /** Agrega un producto al carrito del ticket */
+      /** 
+       * Displays the modal of the extra ingredients 
+       * for each product that has them
+       */
+      $(this).on('click', '.btn-extra-ing', function(event) {
+        var id = $(this).parents('.product-container').attr('id');
+        var element_id = $(this).attr('id').substring(14);
+        var element_name = $(this).parent().siblings('.product-name').text();
+        var element_base_cost = $(this).parent().siblings('.content-price').find('.product-cost').text();
+        var products_list = ExtraIngredientsProducts['extra_ingredients_products_list'];
+        /**
+         * Manages the extra ingredients modal buttons
+         */
+        if (ExtraIngredientObject['ingredients'].length == 0) {
+          $('#btn-add-extra-ingredient').attr('disabled', true);
+        } else {
+          $('#btn-add-extra-ingredient').attr('disabled', false);
+        }
+
+        /**
+         * Resets the ExtraIngredientObject
+         */
+        ExtraIngredientObject['large_id'] = id;
+        ExtraIngredientObject['product_id'] = element_id;
+        ExtraIngredientObject['ingredients'].length = 0;
+        ExtraIngredientObject['name'] = element_name;
+        ExtraIngredientObject['base_cost'] = element_base_cost;
+
+        for (var i = 0; i < products_list.length; i++) {
+          if (element_id == products_list[i].id) {
+            var list_group = $('#extra-ingredient-modal .modal-body').find('.list-group');
+            var extra_ingredients_object = products_list[i];
+            list_group.empty();
+
+            for (var j = 0; j < extra_ingredients_object['extra_ingredients'].length; j++) {
+              extra_ingredient = extra_ingredients_object['extra_ingredients'][j];
+              var new_ingredient = $("" +
+                "<li id='extra-ingredient-id-" + extra_ingredient.id + "' class='media list-group-item list-group-item-action row extra-ingredient-li'>" +
+                " <img class='img-extra-ing col-xs-4' src='"+extra_ingredient.image+"' alt='Extra Ingredient Image'>" +
+                " <div class='media-body col-xd-6'>" +
+                " <h5 class='mt-0 mb-1 ingredient-name'>" + extra_ingredient.name + "</h5>" +
+                " <h3><span class='cost-simbol'>$ </span><span class='number-cost'>" + extra_ingredient.cost + "</span></h3>" +
+                " </div>" +
+                "</li> " +
+                "")
+              new_ingredient.appendTo(list_group);
+            };
+            break;
+          }
+        };
+      });
+
+      /** 
+       * Manipulates the extra ingredients list in ExtraIngredientObject
+       */
+      $(this).on('click', '.extra-ingredient-li', function(event) {
+        var element  = $(this);
+        var element_id = element.attr('id').substring(20);
+        var element_name = element.find('.ingredient-name').text();
+        var element_cost = element.find('.number-cost').text();
+
+        if (element.hasClass('selected-li')) {
+          element.removeClass('selected-li');
+        } else {
+          element.addClass('selected-li');
+        }
+
+        if (ExtraIngredientObject['ingredients'].length == 0) {
+          var IngredientObject = {
+            'id': element_id,
+            'name': element_name,
+            'cost': element_cost,
+          }
+          ExtraIngredientObject['ingredients'].push(IngredientObject);
+        } else {
+          var element_exists = false;
+          for (var i = 0; i < ExtraIngredientObject['ingredients'].length; i++) {
+            var ingredient_object = ExtraIngredientObject['ingredients'][i];
+            if (ingredient_object.id == element_id) {
+              ExtraIngredientObject['ingredients'].splice(i,1);
+              element_exists = true;
+            }
+          };
+          if (!element_exists) {
+            var IngredientObject = {
+              'id': element_id,
+              'name': element_name,
+              'cost': element_cost,
+            }
+            ExtraIngredientObject['ingredients'].push(IngredientObject);
+          }
+        }
+
+        if (ExtraIngredientObject['ingredients'].length >0) {
+          $('#btn-add-extra-ingredient').attr('disabled',false);
+        } else {
+          $('#btn-add-extra-ingredient').attr('disabled',true);
+        };
+      });
+
+      /** 
+       * Adds the product with the extra ingredients to the list
+       */
+      $(this).on('click', '#btn-add-extra-ingredient', function(event) {
+        var element = $(this);
+        function addObjectToJSON(id, quantity, price, type_object) {
+          if (type_object == 'cartridge') {
+            if (id.indexOf('cartridge') >= 0) {
+              var id = id.replace('li-cartridge-', '');
+              var cartridge_id = id.split('-')[0];
+              /** Iterates the cartridges list */
+              function findIdCartridge(cartridge) {
+                return cartridge['id'] == id;
+              }
+              if (!Ticket['extra_ingredients_cartridges'].find(findIdCartridge)) { // Si no existe
+                new_cartridge = {
+                  'id': id,
+                  'cartridge_id': cartridge_id,
+                  'quantity': quantity,
+                  'price': price,
+                  'extra_ingredients': ExtraIngredientObject['ingredients'],
+                }
+
+                Ticket['extra_ingredients_cartridges'].push(new_cartridge);
+
+              } else { // Si ya existe
+                cartridge = Ticket['extra_ingredients_cartridges'].find(findIdCartridge);
+                cartridge['quantity'] = quantity;
+                cartridge['price'] = price;
+                console.log(cartridge);
+              }
+
+            }
+          } else if (type_object == 'package'){
+
+            if (id.indexOf('package') >= 0) {
+              id = id.replace('li-package-', '');
+
+              /** Iterates the packages list*/
+              function findIdPackage(package) {
+                return package['id'] == id;
+              }
+              if (!Ticket['packages'].find(findIdPackage)) { // Si no existe
+                new_package = {}
+                new_package['id'] = id;
+                new_package['quantity'] = quantity;
+                new_package['price'] = price;
+                Ticket['packages'].push(new_package);
+
+              } else {
+                package_cartridge = Ticket['packages'].find(findIdPackage);
+                package_cartridge['quantity'] = quantity;
+                package_cartridge['price'] = price;
+              }
+            }
+          }
+        }
+
+        function addObjectToTicket(){
+          var name = ExtraIngredientObject['name'];
+          var extra_ingredients_name = 'Extra:';
+          var base_cost = parseFloat(ExtraIngredientObject['base_cost']);
+          var cost = base_cost;
+          var quantity;
+          var complete_id = ExtraIngredientObject['id'];
+          var id = ExtraIngredientObject['large_id'];
+          var li_id = ('li-' + id).toString();
+          var type_object = ExtraIngredientObject['large_id'].split('-')[0];
+
+          /**
+           * Concatenates the id's of the extra ingredients
+           */
+          for (var i = 0; i < ExtraIngredientObject['ingredients'].length; i++) {
+            li_id += '-' + ExtraIngredientObject['ingredients'][i].id;
+          };
+
+          /**
+           * Calculates all extra ingredients names
+           */
+          for (var i = 0; i < ExtraIngredientObject['ingredients'].length; i++) {
+            extra_ingredients_name += ExtraIngredientObject['ingredients'][i].name;
+            if (i != ExtraIngredientObject['ingredients'].length - 1) {
+              extra_ingredients_name += ' - ';
+            };
+          };
+
+          quantity = $('ul#sales-list').find('#' + li_id + ' .quantity-li').text();
+          if ($('#' + li_id + '').length != 0) { // If exists
+            quantity++;
+            for (var i = 0; i < ExtraIngredientObject['ingredients'].length; i++) {
+              base_cost += parseFloat(ExtraIngredientObject['ingredients'][i].cost);
+            };
+            cost = base_cost * quantity;
+
+            if (cost % 2 != 0) {
+              cost = cost.toFixed(2);
+            } else {
+              cost += '.00';
+            }
+
+            $('ul#sales-list').find('#' + li_id + ' span.quantity-li').text(quantity);
+            $('ul#sales-list').find('#' + li_id + ' span.total-li').text(cost);
+
+          } else { // If not exists
+            quantity = 1;
+
+            for (var i = 0; i < ExtraIngredientObject['ingredients'].length; i++) {
+                base_cost += parseFloat(ExtraIngredientObject['ingredients'][i].cost);
+            };
+
+            if (base_cost % 2 != 0) {
+              base_cost = base_cost.toFixed(2);
+            } else {
+              base_cost += '.00';
+            }
+
+            nuevo_li = $("" +
+              "<li id='" + li_id + "' class='list-group-item extra-ingredient-li-ticket'>" +
+              "<span class='name-li text-uppercase'>" + name + "</span> " +
+              "<span class='base-cost-li'>" + base_cost + "</span>" +
+              "<span class='remove-icon-li'><i class='material-icons'>remove</i></span>" +
+              "<span class='quantity-li'>" + quantity + "</span>" +
+              "<span class='add-icon-li'><i class='material-icons'>add</i></span>" +
+              "<span class='font-weight-bold s-li'>$ </span>" +
+              "<span class='total-li font-weight-bold'>" + base_cost + "</span>" +
+              "<span class='extra-ingredients-name-li'>" + extra_ingredients_name + "</span>" +
+              "</li>");
+            nuevo_li.appendTo('#sales-list').fadeTo('slow', 1);
+          }
+
+          /** Modificacion del total general */
+          set_total_ticket();
+
+          addObjectToJSON(li_id, quantity, cost, type_object);
+        }
+
+        addObjectToTicket();
+       $('#extra-ingredient-modal').modal('hide');
+      });
+
+      /** 
+       * Adds a product to ticket list 
+       */
       $(this).on('click', '.product-img', function(event) {
         var product_type = $(this).attr('id');
-        var element = $(this)
+        var element = $(this);
+
         function addObjectToJSON(id, quantity, price, type_object) {
           if (type_object == 'cartridge') {
             if (id.indexOf('cartridge') >= 0) {
               id = id.replace('cartridge-', '');
 
-              /** Itera la lista de cartuchos */
-              function findIdCartucho(cartucho) {
-                return cartucho.id == id;
+              /** Iterates the cartridges list */
+              function findIdCartridge(cartridge) {
+                return cartridge.id == id;
               }
-              if (!Ticket.cartuchos.find(findIdCartucho)) { // Si no existe
-                nuevo_cartucho = {}
-                nuevo_cartucho.id = id;
-                nuevo_cartucho.quantity = quantity;
-                nuevo_cartucho.price = price;
-                Ticket.cartuchos.push(nuevo_cartucho);
+              if (!Ticket.cartridges.find(findIdCartridge)) { // Si no existe
+                var new_cartridge = {
+                  'id': id,
+                  'quantity': quantity,
+                  'price': price,
+                }
+                Ticket.cartridges.push(new_cartridge);
 
               } else {
-                mi_cartucho = Ticket.cartuchos.find(findIdCartucho);
-                mi_cartucho.quantity = quantity;
-                mi_cartucho.price = price;
+                var cartridge = Ticket['cartridges'].find(findIdCartridge);
+                cartridge['quantity'] = quantity;
+                cartridge['price'] = price;
               }
             }
           } else if (type_object == 'package'){
             if (id.indexOf('package') >= 0) {
               id = id.replace('package-', '');
 
-              /** Itera la lista de paquetes */
-              function findIdPaquete(paquete) {
-                return paquete.id == id;
+              /** Iterates the packages list*/
+              function findIdPackage(package) {
+                return package.id == id;
               }
-              if (!Ticket.paquetes.find(findIdPaquete)) { // Si no existe
-                nuevo_paquete = {}
-                nuevo_paquete.id = id;
-                nuevo_paquete.quantity = quantity;
-                nuevo_paquete.price = price;
-                Ticket.paquetes.push(nuevo_paquete);
+              if (!Ticket['packages'].find(findIdPackage)) { // Si no existe
+                new_package = {
+                  'id': id,
+                  'quantity': quantity,
+                  'price': price,
+                }
+                Ticket.packages.push(new_package);
 
               } else {
-                mi_paquete = Ticket.paquetes.find(findIdPaquete);
-                mi_paquete.quantity = quantity;
-                mi_paquete.price = price;
+                var package_cartridge = Ticket.packages.find(findIdPackage);
+                package_cartridge['quantity'] = quantity;
+                package_cartridge['price'] = price;
               }
             }
           }
@@ -347,59 +609,72 @@
 
         function addObjectToTicket(){
           let name = element.siblings('.product-name').text();
-          let cost_base = parseFloat(element.siblings('.content-price').children('.product-cost').text());
-          let cost = cost_base;
+          let base_cost = parseFloat(element.siblings('.content-price').children('.product-cost').text());
+          let cost = base_cost;
           let id = element.parent().attr('id');
           let li_id = ('li-' + id).toString();
           let quantity = $('ul#sales-list').find('#' + li_id + ' .quantity-li').text();
           let type_object = element.parent().attr('id').split('-')[0];
+
           if ($('#' + li_id + '').length != 0) {
             quantity++;
 
             cost = cost * quantity;
             if (cost % 2 != 0) {
               cost = cost.toFixed(2);
-            } else 
+            } else {
               cost += '.00';
+            }
+
             $('ul#sales-list').find('#' + li_id + ' span.quantity-li').text(quantity);
             $('ul#sales-list').find('#' + li_id + ' span.total-li').text(cost);
+
           } else {
             quantity = 1;
-            if (cost % 2 != 0)
+
+            if (cost % 2 != 0) {
               cost = cost.toFixed(2);
-            else
+            } else {
               cost += '.00';
-            if (cost_base % 2 != 0)
-              cost_base = cost_base.toFixed(2);
-            else
-              cost_base += '.00';
+            } 
+
+            if (base_cost % 2 != 0) {
+              base_cost = base_cost.toFixed(2);
+            } else {
+              base_cost += '.00';
+            }
+
             $nuevo_li = $("" +
               "<li id='" + li_id + "' class='list-group-item'>" +
               "<span class='name-li text-uppercase'>" + name + "</span> " +
-              "<span class='cost-base-li'>" + cost_base + "</span>" +
+              "<span class='base-cost-li'>" + base_cost + "</span>" +
               "<span class='remove-icon-li'><i class='material-icons'>remove</i></span>" +
               "<span class='quantity-li'>" + quantity + "</span>" +
               "<span class='add-icon-li'><i class='material-icons'>add</i></span>" +
               "<span class='font-weight-bold s-li'>$ </span>" +
               "<span class='total-li font-weight-bold'>" + cost + "</span> " +
               "</li>");
+            
             $nuevo_li.appendTo('#sales-list').fadeTo('slow', 1);
           }
 
-          /** Modificacion del total general */
+          /** Modification of the grand total */
           set_total_ticket();
 
           addObjectToJSON(id, quantity, cost, type_object);
         }
-
         addObjectToTicket();
+        console.log(Ticket);
       });
 
+      /** 
+       * Controls the actions to the btn-remove icon
+       */
       $(this).on('click', '.remove-icon-li', function(event) {
         let element = $(this);
         let quantity_product = element.siblings('.quantity-li').text();
         let quantity_product_container = element.siblings('.quantity-li');
-        let cost_base_product = element.siblings('.cost-base-li').text();
+        let base_cost_product = element.siblings('.base-cost-li').text();
         let total_product = element.siblings('.total-li').text();
         let total_product_container = element.siblings('.total-li');
         let total_ticket = 0;
@@ -419,16 +694,16 @@
 
           /** Removes cartridge from ticket JSON */
 
-          Ticket.cartuchos.forEach(function(cartridge_object) {
+          Ticket.cartridges.forEach(function(cartridge_object) {
             if (cartridge_object.id == id_cartridge) {
-              Ticket.cartuchos.splice(count, 1);
+              Ticket.cartridges.splice(count, 1);
             };
             count += 1;
           });
          
-          Ticket.paquetes.forEach(function(package_object){
+          Ticket.packages.forEach(function(package_object){
             if (package_object.id == id_package){
-              Ticket.paquetes.splice(count, 1);
+              Ticket.packages.splice(count, 1);
             };
             count += 1;
           });
@@ -458,44 +733,44 @@
           var short_type_id = get_type_product(large_type_id);
           
           if(short_type_id == 'cart'){
-            Ticket.cartuchos.forEach(function(cartridge_object, index) {
+            Ticket.cartridges.forEach(function(cartridge_object, index) {
 
               if (cartridge_object.id == id_cartridge) {
 
-                var price_JSON = parseFloat(Ticket.cartuchos[index].price);
-                var quantity_JSON = parseFloat(Ticket.cartuchos[index].quantity);
+                var price_JSON = parseFloat(Ticket.cartridges[index].price);
+                var quantity_JSON = parseFloat(Ticket.cartridges[index].quantity);
 
                 // Modifies the ticket JSON               
-                Ticket.cartuchos[index].quantity -= 1;
-                Ticket.cartuchos[index].price = set_number_format(price_JSON - cost_base_product, 2);
+                Ticket.cartridges[index].quantity -= 1;
+                Ticket.cartridges[index].price = set_number_format(price_JSON - base_cost_product, 2);
 
                 // Modifies the Ticket DOM
                 var new_total_li = 0;
-                new_total_li = Ticket.cartuchos[index].price;
-                set_quantity_li(Ticket.cartuchos[index].quantity);
+                new_total_li = Ticket.cartridges[index].price;
+                set_quantity_li(Ticket.cartridges[index].quantity);
                 set_total_li(new_total_li);
                 throw  StopIteration;
               }
             });
           } else if(short_type_id == 'pack') {
 
-            Ticket.paquetes.forEach(function(package_object, index) {
+            Ticket.packages.forEach(function(package_object, index) {
 
                 if (package_object.id == id_package) {
 
 
-                  var price_JSON = parseFloat(Ticket.paquetes[index].price);
-                  var quantity_JSON = parseFloat(Ticket.paquetes[index].quantity);
+                  var price_JSON = parseFloat(Ticket.packages[index].price);
+                  var quantity_JSON = parseFloat(Ticket.packages[index].quantity);
 
                   // Modifies the ticket JSON               
-                  Ticket.paquetes[index].quantity -= 1;
-                  Ticket.paquetes[index].price = set_number_format(price_JSON - cost_base_product, 2);
+                  Ticket.packages[index].quantity -= 1;
+                  Ticket.packages[index].price = set_number_format(price_JSON - base_cost_product, 2);
 
                   // Modifies the Ticket DOM
                   var new_total_li = 0;
-                  new_total_li = Ticket.paquetes[index].price;
+                  new_total_li = Ticket.packages[index].price;
                   set_total_li(new_total_li);
-                  set_quantity_li(Ticket.paquetes[index].quantity);
+                  set_quantity_li(Ticket.packages[index].quantity);
 
                   throw  StopIteration;
                 }
@@ -522,9 +797,9 @@
             "<span class='text-price-decimal' id='dec-total-price'>" + total_array[1] + "</span>"
           );
 
-          /* Ticket.cartuchos.forEach(function(cartridge_object){
+          /* Ticket.cartridges.forEach(function(cartridge_object){
            if(cartridge_object.id == id_product){
-           Ticket.cartuchos.splice(count, 1);
+           Ticket.cartridges.splice(count, 1);
            };
            count += 1;
            }); */
@@ -542,12 +817,15 @@
          */
         set_total_ticket();
       });
-
+      
+      /** 
+       * Controls the actions to the btn-add icon
+       */
       $(this).on('click', '.add-icon-li', function(event) {
         let element = $(this);
         let quantity_product = element.siblings('span.quantity-li').text();
         let quantity_product_container = element.siblings('span.quantity-li');
-        let cost_base_product = parseFloat(element.siblings('span.cost-base-li').text());
+        let base_cost_product = parseFloat(element.siblings('span.base-cost-li').text());
         let total_product = element.siblings('span.total-li').text();
         let total_product_container = element.siblings('span.total-li');
         let total_ticket = 0;
@@ -580,21 +858,21 @@
           var short_type_id = get_type_product(large_type_id);
           
           if(short_type_id == 'cart'){
-            Ticket.cartuchos.forEach(function(cartridge_object, index) {
+            Ticket.cartridges.forEach(function(cartridge_object, index) {
 
               if (cartridge_object.id == id_cartridge) {
 
-                var price_JSON = parseFloat(Ticket.cartuchos[index].price);
-                var quantity_JSON = parseFloat(Ticket.cartuchos[index].quantity);
+                var price_JSON = parseFloat(Ticket.cartridges[index].price);
+                var quantity_JSON = parseFloat(Ticket.cartridges[index].quantity);
 
                 // Modifies the ticket JSON               
-                Ticket.cartuchos[index].quantity += 1;
-                Ticket.cartuchos[index].price = set_number_format(price_JSON + cost_base_product, 2);
+                Ticket.cartridges[index].quantity += 1;
+                Ticket.cartridges[index].price = set_number_format(price_JSON + base_cost_product, 2);
 
                 // Modifies the Ticket DOM
                 var new_total_li = 0;
-                new_total_li = Ticket.cartuchos[index].price;
-                set_quantity_li(Ticket.cartuchos[index].quantity);
+                new_total_li = Ticket.cartridges[index].price;
+                set_quantity_li(Ticket.cartridges[index].quantity);
                 set_total_li(new_total_li);
 
 
@@ -602,23 +880,23 @@
               }
             });
           } else if(short_type_id == 'pack') {
-            Ticket.paquetes.forEach(function(package_object, index) {
+            Ticket.packages.forEach(function(package_object, index) {
 
                 if (package_object.id == id_package) {
 
 
-                  var price_JSON = parseFloat(Ticket.paquetes[index].price);
-                  var quantity_JSON = parseFloat(Ticket.paquetes[index].quantity);
+                  var price_JSON = parseFloat(Ticket.packages[index].price);
+                  var quantity_JSON = parseFloat(Ticket.packages[index].quantity);
 
                   // Modifies the ticket JSON               
-                  Ticket.paquetes[index].quantity += 1;
-                  Ticket.paquetes[index].price = set_number_format(price_JSON + cost_base_product, 2);
+                  Ticket.packages[index].quantity += 1;
+                  Ticket.packages[index].price = set_number_format(price_JSON + base_cost_product, 2);
 
                   // Modifies the Ticket DOM
                   var new_total_li = 0;
-                  new_total_li = Ticket.paquetes[index].price;
+                  new_total_li = Ticket.packages[index].price;
                   set_total_li(new_total_li);
-                  set_quantity_li(Ticket.paquetes[index].quantity);
+                  set_quantity_li(Ticket.packages[index].quantity);
 
                   throw  StopIteration;
                 }
@@ -635,7 +913,9 @@
         set_total_ticket();
       });
 
-      /** Added the package to modal */
+      /** 
+       * Adds the package to modal 
+       */
       $(this).on('click', '#btn-add-package', function(event) {
 
         var product_type = $(this).attr('id');
@@ -647,7 +927,7 @@
           new_package.quantity = quantity;
           new_package.price = price;
           new_package.name = name;
-          Ticket.paquetes.push(new_package);
+          Ticket.packages.push(new_package);
 
           id_list.forEach(function(element) {
             new_package.id_list.push(element);
@@ -679,8 +959,8 @@
             });
           });
 
-          let cost_base = PackageProduct.cost;
-          let cost = cost_base;
+          let base_cost = PackageProduct.cost;
+          let cost = base_cost;
           let id = element.parent().attr('id');
           let li_id = PackageProduct.id;
           let quantity = 1;
@@ -689,7 +969,7 @@
           $nuevo_li = $("" +
             "<li class='list-group-item'>" +
             "<span class='name-li text-uppercase'>" + package_name_list_string + "</span> " +
-            "<span class='cost-base-li'>" + cost_base + "</span>" +
+            "<span class='base-cost-li'>" + base_cost + "</span>" +
             "<span class='remove-icon-li'><i class='material-icons'>remove</i></span>" +
             "<span class='quantity-li'>" + quantity + "</span>" +
             "<span class='add-icon-li'><i class='material-icons'>add</i></span>" +
@@ -718,7 +998,9 @@
         addProductToTicket();
       });
 
-      /** Despliega el modal para realizar la venta */
+      /** 
+       * Shows the modal to do the sale 
+       */
       $(this).on('click', '#btn-order', function(event) {
         function getActualTime() {
           var datetime = new Date();
@@ -766,7 +1048,7 @@
 
         $('#sales-list li').each(function() {
           let name = $(this).find('.name-li').text();
-          let cost_base = $(this).find('.cost-base-li').text();
+          let base_cost = $(this).find('.base-cost-li').text();
           let quantity = $(this).find('.quantity-li').text();
           let total = $(this).find('.total-li').text();
           let id = $(this).attr('id');
@@ -784,7 +1066,7 @@
           $nuevo_li = $("" +
             "<li id='" + li_id + "' class='list-group-item'>" +
             "<span class='name-li-modal text-uppercase'>" + name + "</span> " +
-            "<span class='cost-li-modal'>" + '$ ' + cost_base + "</span>" +
+            "<span class='cost-li-modal'>" + '$ ' + base_cost + "</span>" +
             "<span class='quantity-li-modal'>" + quantity + "</span>" +
             "<span class='total-li-modal'>" + '$ ' + total + "</span> " +
             "</li>");
@@ -813,14 +1095,9 @@
         setButtonStatus(size_tickets);
       });
 
-      /** Despliega el modal para realizar la venta */
-      $(this).on('click', '#package-img', function(event) {
-        element = $(this);
-        price = element.parent().find('span.product-cost').text();
-        PackageProduct.cost = price;
-      });
-
-      /** Realizar la venta e imprimir ticket */
+      /** 
+       * Sends the new sale and prints the ticket 
+       */
       $(this).on('click', '.btn-printer', function(event) {
         var payment_type = $(this).attr('id');
         var ticket_list = $('#sales-list-modal li');
@@ -877,7 +1154,6 @@
                 $('#btn-pago-tarjeta').attr('disabled', 'true');
                 $('.ticket-id-container').find('span#ticket-id').text(result.ticket_id);
                 $('.ticket-order-container').find('#ticket-order').text(result.ticket_order);
-                console.log($('.ticket-id-container').find('span#ticket-order').text());
                 var options = {
                   mode: 'iframe',
                   popClose: true,
@@ -897,14 +1173,15 @@
             });
           };
         }
-        
       });
 
-      /** Cancelar Venta - Resetear ticket */
+      /** 
+       * Cancels  the sale and resets the ticket object 
+       */
       $(this).on('click', '#btn-orders-reset', function(event) {
         function resetTicketObject() {
-          Ticket.cartuchos.length = 0;
-          Ticket.paquetes.length = 0;
+          Ticket.cartridges.length = 0;
+          Ticket.packages.length = 0;
           PackageProduct.id.length = 0;
         }
 

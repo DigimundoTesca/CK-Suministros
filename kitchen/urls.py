@@ -9,7 +9,8 @@ urlpatterns = [
     # url(r'warehouse/$', views.supplies, name='supplies'),
 
     # Kitchen
-    url(r'kitchen/cold/$', views.cold_kitchen, name='cold_kitchen'),
-    url(r'kitchen/hot/$', views.hot_kitchen, name='hot_kitchen'),
+    url(r'kitchen/$', views.kitchen, name='kitchen'),
+    # url(r'kitchen/cold/$', views.cold_kitchen, name='cold_kitchen'),
+    # url(r'kitchen/hot/$', views.hot_kitchen, name='hot_kitchen'),
     url(r'kitchen/assembly/$', views.assembly, name='assembly'),
 ]

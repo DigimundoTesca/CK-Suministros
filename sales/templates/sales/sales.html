@@ -65,7 +65,7 @@
         </button>
       </div>
       <div class="col-xs-12">
-        <div class="card card-scroll-x">
+        <div class="card card-scroll-x mt-1">
           <table class="table table-hover table-sales-details">
             <thead class="thead-inverse">
               <tr>
@@ -100,7 +100,7 @@
                     {% endfor %}
                   </td>
                   <td>{{ ticket.ticket_parent.seller }}</td>
-                  <td>
+                  <td class="td-total">
                     {{ ticket.total }}
                   </td>
                   <td class="header-actions">
@@ -610,6 +610,7 @@
       var btn_printer = $('.btn-printer');
       var ticket_details;
       var sales_list_modal = $('#sales-list-modal');
+      var total = $(this).parent().siblings('.td-total').text();
 
       function show_modal(dataResponse) {
         var nuevo_li;
@@ -621,7 +622,7 @@
         "<li>" +
         "<span class='name-li-title-modal'>Nombre</span> " +
         "<span class='cost-li-title-modal'>Cost</span>" +
-        "<span class='cant-li-title-modal'>Cant</span>" +
+        "<span class='quantity-li-title-modal'>Cant</span>" +
         "<span class='total-li-title-modal'>Total</span> " +
         "</li>");
 
@@ -649,7 +650,7 @@
             "<li class='list-group-item'>" +
             "<span class='name-li-modal text-uppercase'>" + name + "</span> " +
             "<span class='cost-li-modal'>" + '$ ' + cost_base + "</span>" +
-            "<span class='cant-li-modal'>" + quantity + "</span>" +
+            "<span class='quantity-li-modal'>" + quantity + "</span>" +
             "<span class='total-li-modal'>" + '$ ' + total + "</span> " +
             "</li>");
 
@@ -684,7 +685,7 @@
             "<li class='list-group-item'>" +
             "<span class='name-li-modal text-uppercase'>" + name + "</span> " +
             "<span class='cost-li-modal'>" + '$ ' + cost_base + "</span>" +
-            "<span class='cant-li-modal'>" + quantity + "</span>" +
+            "<span class='quantity-li-modal'>" + quantity + "</span>" +
             "<span class='total-li-modal'>" + '$ ' + total + "</span> " +
             "</li>");
 
@@ -693,8 +694,16 @@
 
         ticket_details.cartridges.forEach(iterate_cartridges);
         ticket_details.packages.forEach(iterate_packages);
-        $("#ticket-id").text(id_element)
+        $("#ticket-id").text(id_element);
         
+        var nuevo_li = $("" +
+          "<li class='total-ticket-container mt-1'>" +
+          " <span id='total-ticket'>$ <span class='total-ticket-cant'> " +
+          " " + total +"</span></span> " +
+          "</li>" +
+          "");
+
+            sales_list_modal.append(nuevo_li);
         $('#modal-ticket').modal('show');
       }
 
@@ -732,7 +741,7 @@
         },
         complete: function(result){
           ticket_details = result.responseJSON.ticket_details;
-
+          $('.ticket-order-container').find('#ticket-order').text(ticket_details.ticket_order);
           setTimeout(function() {
             show_modal(ticket_details)
           }, 750);
@@ -810,7 +819,6 @@
       /**
        * Convert JSON TO CSV
        */
-
         var tickets_json = null
         $.ajax({
           url: "{% url 'sales:sales' %}",

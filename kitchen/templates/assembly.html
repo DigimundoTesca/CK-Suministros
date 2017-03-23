@@ -12,7 +12,7 @@
       <table class="table table-hoverable table-responsive">
         <thead class="thead-inverse">
           <tr>
-            <th>Ticket ID</th>
+            <th>ORDEN</th>
             <th>Productos</th>
             <th>Paquetes</th>
             <th></th>
@@ -21,7 +21,7 @@
         <tbody>
           {% for order in orders %}
             <tr>
-              <th>{{ order.ticket_id }}</th>
+              <th>{{ order.ticket_order }}</th>
               <td>
                 {% for product in order.products %}
                   <span class="badge badge-blue">
