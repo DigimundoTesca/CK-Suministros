@@ -17,7 +17,7 @@
           {% if product.cartridges %}
             {% for cartridge in product.cartridges %}
               <tr>
-                <th scope="row" class="id_kitchen_table">{{ product.ticket_id }}</th>
+                <th scope="row" class="id_kitchen_table">{{ product.ticket_order }}</th>
                 {% if cartridge.name %}
                   <td>{{ cartridge.name }}</td>
                 {% else %}

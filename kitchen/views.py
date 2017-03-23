@@ -118,7 +118,8 @@ def kitchen(request):
             processed_product_object = {
                 'ticket_id': processed.ticket,
                 'cartridges': [],
-                'packages': []
+                'packages': [],
+                'ticket_order':processed.ticket.order_number
             }
 
             for ticket_detail in TicketDetail.objects.filter(ticket=processed.ticket):
