@@ -44,6 +44,7 @@
               </td>
               <td>
                 <button class="btn btn-success btn-lg btn-assembly">Ensamblar</button>
+                <input type="hidden" value="{{ order.ticket_id }}" class="ticket_id">
               </td>
             </tr>
           {% endfor %}
@@ -97,7 +98,9 @@
         assembly_button.removeClass('btn-success').addClass('btn-primary');
         holdActive = false;
         var element = $(this);
-        var order_id = element.parent('td').siblings('th').text();
+
+        var order_id = element.siblings('.ticket_id').val()
+
         $.ajax({
           url: '{% url "kitchen:assembly" %}',
           type: 'POST',
