@@ -427,7 +427,7 @@ def new_sale(request):
 
             for ticket in tickets:
                 order_number_ticket = ticket.order_number
-                if order_number_ticket > order_number
+                if order_number_ticket > order_number:
                     order_number = order_number_ticket
 
             new_ticket_object = Ticket(
