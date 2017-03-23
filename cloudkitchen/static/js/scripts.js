@@ -5,8 +5,11 @@ $(function() {
   if (path == '/sales/') {
     $('#link-sales').addClass('active');
   }
-  else if (path == '/sales/new/') {
-    $('#link-new-sale').addClass('active');
+  else if (path == '/sales/new/breakfast/') {
+    $('#link-new-breakfast').addClass('active');
+  }
+  else if (path == '/sales/new/lunch/') {
+    $('#link-new-lunch').addClass('active');
   }
   else if (path == '/supplies/' || path == '/supplies/new/') {
     $('#link-warehouse').addClass('active');
@@ -17,7 +20,10 @@ $(function() {
   else if (path == '/customers/register/list/') {
     $('#link-customers').addClass('active');
   }
-  else if (path == '/kitchen/hot/' || path == '/kitchen/cold/' ) {
+  else if (path == '/kitchen/' || path == '/kitchen/assembly/' ) {
     $('#link-kitchen').addClass('active');
+  }
+  else if (path == '/diners/') {
+    $('#link-diners').addClass('active');
   }
 });

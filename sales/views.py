@@ -496,10 +496,11 @@ def new_sale(request):
         return JsonResponse({'status': 'error'})
 
     else:
+        print()
         cartridges_list = Cartridge.objects.all().order_by('name')
         package_cartridges = PackageCartridge.objects.all().order_by('name')
         extra_ingredients = ExtraIngredient.objects.all().prefetch_related('ingredient');
-        template = 'sales/new_sale.html'
+        template = 'new/lunch.html'
         title = 'Nueva venta'
         extra_ingredients_products_list = []
 
