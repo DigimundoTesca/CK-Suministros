@@ -243,6 +243,7 @@ def sales(request):
         for ticket in tickets:
             ticket_object = {
                 'ticket_parent': ticket,
+                'order_number': ticket.order_number,
                 'cartridges': [],
                 'packages': [],
                 'total': Decimal(0.00),
@@ -411,8 +412,7 @@ def new_sale(request):
             cash_register = CashRegister.objects.first()
             ticket_detail_json_object = json.loads(request.POST.get('ticket'))
             payment_type = ticket_detail_json_object['payment_type']
-            max_value = 0
-            order_number = 0
+            order_number = 1
             """ 
             Gets the tickets in the week and returns n + 1 
             where n is the Ticket.order_number biggest for the current week
@@ -427,12 +427,12 @@ def new_sale(request):
 
             for ticket in tickets:
                 order_number_ticket = ticket.order_number
-                if order_number_ticket > order_number:
-                    order_number = order_number_ticket
+                if order_number_ticket >= order_number:
+                    order_number = order_number_ticket + 1
 
             new_ticket_object = Ticket(
                 cash_register=cash_register, seller=user_profile_object, 
-                payment_type=payment_type, order_number=order_number_ticket)
+                payment_type=payment_type, order_number=order_number)
             new_ticket_object.save()
 
             """
