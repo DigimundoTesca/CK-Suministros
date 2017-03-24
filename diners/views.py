@@ -2,7 +2,8 @@
 # -*- encoding: utf-8 -*-
 from __future__ import unicode_literals
 
-from datetime import date, datetime, timedelta
+import  pytz
+from datetime import date, datetime, timedelta, time
 
 from django.http import HttpResponse
 from django.shortcuts import render, redirect, get_object_or_404
@@ -12,6 +13,19 @@ from django.core.paginator import Paginator
 
 from .models import AccessLog, Diner
 from cloudkitchen.settings.base import PAGE_TITLE
+
+def naive_to_datetime(nd):
+    if type(nd) == datetime:
+        if nd.tzinfo is not None and nd.tzinfo.utcoffset(nd) is not None: # Is Aware
+            return nd
+        else: # Is Naive
+            return pytz.timezone('America/Mexico_City').localize(nd)              
+
+    elif type(nd) == date:
+        d = nd
+        t = time(0,0)
+        new_date = datetime.combine(d, t)
+        return pytz.timezone('America/Mexico_City').localize(new_date)
 
 def diners_paginator(request, queryset, num_pages):
     result_list = Paginator(queryset, num_pages)
@@ -42,49 +56,41 @@ def diners_paginator(request, queryset, num_pages):
         }
     return context
 
-def get_access_log():
+def get_access_logs():
     year = int(datetime.now().year)
     month = int(datetime.now().month)
     day = int(datetime.now().day)
-    initial_date = date(year, month, day)
-    print(initial_date)
-    final_date = initial_date + timedelta(days=1)
+    initial_date = naive_to_datetime(date(year, month, day))
+    final_date = naive_to_datetime(initial_date + timedelta(days=1))
     diners_access_log = AccessLog.objects.filter(access_to_room__range=(initial_date, final_date)).order_by('-access_to_room')
     return diners_access_log
 
 @csrf_exempt
 def RFID(request):
-    if request.method == 'POST':
-        try:
-            rfid = str(request.body).split('"')[3].lstrip()
-            if rfid is None:
-                return HttpResponse('No se recibió RFID\n')
+    if request.method == 'GET':
+        rfid = str(request.body).split('"')[3].lstrip()
+        if rfid is None:
+            return HttpResponse('No se recibió RFID\n')
+        else:
+            access_logs = get_access_logs()
+            exists = False
+            
+            for log in access_logs:
+                if rfid == log.RFID:
+                    print('EXISTE')
+                    exists = True
+
+            if exists:
+                return HttpResponse('El usuario ya se ha registrado')
             else:
                 try:
-                    access_logs = get_access_log()
                     diner = Diner.objects.get(RFID=rfid)
-                    exists = False
-                    
-                    for log in access_logs:
-                        print(log.RFID)
-                        print(diner.RFID)
-
-                        if diner.RFID == log.RFID:
-                            exists = True
-
-                    if exists:
-                        return HttpResponse('El usuario ya se ha registrado')
-                    else:
-                        new_access_log = AccessLog(diner=diner, RFID=rfid)
-                        new_access_log.save()    
-
+                    new_access_log = AccessLog(diner=diner, RFID=rfid)
+                    new_access_log.save()
                 except Diner.DoesNotExist:
                     new_access_log = AccessLog(diner=None, RFID=rfid)
-                    new_access_log.save()
-        except:
-            print('Error Interno')
-        
-        
+                    new_access_log.save()    
+
         return HttpResponse('Operacion Terminada\n')
 
     else:
@@ -92,7 +98,7 @@ def RFID(request):
 
 
 def diners(request):
-    diners_objects = get_access_log()
+    diners_objects = get_access_logs()
     count = 0
     diners_list = []
     for diner in diners_objects:
