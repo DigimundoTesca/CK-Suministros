@@ -67,7 +67,7 @@ def get_access_logs():
 
 @csrf_exempt
 def RFID(request):
-    if request.method == 'GET':
+    if request.method == 'POST':
         rfid = str(request.body).split('"')[3].lstrip()
         if rfid is None:
             return HttpResponse('No se recibió RFID\n')
@@ -77,8 +77,8 @@ def RFID(request):
             
             for log in access_logs:
                 if rfid == log.RFID:
-                    print('EXISTE')
                     exists = True
+                    break
 
             if exists:
                 return HttpResponse('El usuario ya se ha registrado')
