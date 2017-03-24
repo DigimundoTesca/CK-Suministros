@@ -12,18 +12,23 @@ from .models import AccessLog, Diner
 @csrf_exempt
 def RFID(request):
     if request.method == 'POST':
-        rfid = request.POST['rfid']
+        try:
+            print(request.body)
+            rfid = str(request.body).split('"')[3].lstrip()
+            if rfid is None:
+                return HttpResponse('No se recibió RFID\n')
+            else:
+                try:
+                    diner = Diner.objects.get(RFID=rfid)
+                    new_access_log = AccessLog(diner=diner, RFID=rfid)
+                    new_access_log.save()    
+                except Diner.DoesNotExist:
+                    new_access_log = AccessLog(diner=None, RFID=rfid)
+                    new_access_log.save()
+        except:
+            print('Error Interno')
         
-        if rfid is None:
-            return HttpResponse('No se recibió RFID\n')
-        else:
-            try:
-                diner = Diner.objects.get(RFID=rfid)
-                new_access_log = AccessLog(diner=diner, RFID=rfid)
-                new_access_log.save()    
-            except Diner.DoesNotExist:
-                new_access_log = AccessLog(diner=None, RFID=rfid)
-                new_access_log.save()
+        
         return HttpResponse('Operacion Terminada\n')
 
     else:
