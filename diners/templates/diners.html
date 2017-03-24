@@ -3,28 +3,50 @@
 
 {% block content %}
 <div class="container-fluid">
-<input type="text" id="myInput" placeholder="Buscar Comensal por ID">
+  <input type="text" id="myInput" placeholder="Buscar Comensal por ID">
   <div class="row">
     <table class="table" id="myTable">
       <thead class="thead-inverse">
         <tr>
           <th>RFID</th>
+          <th>Núm. Empleado</th>
           <th>Nombre</th>
           <th>Fecha de Acceso</th>                 
         </tr>
       </thead>      
       <tbody>      
-        {%for object in objects %}        
+        {%for diner in diners %}        
         <tr>       
-
-          <td>{{ object.RFID }}</td>          
-          <td>{{ object.diner.name }}</td>          
-          <td>{{ object.access_to_room }}</td>
+          <th>{{ diner.RFID }}</th> 
+          <td>{{ diner.diner.employee_number }}</td>          
+          <td>{{ diner.diner.name }}</td>          
+          <td>{{ diner.access_to_room }}</td>
         </tr>      
         {% endfor %}        
       </tbody>
     </table>
   </div>
+
+  <div class="row">
+    {{  paginator }}
+    <div class="col-xs-12">
+      <h3 class="text-xs-right" >Págnas totales: <strong>{{ paginator.pages }}</strong></h3>
+    </div>
+    <div class="col-xs-12">
+      {% if  paginator.has_prev %}
+        <a href="{% url 'diners:diners' %}?num_page={{ paginator.prev_page }}">Página Anterior</a>
+      {% else %}
+        <a disabled="disabled" href="{% url 'diners:diners' %}">No hay Página Anterior</a>
+      {% endif %}
+          |
+      {% if paginator.has_next %}
+        <a href="{% url 'diners:diners' %}?num_page={{ paginator.next_page }}">Página siguiente</a>
+      {% else %}
+        <a disabled="disabled" href="">No hay Página Siguiente</a>
+      {% endif %}
+    </div>
+  </div>
+
 </div> 
 
 {% endblock %} 
@@ -32,11 +54,6 @@
 {% block javascript %}
 <script type="text/javascript" charset="utf-8" async>
   $(function() {
-    function rel(){
-      location.reload();
-    }
-
-    setTimeout(rel, 3000);
 
     $(this).on('keyup', '#myInput', function(event) {
       /** Declare variables */
