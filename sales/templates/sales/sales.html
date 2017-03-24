@@ -70,6 +70,7 @@
             <thead class="thead-inverse">
               <tr>
                 <th>Id</th>
+                <th>Orden</th>
                 <th class="header-date">Fecha</th>
                 <th class="header-products">Productos</th>
                 <th class="header-packages">Paquetes</th>
@@ -82,6 +83,7 @@
               {% for ticket in tickets %}
                 <tr>
                   <th class="header-id">{{ ticket.ticket_parent }}</th>
+                  <th>{{ ticket.order_number }}</th>
                   <td class="header-date">{{ ticket.ticket_parent.created_at }}</td>
                   <td class="header-products">
                     {% for cartridge in ticket.cartridges %}

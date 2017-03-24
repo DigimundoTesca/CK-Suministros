@@ -52,7 +52,7 @@
             <div class="card col-xs-12 card-scroll card-outline-info" id="group-complements">
               <div class="card-block products-block">
                 {% for cartridge in cartridges %}
-                  {% if cartridge.is_active %}
+                {% if cartridge.is_active and cartridge.kind_of_food == 'BF'  %}
                     {% if cartridge.category == 'CO' %}
                       <div class="card-block product-container" id="cartridge-{{ cartridge.pk }}">
                         <h6 class="product-name">{{ cartridge.name }}</h6>
@@ -82,7 +82,7 @@
               <div class="card-block products-block">
                 {% for cartridge in cartridges %}
                 {% if cartridge.is_active %}
-                  {% if cartridge.category == 'FD' %}
+                  {% if cartridge.category == 'FD' and cartridge.kind_of_food == 'BF' %}
                     <div class="card-block product-container" id="cartridge-{{ cartridge.pk }}">
                       <h6 class="product-name">{{ cartridge.name }}</h6>
                       <img src="{{ cartridge.image.url }}" id="cartridge-img-{{ cartridge.pk }}" class="product-img" alt="Nombre de la bebida">
@@ -113,7 +113,7 @@
                 <div class="card col-xs-12 card-scroll packages-block card-outline-info" id="group-dishes">
                   <div class="card-block">
                     {% for package in package_cartridges %}
-                      {% if package.is_active %}
+                      {% if package.is_active and package.kind_of_food == 'BF' %}
                         <div class="card-block product-container" id="package-{{ package.pk }}">
                           <h6 class="product-name">{{ package.name }}</h6>
                           <img src="{{ package.image.url }}" id="package-img-{{ package.pk }}" class="product-img" alt="Imagen del Paquete">
@@ -1135,7 +1135,7 @@
           if (ticket_list.length > 2) {
             JSONTicket = JSON.stringify(Ticket);
             $.ajax({
-              url: '{% url "sales:new_sale" %}',
+              url: '{% url "sales:new_breakfast" %}',
               type: 'POST',
               data: {
                 'ticket': JSONTicket,
