@@ -2,6 +2,8 @@
 # -*- encoding: utf-8 -*-
 from __future__ import unicode_literals
 
+from datetime import date, datetime, timedelta
+
 from django.http import HttpResponse
 from django.shortcuts import render, redirect, get_object_or_404
 from diners.models import AccessLog
@@ -40,6 +42,16 @@ def diners_paginator(request, queryset, num_pages):
         }
     return context
 
+def get_diners():
+    year = int(datetime.now().year)
+    month = int(datetime.now().month)
+    day = int(datetime.now().day)
+    initial_date = date(year, month, day)
+    print(initial_date)
+    final_date = initial_date + timedelta(days=1)
+    diners_access_log = AccessLog.objects.filter(access_to_room__range=(initial_date, final_date)).order_by('-access_to_room')
+    return diners_access_log
+
 @csrf_exempt
 def RFID(request):
     if request.method == 'POST':
@@ -49,9 +61,13 @@ def RFID(request):
                 return HttpResponse('No se recibió RFID\n')
             else:
                 try:
+                    diners = get_diners()
                     diner = Diner.objects.get(RFID=rfid)
-                    new_access_log = AccessLog(diner=diner, RFID=rfid)
-                    new_access_log.save()    
+                    if diner in diners:
+                        return HttpResponse('El usuario ya se ha registrado')
+                    else:
+                        new_access_log = AccessLog(diner=diner, RFID=rfid)
+                        new_access_log.save()    
                 except Diner.DoesNotExist:
                     new_access_log = AccessLog(diner=None, RFID=rfid)
                     new_access_log.save()
@@ -66,8 +82,16 @@ def RFID(request):
 
 
 def diners(request):
-    diners_access_log = AccessLog.objects.all().order_by('-access_to_room')
-    pag = diners_paginator(request, diners_access_log, 50)
+    diners_objects = get_diners()
+    count = 0
+    diners_list = []
+    for diner in diners_objects:
+        if diner not in diners_list:
+            diners_list.append(diner)
+            count += 1
+    total_diners = len(diners_list)
+
+    pag = diners_paginator(request, diners_objects, 50)
     template = 'diners.html'
     title = 'Comensales del Dia'
     page_title = PAGE_TITLE
@@ -77,5 +101,6 @@ def diners(request):
         'page_title': title,
         'diners' : pag['queryset'],
         'paginator': pag,
+        'total_diners': total_diners,
     }
     return render(request, template, context)    
