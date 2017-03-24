@@ -42,7 +42,7 @@ def diners_paginator(request, queryset, num_pages):
         }
     return context
 
-def get_diners():
+def get_access_log():
     year = int(datetime.now().year)
     month = int(datetime.now().month)
     day = int(datetime.now().day)
@@ -61,13 +61,16 @@ def RFID(request):
                 return HttpResponse('No se recibió RFID\n')
             else:
                 try:
-                    diners = get_diners()
+                    access_logs = get_access_log()
                     diner = Diner.objects.get(RFID=rfid)
-                    if diner in diners:
-                        return HttpResponse('El usuario ya se ha registrado')
-                    else:
-                        new_access_log = AccessLog(diner=diner, RFID=rfid)
-                        new_access_log.save()    
+                    exists = False
+                    
+                    for log in access_logs:
+                        if diner.RFID == log.RFID:
+                            return HttpResponse('El usuario ya se ha registrado')
+                        else:
+                            new_access_log = AccessLog(diner=diner, RFID=rfid)
+                            new_access_log.save()    
                 except Diner.DoesNotExist:
                     new_access_log = AccessLog(diner=None, RFID=rfid)
                     new_access_log.save()
@@ -82,7 +85,7 @@ def RFID(request):
 
 
 def diners(request):
-    diners_objects = get_diners()
+    diners_objects = get_access_log()
     count = 0
     diners_list = []
     for diner in diners_objects:
