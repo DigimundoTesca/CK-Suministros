@@ -378,10 +378,10 @@ def sales(request):
 
     # Any other request method:
     template = 'sales/sales.html'
-    title = 'Ventas'
+    title = 'Registro de Ventas'
     context = {
-        'page_title': PAGE_TITLE,
-        'title': title,
+        'title': PAGE_TITLE + ' | ' + title,
+        'page_title': title,
         'actual_year': datetime.now().year,
         'sales_week': get_sales_actual_week(),
         'today_name': get_name_day(datetime.now()),
@@ -499,13 +499,15 @@ def new_sale(request):
         path = request.get_full_path().split('/')[3]
         if path == 'breakfast':
             template = 'new/breakfast.html'
+            title = 'Vender Desayuno'
+
         else:
             template = 'new/food.html'
+            title = 'Vender Comida'
 
         cartridges_list = Cartridge.objects.all().order_by('name')
         package_cartridges = PackageCartridge.objects.all().order_by('name')
         extra_ingredients = ExtraIngredient.objects.all().prefetch_related('ingredient');
-        title = 'Nueva venta'
         extra_ingredients_products_list = []
 
         for cartridge in cartridges_list:
@@ -528,8 +530,8 @@ def new_sale(request):
 
 
         context = {
-            'page_title': PAGE_TITLE,
-            'title': title,
+            'title': PAGE_TITLE + ' | ' + title,
+            'page_title': title,
             'cartridges': cartridges_list,
             'package_cartridges': package_cartridges,
             'extra_ingredients': extra_ingredients,

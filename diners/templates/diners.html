@@ -9,6 +9,7 @@
       <thead class="thead-inverse">
         <tr>
           <th>RFID</th>
+          <th>Núm. Empleado</th>
           <th>Nombre</th>
           <th>Fecha de Acceso</th>                 
         </tr>
@@ -16,8 +17,8 @@
       <tbody>      
         {%for object in objects %}        
         <tr>       
-
-          <td>{{ object.RFID }}</td>          
+          <th>{{ object.RFID }}</th> 
+          <td>{{ object.diner.employee_number }}</td>          
           <td>{{ object.diner.name }}</td>          
           <td>{{ object.access_to_room }}</td>
         </tr>      

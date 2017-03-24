@@ -8,6 +8,7 @@ from diners.models import AccessLog
 from django.views.decorators.csrf import csrf_exempt
 
 from .models import AccessLog, Diner
+from cloudkitchen.settings.base import PAGE_TITLE
 
 @csrf_exempt
 def RFID(request):
@@ -39,8 +40,10 @@ def diners(request):
 
     template = 'diners.html'
     title = 'Comensales del Dia'
+    page_title = PAGE_TITLE
     context={
-        'title' : title,
+        'title': PAGE_TITLE + ' | ' + title,
+        'page_title': title,
         'objects' : objects
     }
     return render(request, template, context)    
