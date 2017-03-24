@@ -5,11 +5,16 @@
 <div class="container-fluid">
   <input type="text" id="myInput" placeholder="Buscar Comensal por ID">
   <div class="row">
+    <div class="col xs 12 mt-1 mb-1">
+      <h3 class="text-xs-right">Comensales de Hoy: <span class="badge badge-blue">{{ total_diners }}</span></h3>
+    </div>
+  </div>
+  <div class="row">
     <table class="table" id="myTable">
       <thead class="thead-inverse">
         <tr>
           <th>RFID</th>
-          <th>Núm. Empleado</th>
+          <th>SAP</th>
           <th>Nombre</th>
           <th>Fecha de Acceso</th>                 
         </tr>
