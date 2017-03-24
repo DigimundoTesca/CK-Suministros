@@ -13,7 +13,6 @@ from .models import AccessLog, Diner
 def RFID(request):
     if request.method == 'POST':
         try:
-            print(request.body)
             rfid = str(request.body).split('"')[3].lstrip()
             if rfid is None:
                 return HttpResponse('No se recibió RFID\n')
@@ -41,7 +40,7 @@ def diners(request):
     template = 'diners.html'
     title = 'Comensales del Dia'
     context={
-        'titie' : title,
+        'title' : title,
         'objects' : objects
     }
     return render(request, template, context)    
