@@ -48,7 +48,7 @@
             </a>
           </li>
           {% endif %}
-          
+
           <li class="page-item"><a class="page-link" href="{% url 'diners:diners' %}?num_page={{ paginator.prev_page }}">{{ paginator.prev_page }}</a></li>
           <li class="page-item active">
             <span class="page-link">
@@ -68,7 +68,7 @@
           <li class="page-item disbled">
             <a class="page-link" href="#" aria-label="Next">
               <span aria-hidden="true">&raquo;</span>
-              
+
               <span class="sr-only">Next</span>
             </a>
           </li>
@@ -89,7 +89,7 @@
     function rel(){
       location.reload();
     }
-    setTimeout(rel, 5000);
+    setTimeout(rel, 3000);
 
     $(this).on('keyup', '#myInput', function(event) {
       /** Declare variables */
