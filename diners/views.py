@@ -66,11 +66,18 @@ def RFID(request):
                     exists = False
                     
                     for log in access_logs:
+                        print(log.RFID)
+                        print(diner.RFID)
+
                         if diner.RFID == log.RFID:
-                            return HttpResponse('El usuario ya se ha registrado')
-                        else:
-                            new_access_log = AccessLog(diner=diner, RFID=rfid)
-                            new_access_log.save()    
+                            exists = True
+
+                    if exists:
+                        return HttpResponse('El usuario ya se ha registrado')
+                    else:
+                        new_access_log = AccessLog(diner=diner, RFID=rfid)
+                        new_access_log.save()    
+
                 except Diner.DoesNotExist:
                     new_access_log = AccessLog(diner=None, RFID=rfid)
                     new_access_log.save()
