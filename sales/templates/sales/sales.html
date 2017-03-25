@@ -371,7 +371,7 @@
         success: function(result) {
           var sales_day_earnings_list = [];
           var initial_hour = '08:00',
-              final_hour = '22:00',
+              final_hour = '16:00',
               separation_time = 60; // In minutes
           var sales_day_object_list = result['sales_day_list'];
           var total_datas = sales_day_object_list.length;
@@ -383,7 +383,7 @@
             title: "Éxito",
             text: "Gráfica generada",
             type: "success",
-            timer: 750,
+            timer: 600,
             showConfirmButton: false
           }).then(
           function(){},
@@ -490,7 +490,6 @@
       data: {
         labels: [
         "Out",
-        "21:00 - 22:00", "20:00 - 21:00", "19:00 - 20:00", "18:00 - 19:00", "17:00 - 18:00", "16:00 - 17:00",
         "15:00 - 16:00", "14:00 - 15:00", "13:00 - 14:00", "12:00 - 13:00", "11:00 - 12:00", "10:00 - 11:00", "09:00 - 10:00", "08:00 - 09:00",
         ],
         datasets: [{
@@ -498,22 +497,14 @@
           data: [],
           backgroundColor: [
           'rgba(247,202,24,0.7)',
-          'rgba(103,65,114,0.7)',
-          'rgba(65,131,215,0.7)',
-          'rgba(246,36,89,0.7)',
-          'rgba(103,65,114,0.7)',
-          'rgba(54,215,183,0.7)',
-          'rgba(46,204,113,0.7)',
           'rgba(247,202,24,0.7)',
-          'rgba(249,105,14,0.7)',
-          'rgba(242,38,19,0.7)',
-          'rgba(246,36,89,0.7)',
-          'rgba(103,65,114,0.7)',
-          'rgba(65,131,215,0.7)',
-          'rgba(54,215,183,0.7)',
-          'rgba(46,204,113,0.7)',
           'rgba(247,202,24,0.7)',
-          'rgba(249,105,14,0.7)',
+          'rgba(247,202,24,0.7)',
+          'rgba(247,202,24,0.7)',
+          'rgba(46,204,113,0.7)',
+          'rgba(46,204,113,0.7)',
+          'rgba(46,204,113,0.7)',
+          'rgba(46,204,113,0.7)',
           ],
           borderWidth: 0
         }]
@@ -600,7 +591,6 @@
         },
       });
     });
-
 
     /**
      * Get's the ticket id for printer-icon selected 
