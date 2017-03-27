@@ -15,7 +15,7 @@ class Rol(models.Model):
         verbose_name_plural = 'Roles'
 
     def __str__(self):
-        return self.rol
+        return '%s' % self.rol
 
 
 class User(AbstractUser):
