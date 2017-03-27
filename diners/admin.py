@@ -13,7 +13,6 @@ class DinerAdmin(admin.ModelAdmin):
 class AccessLogAdmin(admin.ModelAdmin):
     list_display = ('id', 'RFID', 'diner', 'access_to_room', )
     ordering = ('access_to_room',) 
-    list_filter = ('diner', 'RFID', 'access_to_room')
+    list_filter = ('diner', 'RFID', 'access_to_room', )
     search_fields = ('RFID', )
-
-
+    date_hierarchy = 'access_to_room'

@@ -15,7 +15,12 @@
         </form>
       </div>
     </div>
-    <input class="col-xs-12" type="text" id="myInput" placeholder="Buscar Comensal por ID">
+    <div class="form-inline col-xs-12 diners-id-form mb-1">
+      <div class="input-group">
+        <div class="input-group-addon"><i class="material-icons">search</i></div>
+        <input type="text" class="form-control form-control-lg" id="input-diners-search" placeholder="Buscar Comensal por ID">
+      </div>
+    </div>
     <div class="col xs 12 mt-1 mb-1">
       <h3 class="text-xs-right">Comensales hasta hoy: <span class="badge badge-blue">{{ total_diners }}</span></h3>
     </div>
@@ -152,10 +157,42 @@
       });      
     }
 
-    $(this).on('keyup', '#myInput', function(event) {
+    $(this).on('click', '#btn-set-new-range', function(event) {
+      dt_year = $('#dt-year').val();
+      dt_week = $('#dt-week').val();
+      $.ajax({
+        url: "{% url 'sales:sales' %}",
+        type: 'POST',
+        data: {
+          csrfmiddlewaretoken: '{{ csrf_token }}',
+          'dt_year': dt_year,
+          'dt_week': dt_week,
+          'type': 'sales_week',
+        },
+        traditional: true,
+        datatype: 'jsonp',
+        success: function(result) {
+          swal({
+            title: 'Oops!',
+            type: 'info',
+            text: 'Estamos dando mantenimiento a este modulo, volveremos a la brevedad.',
+            timer: 2000
+          }).then( function () {}, function (dismiss) {
+            if (dismiss === 'timer') {
+            }
+          })
+        },
+
+        error: function(result, jqXHR, textStatus, errorThrown) {
+          console.log(result);
+        },
+      });
+    });
+
+    $(this).on('keyup', '#input-diners-search', function(event) {
       /** Declare variables */
       var input, filter, table, tr, td, i;
-      input = document.getElementById("myInput");
+      input = document.getElementById("input-diners-search");
       filter = input.value.toUpperCase();
       table = document.getElementById("myTable");
       tr = table.getElementsByTagName("tr");

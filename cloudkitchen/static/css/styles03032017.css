@@ -539,10 +539,16 @@ transition: all 1s ease;
   background: #fff url("data:image/svg+xml;charset=utf8,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 4 5'%3E%3Cpath fill='%23333' d='M2 0L0 2h4zm0 5L0 3h4z'/%3E%3C/svg%3E") no-repeat right .75rem center;
   -webkit-background-size: 8px 10px;
   background-size: 8px 10px;
-  border: 1px solid rgba(0,       0, 0, 0.1);
+  border: 1px solid rgba(0, 0, 0, 0.1);
   border-radius: .25rem;
   -moz-appearance: none;
   -webkit-appearance: none;
+}
+.diners-id-form .input-group {
+  width: 100%;
+}
+.diners-id-form .input-group .input-group-addon {
+  width: 5em;
 }
 .dropdown-menu {
   margin-left: -5rem !important;
@@ -737,15 +743,16 @@ transition: all 1s ease;
   width: 3rem;
 }
 
-#myInput {    
+/*#myInput {    
     background-position: 10px 12px; /* Position the search icon */
     background-repeat: no-repeat; /* Do not repeat the icon image */
-    width: 100%; /* Full-width */
-    font-size: 16px; /* Increase font-size */
+    /*width: 100%;  Full-width */
+    font-size: 16px;  Increase font-size 
     padding: 12px 20px 12px 40px; /* Add some padding */
     border: 1px solid #ddd; /* Add a grey border */
-    margin-bottom: 12px; /* Add some space below the input */
-}
+    /*margin-bottom: 12px;  Add some space below the input */
+    color: #3e3e3e;
+}*/
 
 #myTable {
     border-collapse: collapse; /* Collapse borders */
