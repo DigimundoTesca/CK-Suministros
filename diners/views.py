@@ -15,6 +15,7 @@ from django.db.models import Max, Min
 from .models import AccessLog, Diner
 from cloudkitchen.settings.base import PAGE_TITLE
 
+
 def naive_to_datetime(nd):
     if type(nd) == datetime:
         if nd.tzinfo is not None and nd.tzinfo.utcoffset(nd) is not None: # Is Aware
@@ -27,6 +28,7 @@ def naive_to_datetime(nd):
         t = time(0,0)
         new_date = datetime.combine(d, t)
         return pytz.timezone('America/Mexico_City').localize(new_date)
+
 
 def diners_paginator(request, queryset, num_pages):
     result_list = Paginator(queryset, num_pages)
@@ -57,15 +59,19 @@ def diners_paginator(request, queryset, num_pages):
         }
     return context
 
-def get_access_logs():
+
+def get_access_logs_today():
     year = int(datetime.now().year)
     month = int(datetime.now().month)
     day = int(datetime.now().day)
     initial_date = naive_to_datetime(date(year, month, day))
     final_date = naive_to_datetime(initial_date + timedelta(days=1))
-    diners_access_log = AccessLog.objects.filter(access_to_room__range=(initial_date, final_date)).order_by('-access_to_room')
-    #diners_access_log = AccessLog.objects.all().order_by('-access_to_room')
-    return diners_access_log
+    return AccessLog.objects.filter(access_to_room__range=(initial_date, final_date)).order_by('-access_to_room')
+
+
+def get_all_access_logs():
+    return AccessLog.objects.all().order_by('-access_to_room')
+
 
 def get_start_week_day(day):
     format = "%w"
@@ -84,7 +90,7 @@ def RFID(request):
         if rfid is None:
             return HttpResponse('No se recibió RFID\n')
         else:
-            access_logs = get_access_logs()
+            access_logs = get_access_logs_today()
             exists = False
             
             for log in access_logs:
@@ -95,13 +101,16 @@ def RFID(request):
             if exists:
                 return HttpResponse('El usuario ya se ha registrado')
             else:
-                try:
-                    diner = Diner.objects.get(RFID=rfid)
-                    new_access_log = AccessLog(diner=diner, RFID=rfid)
-                    new_access_log.save()
-                except Diner.DoesNotExist:
-                    new_access_log = AccessLog(diner=None, RFID=rfid)
-                    new_access_log.save()    
+                if len(rfid) < 7:
+                    try:
+                        diner = Diner.objects.get(RFID=rfid)
+                        new_access_log = AccessLog(diner=diner, RFID=rfid)
+                        new_access_log.save()
+                    except Diner.DoesNotExist:
+                        new_access_log = AccessLog(diner=None, RFID=rfid)
+                        new_access_log.save()   
+                else:
+                    return HttpResponse('RFID Inválido\n')
 
         return HttpResponse('Operacion Terminada\n')
 
@@ -110,8 +119,30 @@ def RFID(request):
 
 
 def diners(request):
-    diners_objects = get_access_logs()
-    
+    diners_objects = get_access_logs_today()
+    total_diners = diners_objects.count()
+
+    pag = diners_paginator(request, diners_objects, 50)
+    template = 'diners.html'
+    title = 'Comensales del Dia'
+    page_title = PAGE_TITLE
+
+    context={
+        'title': PAGE_TITLE + ' | ' + title,
+        'page_title': title,
+        'diners' : pag['queryset'],
+        'paginator': pag,
+        'total_diners': total_diners,
+    }
+    return render(request, template, context)    
+
+
+def diners_logs(request):
+    all_diners_objects = get_all_access_logs()
+    today_diners_objects = get_access_logs_today()
+    total_diners = all_diners_objects.count()
+    total_diners_today = today_diners_objects.count()
+
     def get_dates_range():
         """
         Returns a JSON with a years list.
@@ -120,12 +151,12 @@ def diners(request):
             start date and final date. Ranges of each week.
         """
         try:
-            min_year = diners_objects.aggregate(Min('access_to_room'))['access_to_room__min'].year
-            max_year = diners_objects.aggregate(Max('access_to_room'))['access_to_room__max'].year
+            min_year = all_diners_objects.aggregate(Min('access_to_room'))['access_to_room__min'].year
+            max_year = all_diners_objects.aggregate(Max('access_to_room'))['access_to_room__max'].year
             years_list = [] # [2015:object, 2016:object, 2017:object, ...]
         except Exception as e:
             print('Error:' , e)
-            return HttpResponse('Necesitas crear ventas para ver esta pantalla <a href="sales:new">Nueva Venta</a>')
+            return HttpResponse('No hay registros')
             
         while max_year >= min_year:
             year_object = { # 2015:object or 2016:object or 2017:object ...
@@ -133,19 +164,19 @@ def diners(request):
                 'weeks_list' : []
             }
 
-            tickets_per_year = diners_objects.filter(
+            diners_per_year = all_diners_objects.filter(
                 access_to_room__range=[naive_to_datetime(date(max_year,1,1)),naive_to_datetime(date(max_year,12,31))])
             
-            for ticket in tickets_per_year:
+            for diner in diners_per_year:
                 if len(year_object['weeks_list']) == 0: 
                     """
                     Creates a new week_object in the weeks_list of the actual year_object
                     """
-                    start_week_day = get_start_week_day(ticket.access_to_room.date())
+                    start_week_day = get_start_week_day(diner.access_to_room.date())
                     week_object = { 
-                        'week_number': ticket.access_to_room.isocalendar()[1],
-                        'start_date': ticket.access_to_room.date().strftime("%d-%m-%Y"),
-                        'end_date': ticket.access_to_room.date().strftime("%d-%m-%Y"),
+                        'week_number': diner.access_to_room.isocalendar()[1],
+                        'start_date': diner.access_to_room.date().strftime("%d-%m-%Y"),
+                        'end_date': diner.access_to_room.date().strftime("%d-%m-%Y"),
                     }
                     year_object['weeks_list'].append(week_object)
                     # End if
@@ -159,23 +190,23 @@ def diners(request):
                     """
                     existing_week = False
                     for week_object in year_object['weeks_list']:
-                        if week_object['week_number'] == ticket.access_to_room.isocalendar()[1]:
+                        if week_object['week_number'] == diner.access_to_room.isocalendar()[1]:
                             # There's a same week number
                             existing_week = True
-                            if datetime.strptime(week_object['start_date'], "%d-%m-%Y").date() > ticket.access_to_room.date():
+                            if datetime.strptime(week_object['start_date'], "%d-%m-%Y").date() > diner.access_to_room.date():
                                 exists = True
-                                week_object['start_date'] = ticket.access_to_room.date().strftime("%d-%m-%Y")
-                            elif datetime.strptime(week_object['end_date'], "%d-%m-%Y").date() < ticket.access_to_room.date():
-                                week_object['end_date'] = ticket.access_to_room.date().strftime("%d-%m-%Y")
+                                week_object['start_date'] = diner.access_to_room.date().strftime("%d-%m-%Y")
+                            elif datetime.strptime(week_object['end_date'], "%d-%m-%Y").date() < diner.access_to_room.date():
+                                week_object['end_date'] = diner.access_to_room.date().strftime("%d-%m-%Y")
                             existing_week = True
                             break
 
                     if not existing_week:
                         # There's a different week number
                         week_object = { 
-                            'week_number': ticket.access_to_room.isocalendar()[1],
-                            'start_date': ticket.access_to_room.date().strftime("%d-%m-%Y"),
-                            'end_date': ticket.access_to_room.date().strftime("%d-%m-%Y"),
+                            'week_number': diner.access_to_room.isocalendar()[1],
+                            'start_date': diner.access_to_room.date().strftime("%d-%m-%Y"),
+                            'end_date': diner.access_to_room.date().strftime("%d-%m-%Y"),
                         }
                         year_object['weeks_list'].append(week_object)
 
@@ -185,16 +216,8 @@ def diners(request):
         # End while
         return json.dumps(years_list)
 
-    count = 0
-    diners_list = []
-    for diner in diners_objects:
-        if diner not in diners_list:
-            diners_list.append(diner)
-            count += 1
-    total_diners = len(diners_list)
-
-    pag = diners_paginator(request, diners_objects, 10000)
-    template = 'diners.html'
+    pag = diners_paginator(request, all_diners_objects, 50)
+    template = 'diners_logs.html'
     title = 'Comensales del Dia'
     page_title = PAGE_TITLE
 
@@ -204,6 +227,7 @@ def diners(request):
         'diners' : pag['queryset'],
         'paginator': pag,
         'total_diners': total_diners,
+        'total_diners_today': total_diners_today,
         'dates_range': get_dates_range(),
     }
     return render(request, template, context)    

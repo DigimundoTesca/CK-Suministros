@@ -19,9 +19,10 @@
         </div>
       </li>
       <li class="nav-item dropdown" id="link-diners">
-        <a class="nav-link dropdown-toggle" href="#" id="supportedContentDropdown" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">Comensales</a>
+        <a class="nav-link dropdown-toggle" href="#" id="supportedContentDropdown" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">Comedor</a>
         <div class="dropdown-menu" aria-labelledby="supportedContentDropdown">
-          <a class="dropdown-item" href="{% url 'diners:diners' %}">Accesos al Comedor</a>
+          <a class="dropdown-item" href="{% url 'diners:diners' %}">Accesos de hoy</a>
+          <a class="dropdown-item" href="{% url 'diners:diners_logs' %}">Registro de Accesos</a>
         </div>
       </li>
       <li class="nav-item dropdown">
