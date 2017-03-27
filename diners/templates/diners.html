@@ -109,7 +109,7 @@
     function rel(){
       location.reload();
     }
-    // setTimeout(rel, 3000);
+    setTimeout(rel, 3000);
 
     function fill_dates_range_form() {
       var dates_range_form = $(this).find('#dt-year');
@@ -157,37 +157,7 @@
       });      
     }
 
-    $(this).on('click', '#btn-set-new-range', function(event) {
-      dt_year = $('#dt-year').val();
-      dt_week = $('#dt-week').val();
-      $.ajax({
-        url: "{% url 'sales:sales' %}",
-        type: 'POST',
-        data: {
-          csrfmiddlewaretoken: '{{ csrf_token }}',
-          'dt_year': dt_year,
-          'dt_week': dt_week,
-          'type': 'sales_week',
-        },
-        traditional: true,
-        datatype: 'jsonp',
-        success: function(result) {
-          swal({
-            title: 'Oops!',
-            type: 'info',
-            text: 'Estamos dando mantenimiento a este modulo, volveremos a la brevedad.',
-            timer: 2000
-          }).then( function () {}, function (dismiss) {
-            if (dismiss === 'timer') {
-            }
-          })
-        },
-
-        error: function(result, jqXHR, textStatus, errorThrown) {
-          console.log(result);
-        },
-      });
-    });
+    
 
     $(this).on('keyup', '#input-diners-search', function(event) {
       /** Declare variables */
