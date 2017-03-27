@@ -62,7 +62,8 @@ def get_access_logs():
     day = int(datetime.now().day)
     initial_date = naive_to_datetime(date(year, month, day))
     final_date = naive_to_datetime(initial_date + timedelta(days=1))
-    diners_access_log = AccessLog.objects.filter(access_to_room__range=(initial_date, final_date)).order_by('-access_to_room')
+    #diners_access_log = AccessLog.objects.filter(access_to_room__range=(initial_date, final_date)).order_by('-access_to_room')
+    diners_access_log = AccessLog.objects.all().order_by('-access_to_room')
     return diners_access_log
 
 @csrf_exempt
