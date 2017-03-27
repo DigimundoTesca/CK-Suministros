@@ -107,7 +107,7 @@ def diners(request):
             count += 1
     total_diners = len(diners_list)
 
-    pag = diners_paginator(request, diners_objects, 50)
+    pag = diners_paginator(request, diners_objects, 10000)
     template = 'diners.html'
     title = 'Comensales del Dia'
     page_title = PAGE_TITLE
