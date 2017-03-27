@@ -36,12 +36,10 @@
 {% block javascript %}
 <script type="text/javascript" charset="utf-8" async>
   $(function() {
-    var dates_range = JSON.parse('{{ dates_range | safe }}');
-
     function rel(){
       location.reload();
     }
-    setTimeout(rel, 3000);
+    setTimeout(rel, 2000);
 
     $(this).on('keyup', '#input-diners-search', function(event) {
       /** Declare variables */

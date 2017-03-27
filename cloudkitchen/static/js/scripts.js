@@ -23,7 +23,7 @@ $(function() {
   else if (path == '/kitchen/' || path == '/kitchen/assembly/' ) {
     $('#link-kitchen').addClass('active');
   }
-  else if (path == '/diners/') {
+  else if (path == '/diners/' || path == '/diners/logs/') {
     $('#link-diners').addClass('active');
   }
 });
