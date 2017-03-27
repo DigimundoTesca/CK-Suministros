@@ -359,10 +359,6 @@ def sales(request):
                             ticket_object['Paquete'] = ticket_detail.package_cartridge.name
                         else:
                             ticket_object['Paquete'] = None
-                        if ticket_detail.extra_ingredient:
-                            ticket_object['Ingrediente Extra'] = ticket_detail.extra_ingredient.ingredient.name
-                        else:
-                            ticket_object['Ingrediente Extra'] = None
                         ticket_object['Cantidad'] = ticket_detail.quantity
                         ticket_object['Total'] = ticket_detail.price
                         ticket_object['Precio Unitario'] = ticket_detail.price / ticket_detail.quantity
