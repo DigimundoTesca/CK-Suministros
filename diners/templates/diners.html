@@ -2,31 +2,13 @@
 {% load static %}
 
 {% block content %}
-<<<<<<< HEAD
   <div class="container-fluid">
-    <input type="text" id="myInput" placeholder="Buscar Comensal por ID">
+    <input class="container-fluid" type="text" id="input-diners-search" placeholder="Buscar Comensal por ID">
+
     <div class="row">
       <div class="col xs 12 mt-1 mb-1">
         <h3 class="text-xs-right">Comensales de Hoy: <span class="badge badge-blue">{{ total_diners }}</span></h3>
       </div>
-=======
-<div class="container-fluid">
-  <div class="row">
-    <div class="col-xs-6 mt-1 mb-1">
-      <h3 class="text-xs-left">Comensales de hoy: <span class="badge badge-blue">{{ total_diners }}</span></h3>
->>>>>>> develop
-    </div>
-    <div class="row">
-      <div class="col-xs-12 col-lg-6">
-        <div class="canvas-holder">
-          <canvas id="dinners_by_day"></canvas>
-        </div>
-       </div>
-       <div class="col-xs-12 col-lg-6">
-        <div class="canvas-holder">
-          <canvas id="dinners_by_hour"></canvas>
-        </div>
-       </div>         
     </div>            
 
     <div class="row">
@@ -51,7 +33,7 @@
       </tbody>
     </table>
   </div>
-<<<<<<< HEAD
+
   <div class="container-fluid mt-2 mb-2">
     <div class="col-xs-12">
       <div class="text-xs-center">
@@ -97,169 +79,24 @@
               </li>
             {% endif %}
           </ul>
-        </nav>
-      </div>
+        </nav>      
     </div>
   </div>
 </div>
-{% endblock %}
-=======
-</div> 
 {% endblock %} 
 
->>>>>>> develop
 {% block javascript %}
-<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.5.0/Chart.min.js"></script>
+
 
 <script type="text/javascript" charset="utf-8" async>
-<<<<<<< HEAD
-$(function() {  
-
-  var ctx_diners_hour = document.getElementById("dinners_by_hour");
-  var ctx_diners_day = document.getElementById("dinners_by_day");
-  var diners_hour = JSON.parse('{{ diners_hour | safe }}');
-  var diners_week = JSON.parse('{{ diners_week | safe }}');
-
-  function get_hours_of_diners(){
-    var count_list = [];
-      var count = 0;
-
-      while (count < diners_hour.length) {
-        count_list.push(parseFloat(diners_hour[count].count));
-        count++;
-      }
-      return count_list;
-  }
-
-
-
-  function get_diners_day(){
-    var entries_list = [];
-      var count = 0;
-
-      while (count < diners_week.length) {
-        entries_list.push(parseFloat(diners_week[count].entries));
-        count++;
-      }
-      return entries_list;
-
-  }
-
-  var myChart = new Chart(ctx_diners_day, {
-    type: 'bar',
-    data: {
-        labels: ["Lunes", "Martes", "Miercoles", "Juevez", "Viernes", "Sabado", "Domingo"],
-        datasets: [{
-            label: 'Comensales por dia',
-            data: get_diners_day(),
-            backgroundColor: [
-                'rgba(255, 99, 132, 0.2)',
-                'rgba(54, 162, 235, 0.2)',
-                'rgba(255, 206, 86, 0.2)',
-                'rgba(75, 192, 192, 0.2)',
-                'rgba(153, 102, 255, 0.2)',
-                'rgba(255, 206, 86, 0.2)',
-                'rgba(255, 159, 64, 0.2)'
-            ],
-            borderColor: [
-                'rgba(255,99,132,1)',
-                'rgba(54, 162, 235, 1)',
-                'rgba(255, 206, 86, 1)',
-                'rgba(75, 192, 192, 1)',
-                'rgba(153, 102, 255, 1)',
-                'rgba(255, 206, 86, 1)',
-                'rgba(255, 159, 64, 1)'
-            ],
-            borderWidth: 1
-        }]
-    },
-    options: {
-        responsive: true,        
-        scales: {
-          yAxes: [{
-            ticks: {
-              beginAtZero: true,
-            },
-          }]
-        }
-      }
-});
-
- 
-  var chart_hours = new Chart(ctx_diners_hour, {
-    type: 'bar',
-    data: {
-        labels: ["05:00", "06:00", "07:00", "08:00", "09:00", "10:00", "11:00", "12:00"],
-        datasets: [{
-            label: 'Comensales por hora',
-            data: get_hours_of_diners(),
-            backgroundColor: [
-                'rgba(255, 99, 132, 0.2)',
-                'rgba(54, 162, 235, 0.2)',
-                'rgba(255, 206, 86, 0.2)',
-                'rgba(75, 192, 192, 0.2)',
-                'rgba(153, 102, 255, 0.2)',
-                'rgba(75, 192, 192, 0.2)',
-                'rgba(75, 192, 192, 0.2)',
-                'rgba(255, 159, 64, 0.2)'
-            ],
-            borderColor: [
-                'rgba(255,99,132,1)',
-                'rgba(54, 162, 235, 1)',
-                'rgba(255, 206, 86, 1)',
-                'rgba(75, 192, 192, 1)',
-                'rgba(255, 206, 86, 1)',
-                'rgba(255, 206, 86, 1)',
-                'rgba(153, 102, 255, 1)',
-                'rgba(255, 159, 64, 1)'
-            ],
-            borderWidth: 1
-        }]
-    },
-    options: {
-        responsive: true,        
-        scales: {
-          yAxes: [{
-            ticks: {
-              beginAtZero: true,
-            },
-          }]
-        }
-      }
-});
-
-  
-
-
-
-  function rel(){
-    location.reload();
-  }
-
-  setTimeout(rel, 3000);
-  
-  $(this).on('keyup', '#myInput', function(event) {
-    /** Declare variables */
-    var input, filter, table, tr, td, i;
-    input = document.getElementById("myInput");
-    filter = input.value.toUpperCase();
-    table = document.getElementById("myTable");
-    tr = table.getElementsByTagName("tr");
-    /** Loop through all table rows, and hide those who don't match the search query */
-    for (i = 0; i < tr.length; i++) {
-      td = tr[i].getElementsByTagName("td")[0];
-      if (td) {
-        if (td.innerHTML.toUpperCase().indexOf(filter) > -1) {
-          tr[i].style.display = "";
-        } else {
-        tr[i].style.display = "none";
-        }
-=======
   $(function() {
-    function rel(){
+    
+    function rel() {
       location.reload();
     }
+
     setTimeout(rel, 3000);
+    
 
     $(this).on('keyup', '#input-diners-search', function(event) {
       /** Declare variables */
@@ -278,17 +115,10 @@ $(function() {
           } else {
             tr[i].style.display = "none";
           }
-        } 
->>>>>>> develop
+        }
+
       }
-    }   
+    });
   });
-
-
-
-
-
-
-});
 </script>
 {% endblock javascript %}

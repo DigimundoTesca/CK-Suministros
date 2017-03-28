@@ -171,7 +171,7 @@ def get_diners_per_hour():
     hours_to_count = 12
     start_hour = 5
     customter_count = 0    
-    logs = get_access_logs()
+    logs = get_access_logs_today()
 
     while start_hour <= hours_to_count:
 
@@ -228,14 +228,9 @@ def get_diners_actual_week():
         return json.dumps(week_diners_list)         
 
 
-def diners(request):
-    diners_objects = get_access_logs()   
+def diners(request):     
     count = 0
-    diners_list = []
-    for diner in diners_objects:
-        if diner not in diners_list:
-            diners_list.append(diner)
-            count += 1
+    diners_list = []    
     total_diners = len(diners_list)
     diners_objects = get_access_logs_today()
     total_diners = diners_objects.count()
@@ -247,9 +242,7 @@ def diners(request):
     context={
         'title': PAGE_TITLE + ' | ' + title,
         'page_title': title,
-        'diners' : pag['queryset'],
-        'diners_hour' : get_diners_per_hour(),
-        'diners_week' : get_diners_actual_week(),        
+        'diners' : pag['queryset'],                
         'paginator': pag,
         'total_diners': total_diners,
     }
@@ -347,6 +340,8 @@ def diners_logs(request):
         'paginator': pag,
         'total_diners': total_diners,
         'total_diners_today': total_diners_today,
+        'diners_hour' : get_diners_per_hour(),
+        'diners_week' : get_diners_actual_week(),
         'dates_range': get_dates_range(),
     }
     return render(request, template, context)    
