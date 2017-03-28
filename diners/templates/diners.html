@@ -2,12 +2,19 @@
 {% load static %}
 
 {% block content %}
+<<<<<<< HEAD
   <div class="container-fluid">
     <input type="text" id="myInput" placeholder="Buscar Comensal por ID">
     <div class="row">
       <div class="col xs 12 mt-1 mb-1">
         <h3 class="text-xs-right">Comensales de Hoy: <span class="badge badge-blue">{{ total_diners }}</span></h3>
       </div>
+=======
+<div class="container-fluid">
+  <div class="row">
+    <div class="col-xs-6 mt-1 mb-1">
+      <h3 class="text-xs-left">Comensales de hoy: <span class="badge badge-blue">{{ total_diners }}</span></h3>
+>>>>>>> develop
     </div>
     <div class="row">
       <div class="col-xs-12 col-lg-6">
@@ -44,6 +51,7 @@
       </tbody>
     </table>
   </div>
+<<<<<<< HEAD
   <div class="container-fluid mt-2 mb-2">
     <div class="col-xs-12">
       <div class="text-xs-center">
@@ -95,10 +103,16 @@
   </div>
 </div>
 {% endblock %}
+=======
+</div> 
+{% endblock %} 
+
+>>>>>>> develop
 {% block javascript %}
 <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.5.0/Chart.min.js"></script>
 
 <script type="text/javascript" charset="utf-8" async>
+<<<<<<< HEAD
 $(function() {  
 
   var ctx_diners_hour = document.getElementById("dinners_by_hour");
@@ -240,6 +254,32 @@ $(function() {
         } else {
         tr[i].style.display = "none";
         }
+=======
+  $(function() {
+    function rel(){
+      location.reload();
+    }
+    setTimeout(rel, 3000);
+
+    $(this).on('keyup', '#input-diners-search', function(event) {
+      /** Declare variables */
+      var input, filter, table, tr, td, i;
+      input = document.getElementById("input-diners-search");
+      filter = input.value.toUpperCase();
+      table = document.getElementById("myTable");
+      tr = table.getElementsByTagName("tr");
+
+      /** Loop through all table rows, and hide those who don't match the search query */
+      for (i = 0; i < tr.length; i++) {
+        td = tr[i].getElementsByTagName("td")[0];
+        if (td) {
+          if (td.innerHTML.toUpperCase().indexOf(filter) > -1) {
+            tr[i].style.display = "";
+          } else {
+            tr[i].style.display = "none";
+          }
+        } 
+>>>>>>> develop
       }
     }   
   });

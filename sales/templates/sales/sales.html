@@ -3,7 +3,6 @@
 {% load static %}
 
 {% block link %}
-  <link rel="stylesheet" type="text/css" href="https://cdnjs.cloudflare.com/ajax/libs/limonte-sweetalert2/6.3.8/sweetalert2.min.css">
   <!--
   <link rel="stylesheet" href="{% static 'css/sweetalert.css' %}">
   -->
@@ -180,7 +179,6 @@
 {% endblock content %}
 
 {% block javascript %}
-<script src="https://cdnjs.cloudflare.com/ajax/libs/limonte-sweetalert2/6.3.8/sweetalert2.min.js"></script>
 <!--
 <script src="{% static 'js/sweetalert.min.js' %}">
 -->
@@ -414,7 +412,7 @@
          $('#dates-range-form').find('#dt-year').append(
             "<option value=" + item.year + ">" + item.year + "</option>"
           );
-      });;
+      });
 
       selected_year = $('#dates-range-form').find('#dt-year').val();
       
@@ -583,7 +581,15 @@
         traditional: true,
         datatype: 'jsonp',
         success: function(result) {
-          console.log(result);
+          swal({
+            title: 'Oops!',
+            type: 'info',
+            text: 'Estamos dando mantenimiento a este modulo, volveremos a la brevedad.',
+            timer: 2000
+          }).then( function () {}, function (dismiss) {
+            if (dismiss === 'timer') {
+            }
+          })
         },
 
         error: function(result, jqXHR, textStatus, errorThrown) {
