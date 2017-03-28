@@ -212,7 +212,7 @@ def sales(request):
             day_object = {
                 'date': str(start_datetime(days_to_count).date()),
                 'day_name': None,
-                'earnings': None,
+                'entries': None,
             }
 
             tickets = all_tickets.filter(created_at__range=[start_datetime(days_to_count), end_datetime(days_to_count)])
