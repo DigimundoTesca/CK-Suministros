@@ -106,6 +106,7 @@ def RFID(request):
     if request.method == 'POST':
         rfid = str(request.body).split('"')[3].lstrip()
         if rfid is None:
+            print('no se recibio rfid')
             return HttpResponse('No se recibió RFID\n')
         else:
             access_logs = get_access_logs_today()
@@ -117,6 +118,7 @@ def RFID(request):
                     break
 
             if exists:
+                print('El usuario ya se ha registrado')
                 return HttpResponse('El usuario ya se ha registrado')
             else:
                 if len(rfid) < 7:
@@ -128,6 +130,7 @@ def RFID(request):
                         new_access_log = AccessLog(diner=None, RFID=rfid)
                         new_access_log.save()   
                 else:
+                    print('RFID Inválido\n')
                     return HttpResponse('RFID Inválido\n')
 
         return HttpResponse('Operacion Terminada\n')
