@@ -2,109 +2,74 @@
 {% load static %}
 
 {% block content %}
-<div class="container-fluid">
-  <div class="row">
-    <div class="col-xs-12">
-      <div class="text-xs-right mb-2">
-        <form class="form-inline" id="dates-range-form">
-          <select class="custom-select" id="dt-year">
-          </select>
-          <select class="custom-select" id="dt-week" >
-          </select>
-          <button id="btn-set-new-range" type="button" class="btn btn-outline-primary">Actualizar</button>
+<div class="container-fluid container-diners">
+  <div class="row mb-2">
+    <div class="form-inline col-xs-12 col-lg-4 diners-id-form mb-1">
+      <div class="input-group">
+        <div class="input-group-addon"><i class="material-icons">search</i></div>
+        <input type="text" class="form-control" id="input-diners-search" placeholder="Buscar Comensal por ID">
+      </div>
+    </div>
+    <div class="col-xs-12 col-lg-8 text-xs-right  inputs-container">
+      <div class="row">
+        <form class="form-inline col-xs-12 " id="dates-range-form">
+          <div class="col-xs-12 col-lg-2 container-select">
+            <select class="custom-select col-xs-12" id="dt-year">
+            </select>
+          </div>
+          <div class="col-xs-12 col-lg-6 container-select">
+            <select class="custom-select col-xs-12" id="dt-week" >
+            </select>
+          </div>
+          <button class="btn btn-outline-primary col-xs-12 col-lg-3" id="btn-set-new-range" type="button">Actualizar</button>
         </form>
       </div>
     </div>
-    <div class="form-inline col-xs-12 diners-id-form mb-1">
-      <div class="input-group">
-        <div class="input-group-addon"><i class="material-icons">search</i></div>
-        <input type="text" class="form-control form-control-lg" id="input-diners-search" placeholder="Buscar Comensal por ID">
-      </div>
-    </div>
-    <div class="col-xs-6 mt-1 mb-1">
-      <h3 class="text-xs-left">Comensales hasta hoy: <span class="badge badge-blue">{{ total_diners }}</span></h3>
-    </div>
-    <div class="col-xs-6 mt-1 mb-1">
-      <h3 class="text-xs-right">Comensales de hoy: <span class="badge badge-success">{{ total_diners_today }}</span></h3>
+  </div>
+  <div class="row">
+    <div class="col-xs-12">
+      <h3 class="col-xs-12 col-sm-8 col-xl-10">Comensales hasta hoy: <span class="badge badge-blue">{{ total_diners }}</span></h3>
+      <button id="btn-save-ticket-csv" class="col-xs-12 col-sm-4 col-xl-2 btn btn-primary d-flex">
+        <span class="btn-reports d-flex align-items-center"><i class="material-icons">file_download</i>Generar Reporte</span>
+      </button>
     </div>
   </div>
   <div class="row">
-    <table class="table" id="access-logs-table">
-      <thead class="thead-inverse">
-        <tr>
-          <th>RFID</th>
-          <th>SAP</th>
-          <th>Nombre</th>
-          <th>Fecha de Acceso</th>                 
-        </tr>
-      </thead>      
-      <tbody>      
-        {%for diner in diners %}        
-        <tr>       
-          <th>{{ diner.RFID }}</th> 
-          <td>{{ diner.diner.employee_number }}</td>          
-          <td>{{ diner.diner.name }}</td>          
-          <td>{{ diner.access_to_room }}</td>
-        </tr>      
-        {% endfor %}        
-      </tbody>
-    </table>
-  </div>
-
-  <div class="container-fluid mt-2 mb-2">
     <div class="col-xs-12">
-      <div class="text-xs-center">
-        <small>Página {{ paginator.num_page }} de {{ paginator.pages }}</small>
-        <nav aria-label="Page navigation example">
-          <ul class="pagination justify-content-right">
-            {% if  paginator.has_prev %}
-            <li class="page-item ">
-              <a class="page-link" href="#" aria-label="Previous">
-                <span aria-hidden="true">&laquo;</span>
-                <span class="sr-only">Previous</span>
-              </a>
-            </li>
-            {% else %}
-            <li class="page-item disabled">
-              <a class="page-link" href="#" aria-label="Previous">
-                <span aria-hidden="true">&laquo;</span>
-                <span class="sr-only">Previous</span>
-              </a>
-            </li>
-            {% endif %}
-            <li class="page-item"><a class="page-link" href="{% url 'diners:diners_logs' %}?num_page={{ paginator.prev_page }}">{{ paginator.prev_page }}</a></li>
-            <li class="page-item active">
-              <span class="page-link">
-                {{ paginator.num_page }}
-                <span class="sr-only">(current)</span>
-              </span>
-            </li>
-            <li class="page-item"><a class="page-link" href="#{% url 'diners:diners_logs' %}?num_page={{ paginator.next_page }}">{{ paginator.next_page }}</a></li>
-            {% if paginator.has_next %}
-            <li class="page-item">
-              <a class="page-link" href="{% url 'diners:diners_logs' %}?num_page={{ paginator.next_page }}" aria-label="Next">
-                <span aria-hidden="true">&raquo;</span>
-                <span class="sr-only">Next</span>
-              </a>
-            </li>
-            {% else %}
-            <li class="page-item disbled">
-              <a class="page-link" href="#" aria-label="Next">
-                <span aria-hidden="true">&raquo;</span>
-
-                <span class="sr-only">Next</span>
-              </a>
-            </li>
-            {% endif %}
-          </ul>
-        </nav>
+      <div class="card card-scroll-x mt-1">
+        <table class="table" id="access-logs-table">
+          <thead class="thead-inverse">
+            <tr>
+              <th>RFID</th>
+              <th>SAP</th>
+              <th>Nombre</th>
+              <th>Fecha de Acceso</th>                 
+            </tr>
+          </thead>      
+          <tbody>      
+            {%for diner in diners %}        
+            <tr>       
+              <th>{{ diner.RFID }}</th> 
+              <td>{{ diner.diner.employee_number }}</td>          
+              <td>{{ diner.diner.name }}</td>          
+              <td>{{ diner.access_to_room }}</td>
+            </tr>      
+            {% endfor %}        
+          </tbody>
+        </table>
       </div>
     </div>
   </div>
+
 </div> 
 {% endblock %} 
 
 {% block javascript %}
+<script src="{% static 'js/Chart.bundle.min.js' %}" defer></script>
+<script src="{% static 'js/papaparse.min.js' %}" defer></script>
+<script src="{% static 'js/blob.js' %}" defer></script>
+<script src="{% static 'js/fileSaver.min.js' %}" defer></script>
+
 <script type="text/javascript" charset="utf-8" async>
   $(function() {
     var dates_range = JSON.parse('{{ dates_range | safe }}');
@@ -172,7 +137,7 @@
       },
       beforeSend: function(){
         swal({
-          title: "Obteniendo datos del ticket",
+          title: "Obteniendo registros",
           text: "Espere mientras obtenemos toda la información",
         });
         swal.enableLoading();
