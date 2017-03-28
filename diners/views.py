@@ -104,9 +104,7 @@ def get_start_week_day(day):
 @csrf_exempt
 def RFID(request):
     if request.method == 'POST':
-        print('hay paso')
-        print(request.body)
-        rfid = str(request.body).split('"')[3].strip()
+        rfid = str(request.body).split('"')[3].replace(" ", "")
         if rfid is None:
             print('no se recibio rfid')
             return HttpResponse('No se recibió RFID\n')
@@ -114,17 +112,23 @@ def RFID(request):
             access_logs = get_access_logs_today()
             exists = False
             
+            for log in access_logs:
+                if rfid == log.RFID:
+                    exists = True
+                    break
+
             if exists:
                 print('El usuario ya se ha registrado')
                 return HttpResponse('El usuario ya se ha registrado')
             else:
-                try:
-                    diner = Diner.objects.get(RFID=rfid)
-                    new_access_log = AccessLog(diner=diner, RFID=rfid)
-                    new_access_log.save()
-                except Diner.DoesNotExist:
-                    new_access_log = AccessLog(diner=None, RFID=rfid)
-                    new_access_log.save()   
+                if len(rfid) < 7:
+                    try:
+                        diner = Diner.objects.get(RFID=rfid)
+                        new_access_log = AccessLog(diner=diner, RFID=rfid)
+                        new_access_log.save()
+                    except Diner.DoesNotExist:
+                        new_access_log = AccessLog(diner=None, RFID=rfid)
+                        new_access_log.save()   
                 else:
                     print('RFID Inválido\n')
                     return HttpResponse('RFID Inválido\n')
