@@ -154,8 +154,7 @@ def get_diners_per_hour():
 
         for log in logs:
             datetime = str(log.access_to_room)
-            date,time = datetime.split(" ")        
-            print("0"+str(start_hour))
+            date,time = datetime.split(" ")    
             if(time.startswith("0"+str(start_hour))):
                 customter_count += 1 
             hour['count'] = customter_count
