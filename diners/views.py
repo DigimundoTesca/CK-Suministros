@@ -104,6 +104,7 @@ def get_start_week_day(day):
 @csrf_exempt
 def RFID(request):
     if request.method == 'POST':
+        print('hay paso')
         print(request.body)
         rfid = str(request.body).split('"')[3].lstrip()
         if rfid is None:
