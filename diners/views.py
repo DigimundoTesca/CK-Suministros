@@ -112,23 +112,17 @@ def RFID(request):
             access_logs = get_access_logs_today()
             exists = False
             
-            for log in access_logs:
-                if rfid == log.RFID:
-                    exists = True
-                    break
-
             if exists:
                 print('El usuario ya se ha registrado')
                 return HttpResponse('El usuario ya se ha registrado')
             else:
-                if len(rfid) < 7:
-                    try:
-                        diner = Diner.objects.get(RFID=rfid)
-                        new_access_log = AccessLog(diner=diner, RFID=rfid)
-                        new_access_log.save()
-                    except Diner.DoesNotExist:
-                        new_access_log = AccessLog(diner=None, RFID=rfid)
-                        new_access_log.save()   
+                try:
+                    diner = Diner.objects.get(RFID=rfid)
+                    new_access_log = AccessLog(diner=diner, RFID=rfid)
+                    new_access_log.save()
+                except Diner.DoesNotExist:
+                    new_access_log = AccessLog(diner=None, RFID=rfid)
+                    new_access_log.save()   
                 else:
                     print('RFID Inválido\n')
                     return HttpResponse('RFID Inválido\n')
