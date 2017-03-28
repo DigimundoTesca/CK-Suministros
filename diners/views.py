@@ -106,7 +106,7 @@ def RFID(request):
     if request.method == 'POST':
         print('hay paso')
         print(request.body)
-        rfid = str(request.body).split('"')[3].lstrip()
+        rfid = str(request.body).split('"')[3].strip()
         if rfid is None:
             print('no se recibio rfid')
             return HttpResponse('No se recibió RFID\n')
