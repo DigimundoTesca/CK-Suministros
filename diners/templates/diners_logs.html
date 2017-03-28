@@ -29,7 +29,7 @@
     </div>
   </div>
   <div class="row">
-    <table class="table" id="myTable">
+    <table class="table" id="access-logs-table">
       <thead class="thead-inverse">
         <tr>
           <th>RFID</th>
@@ -170,14 +170,60 @@
         'dt_week': dt_week,
         'type': 'diners_logs',
       },
+      beforeSend: function(){
+        swal({
+          title: "Obteniendo datos del ticket",
+          text: "Espere mientras obtenemos toda la información",
+        });
+        swal.enableLoading();
+      },
       traditional: true,
       datatype: 'jsonp',
-      success: function(result) {
-       console.log(result);
+      success: function(result, status, XHR) {
+        var list_length = result.length;
+        var access_logs_table = $('#access-logs-table').find('tbody');
+        access_logs_table.empty();
+        console.log(result);
+        swal({
+          title: "Éxito",
+          text: "Datos obtenidos",
+          type: "info",
+          timer: 750,
+          showConfirmButton: false
+        }).then(
+        function(){},
+        function(dismiss){}
+        );
+        for (var i = 0; i < list_length; i++) {
+          access_logs_table.append("" +
+            "<tr>" +
+            "<th>" + result[i].rfid + "</th>" +
+            "<td>" + result[i].SAP + "</td>" +
+            "<td>" + result[i].name + "</td>" +
+            "<td>" + result[i].access + "</td>" +
+            "</tr>" +
+          "");
+        };
+
       },
       error: function(result, jqXHR, textStatus, errorThrown) {
         console.log(result);
       },
+      complete: function(result){
+        // ticket_details = result.responseJSON.ticket_details;
+        // $('.ticket-order-container').find('#ticket-order').text(ticket_details.ticket_order);
+        // setTimeout(function() {
+        //   show_modal(ticket_details)
+        // }, 750);
+
+        // btn_printer.on('click', function(){
+        //   var options = {
+        //     mode: 'iframe',
+        //     popClose: true,
+        //   };
+        //   $("#printer").printArea(options);
+        // });
+      }
     });
   });
 
@@ -186,7 +232,7 @@
       var input, filter, table, tr, td, i;
       input = document.getElementById("input-diners-search");
       filter = input.value.toUpperCase();
-      table = document.getElementById("myTable");
+      table = document.getElementById("access-logs-table");
       tr = table.getElementsByTagName("tr");
 
       /** Loop through all table rows, and hide those who don't match the search query */

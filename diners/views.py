@@ -171,14 +171,14 @@ def diners_logs(request):
             for diner_log in diners_logs_objects:
                 diner_log_object = {
                     'rfid': diner_log.RFID,
-                    'access': diner_log.access_to_room,
+                    'access': datetime.strftime(diner_log.access_to_room, "%B %d, %I, %H:%M:%S %p"),
                 }
                 if diner_log.diner:
                     diner_log_object['SAP'] = diner_log.diner.employee_number
                     diner_log_object['name'] = diner_log.diner.name
                 else:
-                    diner_log_object['SAP'] = None
-                    diner_log_object['name'] = None
+                    diner_log_object['SAP'] = ''
+                    diner_log_object['name'] = ''
                 diners_logs_list.append(diner_log_object)
             return JsonResponse(diners_logs_list, safe=False)
             
