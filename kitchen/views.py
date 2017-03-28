@@ -48,10 +48,10 @@ def cold_kitchen(request):
         return processed_products_list
 
     context = {
+        'title': PAGE_TITLE + ' | ' + title,
+        'page_title': title,
         'products': get_processed_products(),
         'tickets': tickets,
-        'page_title': 'Cocina Fría' ,
-        'title': PAGE_TITLE,
     }
 
     return render(request, template, context)
@@ -96,10 +96,10 @@ def hot_kitchen(request):
         return processed_products_list
 
     context = {
+        'title': PAGE_TITLE + ' | ' + title,
+        'page_title': title,
         'products': get_processed_products(),
         'tickets': tickets,
-        'page_title': 'Cocina Caliente',
-        'title': PAGE_TITLE,
     }
 
     return render(request, template, context)
@@ -107,6 +107,7 @@ def hot_kitchen(request):
 
 def kitchen(request):
     template = 'kitchen.html'
+    title = 'Cocina'
     tickets = Ticket.objects.all()
     tickets_details = TicketDetail.objects.all()
     extra_ingredients = TicketExtraIngredient.objects.all()
@@ -153,11 +154,11 @@ def kitchen(request):
         return processed_products_list
 
     context = {
+        'title': PAGE_TITLE + ' | ' + title,
+        'page_title': title,
         'extra_ingredients': extra_ingredients,
         'products': get_processed_products(),
         'tickets': tickets,
-        'page_title': 'Cocina Caliente',
-        'title': PAGE_TITLE,
         'tickets_details': tickets_details,
     }
 
@@ -174,7 +175,8 @@ def assembly(request):
 
     else:
         template = 'assembly.html'
-
+        title = 'Ensamblado'
+        
         pending_orders = ProcessedProduct.objects.filter(status='PE')
         orders_list = []
 
@@ -210,8 +212,8 @@ def assembly(request):
             orders_list.append(order_object)
 
         context = {
-            'orders': orders_list,
-            'page_title': 'Ensamblado',
+            'title': PAGE_TITLE + ' | ' + title,
+            'page_title': title,
             'title': PAGE_TITLE
         }
 

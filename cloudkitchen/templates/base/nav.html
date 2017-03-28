@@ -1,7 +1,6 @@
 <nav class="navbar navbar-full navbar-dark navbar-base">
   <div class="container-fluid">
     <a class="navbar-brand" href="{% url 'users:login' %}"><h3>{{ page_title }}</h3></a>
-
     <ul class="nav navbar-nav float-xs-right">
       <li class="nav-item" id="link-sales">
         <a class="nav-link" href="{% url 'sales:sales' %}">Ventas <span class="sr-only">(current)</span></a>
@@ -20,9 +19,10 @@
         </div>
       </li>
       <li class="nav-item dropdown" id="link-diners">
-        <a class="nav-link dropdown-toggle" href="#" id="supportedContentDropdown" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">Comensales</a>
+        <a class="nav-link dropdown-toggle" href="#" id="supportedContentDropdown" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">Comedor</a>
         <div class="dropdown-menu" aria-labelledby="supportedContentDropdown">
-          <a class="dropdown-item" href="{% url 'diners:diners' %}">Accesos al Comedor</a>
+          <a class="dropdown-item" href="{% url 'diners:diners' %}">Accesos de hoy</a>
+          <a class="dropdown-item" href="{% url 'diners:diners_logs' %}">Registro de Accesos</a>
         </div>
       </li>
       <li class="nav-item dropdown">

@@ -113,7 +113,7 @@
                 <div class="card col-xs-12 card-scroll packages-block card-outline-info" id="group-dishes">
                   <div class="card-block">
                     {% for package in package_cartridges %}
-                      {% if package.is_active and package.kinf_of_food == 'FO' %}
+                      {% if package.is_active and package.kind_of_food == 'FO' %}
                         <div class="card-block product-container" id="package-{{ package.pk }}">
                           <h6 class="product-name">{{ package.name }}</h6>
                           <img src="{{ package.image.url }}" id="package-img-{{ package.pk }}" class="product-img" alt="Imagen del Paquete">

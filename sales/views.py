@@ -212,7 +212,7 @@ def sales(request):
             day_object = {
                 'date': str(start_datetime(days_to_count).date()),
                 'day_name': None,
-                'earnings': None,
+                'entries': None,
             }
 
             tickets = all_tickets.filter(created_at__range=[start_datetime(days_to_count), end_datetime(days_to_count)])
@@ -359,10 +359,6 @@ def sales(request):
                             ticket_object['Paquete'] = ticket_detail.package_cartridge.name
                         else:
                             ticket_object['Paquete'] = None
-                        if ticket_detail.extra_ingredient:
-                            ticket_object['Ingrediente Extra'] = ticket_detail.extra_ingredient.ingredient.name
-                        else:
-                            ticket_object['Ingrediente Extra'] = None
                         ticket_object['Cantidad'] = ticket_detail.quantity
                         ticket_object['Total'] = ticket_detail.price
                         ticket_object['Precio Unitario'] = ticket_detail.price / ticket_detail.quantity
@@ -378,10 +374,10 @@ def sales(request):
 
     # Any other request method:
     template = 'sales/sales.html'
-    title = 'Ventas'
+    title = 'Registro de Ventas'
     context = {
-        'page_title': PAGE_TITLE,
-        'title': title,
+        'title': PAGE_TITLE + ' | ' + title,
+        'page_title': title,
         'actual_year': datetime.now().year,
         'sales_week': get_sales_actual_week(),
         'today_name': get_name_day(datetime.now()),
@@ -499,13 +495,15 @@ def new_sale(request):
         path = request.get_full_path().split('/')[3]
         if path == 'breakfast':
             template = 'new/breakfast.html'
+            title = 'Vender Desayuno'
+
         else:
             template = 'new/food.html'
+            title = 'Vender Comida'
 
         cartridges_list = Cartridge.objects.all().order_by('name')
         package_cartridges = PackageCartridge.objects.all().order_by('name')
         extra_ingredients = ExtraIngredient.objects.all().prefetch_related('ingredient');
-        title = 'Nueva venta'
         extra_ingredients_products_list = []
 
         for cartridge in cartridges_list:
@@ -528,8 +526,8 @@ def new_sale(request):
 
 
         context = {
-            'page_title': PAGE_TITLE,
-            'title': title,
+            'title': PAGE_TITLE + ' | ' + title,
+            'page_title': title,
             'cartridges': cartridges_list,
             'package_cartridges': package_cartridges,
             'extra_ingredients': extra_ingredients,
