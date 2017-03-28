@@ -12,7 +12,8 @@ urlpatterns = [
     url(r'^diners/$', views.diners, name='diners'),
     url(r'^diners/logs/$', views.diners_logs, name='diners_logs'),
 
-
-    # Tests
-    url(r'^diners/test/$', views.test, name='diners_test'),
 ]
+
+# Test
+if settings.DEBUG:
+    urlpatterns.append( url(r'^diners/test/$', views.test, name='diners_test'))
