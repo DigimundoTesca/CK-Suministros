@@ -4,6 +4,8 @@ from __future__ import unicode_literals
 from time import sleep
 import  pytz, json
 from datetime import date, datetime, timedelta, time
+from django.conf import settings
+
 
 from django.http import HttpResponse, JsonResponse
 from django.shortcuts import render, redirect, get_object_or_404
@@ -105,9 +107,12 @@ def get_start_week_day(day):
 def RFID(request):
     if request.method == 'POST':
         rfid = str(request.body).split('"')[3].replace(" ", "")
-        print(rfid)
+        if settings.DEBUG:
+            print(rfid)
+
         if rfid is None:
-            print('no se recibio rfid')
+            if settings.DEBUG:
+                print('no se recibio rfid')
             return HttpResponse('No se recibió RFID\n')
         else:
             access_logs = get_access_logs_today()
@@ -119,7 +124,8 @@ def RFID(request):
                     break
 
             if exists:
-                print('El usuario ya se ha registrado')
+                if settings.DEBUG:
+                    print('El usuario ya se ha registrado')
                 return HttpResponse('El usuario ya se ha registrado')
             else:
                 if len(rfid) < 7:
@@ -131,7 +137,8 @@ def RFID(request):
                         new_access_log = AccessLog(diner=None, RFID=rfid)
                         new_access_log.save()   
                 else:
-                    print('RFID Inválido\n')
+                    if settings.DEBUG:
+                        print('RFID Inválido\n')
                     return HttpResponse('RFID Inválido\n')
 
         return HttpResponse('Operacion Terminada\n')
@@ -205,7 +212,8 @@ def diners_logs(request):
                 max_year = all_diners_objects.aggregate(Max('access_to_room'))['access_to_room__max'].year
                 years_list = [] # [2015:object, 2016:object, 2017:object, ...]
             except Exception as e:
-                print('Error:' , e)
+                if settings.DEBUG:
+                    print('Error:' , e)
                 return HttpResponse('No hay registros')
                 
             while max_year >= min_year:
@@ -301,11 +309,13 @@ def test(request):
             for log in access_logs:
                 if rfid == log.RFID:
                     exists = True
-                    print('es identico...........')
+                    if settings.DEBUG:
+                        print('es identico...........')
                     break
 
             if exists:
-                print('El usuario ya se ha registrado')
+                if settings.DEBUG:
+                    print('El usuario ya se ha registrado')
             else:
                 if len(rfid) < 7:
                     try:
@@ -314,9 +324,11 @@ def test(request):
                         new_access_log.save()
                     except Diner.DoesNotExist:
                         new_access_log = AccessLog(diner=None, RFID=rfid, access_to_room=dt)
-                        new_access_log.save()   
-                        print('Nuevo comensal\n')
+                        new_access_log.save()
+                        if settings.DEBUG:   
+                            print('Nuevo comensal\n')
                 else:
-                    print('RFID Inválido\n')
+                    if settings.DEBUG:
+                        print('RFID Inválido\n')
 
     return HttpResponse('Hola')
