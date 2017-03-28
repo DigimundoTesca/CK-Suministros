@@ -105,6 +105,7 @@ def get_start_week_day(day):
 def RFID(request):
     if request.method == 'POST':
         rfid = str(request.body).split('"')[3].replace(" ", "")
+        print(rfid)
         if rfid is None:
             print('no se recibio rfid')
             return HttpResponse('No se recibió RFID\n')
