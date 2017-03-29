@@ -1,18 +1,22 @@
 from django.contrib import admin
 from diners.models import Diner, AccessLog
 
+from actions import export_as_excel
+
 
 @admin.register(Diner)
 class DinerAdmin(admin.ModelAdmin):
-    list_display = ('id', 'name', 'RFID', 'created_at',)    
+    list_display = ('id', 'name', 'RFID', 'employee_number', 'created_at',)    
     ordering = ('created_at', 'name') 
-    list_editable = ('name', 'RFID',)
-    search_fields = ('name', 'RFID')
+    list_editable = ('name', 'RFID', 'employee_number')
+    search_fields = ('name', 'RFID', 'employee_number')
+    actions = (export_as_excel,)
+
 
 @admin.register(AccessLog)
 class AccessLogAdmin(admin.ModelAdmin):
     list_display = ('id', 'RFID', 'diner', 'access_to_room', )
     ordering = ('access_to_room',) 
     list_filter = ('diner', 'RFID', 'access_to_room', )
-    search_fields = ('RFID', )
+    search_fields = ('RFID',)
     date_hierarchy = 'access_to_room'

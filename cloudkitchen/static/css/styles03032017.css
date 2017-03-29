@@ -243,7 +243,25 @@ small {
   font-size: 1.4rem;
 }
 .container-assembly table button.btn-assembly{
-transition: all 1s ease;
+  transition: all 1s ease;
+}
+.container-diners #dates-range-form {
+}
+.container-diners #dates-range-form .container-select {
+  /*margin: .5em;*/
+  padding-bottom: 0.5em;
+}
+.container-diners #dates-range-form button#btn-set-new-range {
+  height: 2.7em;
+}
+.container-diners .diners-id-form .input-group {
+  width: 100%;
+}
+.container-diners .diners-id-form .input-group input {
+  padding: 0.7em;
+}
+.container-diners .diners-id-form .input-group .input-group-addon {
+  width: 4em;
 }
 .container-web-logo {
   text-align: center;
@@ -543,12 +561,6 @@ transition: all 1s ease;
   border-radius: .25rem;
   -moz-appearance: none;
   -webkit-appearance: none;
-}
-.diners-id-form .input-group {
-  width: 100%;
-}
-.diners-id-form .input-group .input-group-addon {
-  width: 5em;
 }
 .dropdown-menu {
   margin-left: -5rem !important;
