@@ -88,11 +88,11 @@
   $(function() {
     var ctx_diners_hour = document.getElementById("dinners_by_hour");
     var ctx_diners_day = document.getElementById("dinners_by_day");
+    var diners_week_chart,
+        diners_day_chart;
     var diners_hour = JSON.parse('{{ diners_hour | safe }}');
     var diners_week = JSON.parse('{{ diners_week | safe }}');    
     var dates_range = JSON.parse('{{ dates_range | safe }}');
-    console.log(dates_range);
-
 
     function convert_date_to_str(date) {
       months = {
@@ -104,110 +104,15 @@
       return fdate;
     }
 
-    function get_hours_of_diners() {
-      var count_list = [];
-      var count = 0;
-
-      while (count < diners_hour.length) {
-        count_list.push(parseFloat(diners_hour[count].count));
-        count++;
-      }
-      return count_list;
+    /**
+     * Receives a datetime with format from python.
+     * Returns an hour converted into 24-hours format: hh:mm ith Timezone +06:00
+     */
+    function convert_datetime_to_hour(original_datetime){
+      hour_formated = original_datetime.split('T')[1].split('.')[0].substr(0,5);
+      return hour_formated;
     }
-
-    function get_diners_day() {
-      var entries_list = [];
-      var count = 0;
-
-      while (count < diners_week.length) {
-        entries_list.push(parseFloat(diners_week[count].entries));
-        count++;
-      }
-      return entries_list;
-    }
-
-    var chart_days = new Chart(ctx_diners_day, {
-      type: 'bar',
-      data: {
-        labels: ["Lunes", "Martes", "Miercoles", "Juevez", "Viernes", "Sabado", "Domingo"],
-        datasets: [{
-          label: 'Comensales por dia',
-          data: get_diners_day(),
-          backgroundColor: [
-            'rgba(255, 99, 132, 0.2)',
-            'rgba(54, 162, 235, 0.2)',
-            'rgba(255, 206, 86, 0.2)',
-            'rgba(75, 192, 192, 0.2)',
-            'rgba(153, 102, 255, 0.2)',
-            'rgba(255, 206, 86, 0.2)',
-            'rgba(255, 159, 64, 0.2)'
-          ],
-          borderColor: [
-            'rgba(255,99,132,1)',
-            'rgba(54, 162, 235, 1)',
-            'rgba(255, 206, 86, 1)',
-            'rgba(75, 192, 192, 1)',
-            'rgba(153, 102, 255, 1)',
-            'rgba(255, 206, 86, 1)',
-            'rgba(255, 159, 64, 1)'
-          ],
-          borderWidth: 1
-        }]
-      },
-      options: {
-        responsive: true,
-        scales: {
-          yAxes: [{
-            ticks: {
-              beginAtZero: true,
-            },
-          }]
-        }
-      }
-    });
-
-    var chart_hours = new Chart(ctx_diners_hour, {
-      type: 'bar',
-      data: {
-        labels: ["05:00", "06:00", "07:00", "08:00", "09:00", "10:00", "11:00", "12:00"],
-        datasets: [{
-          label: 'Comensales por hora',
-          data: get_hours_of_diners(),
-          backgroundColor: [
-            'rgba(255, 99, 132, 0.2)',
-            'rgba(54, 162, 235, 0.2)',
-            'rgba(255, 206, 86, 0.2)',
-            'rgba(75, 192, 192, 0.2)',
-            'rgba(153, 102, 255, 0.2)',
-            'rgba(75, 192, 192, 0.2)',
-            'rgba(75, 192, 192, 0.2)',
-            'rgba(255, 159, 64, 0.2)'
-          ],
-          borderColor: [
-            'rgba(255,99,132,1)',
-            'rgba(54, 162, 235, 1)',
-            'rgba(255, 206, 86, 1)',
-            'rgba(75, 192, 192, 1)',
-            'rgba(255, 206, 86, 1)',
-            'rgba(255, 206, 86, 1)',
-            'rgba(153, 102, 255, 1)',
-            'rgba(255, 159, 64, 1)'
-          ],
-          borderWidth: 1
-        }]
-      },
-      options: {
-        responsive: true,
-        scales: {
-          yAxes: [{
-            ticks: {
-              beginAtZero: true,
-            },
-          }]
-        }
-      }
-    });
-
+    
     function fill_dates_range_form() {
       var dates_range_form = $(this).find('#dt-year');
       var selected_year;
@@ -236,6 +141,280 @@
       today_date = $('#dt-week').val().split(',')[1];    
     }
 
+    /**
+     * Receives an hour in 24-hour format and returns the same hour but
+     * converted into minutes.
+     * The string must have to have the following format: hh:mm
+     */
+    function hours_to_minutes(original_time) {
+      var hours,
+      minutes;
+      hours = parseInt(original_time.split(':')[0])*60;
+      minutes = parseInt(original_time.split(':')[1]);
+      return parseInt(hours + minutes);
+    }
+
+    /**
+     * Receives an hour and verifies if it't is in the offered time range.
+     * The hours received must have the following format: hh:mm
+     * Returns true if the condition is met. Otherwise returns false.
+     */
+    function is_time_in_range(hour, start_hour, end_hour) {
+      hour_in_minutes = hours_to_minutes(hour);
+      start_hour_in_minutes = hours_to_minutes(start_hour);
+      end_hour_in_minutes = hours_to_minutes(end_hour);
+
+      if(hour_in_minutes >= start_hour_in_minutes && hour_in_minutes < end_hour_in_minutes)
+        return true;
+      return false;
+    }
+
+    /**
+     * Receives an hour in minutes format and returns the same hour but
+     * converted into 24-hour format.
+     * The string returned have the next format: hh:mm
+     */
+    function minutes_to_hours(original_time) {
+      hours = parseInt(original_time / 60);
+      minutes = parseInt(original_time % 60);
+      
+      if (hours.toString().length < 2) {
+        hours = "0"+hours;
+      }
+      
+      if (minutes.toString().length < 2) {
+        minutes = "0"+minutes;
+      }
+        return hours + ':' + minutes;
+    }
+
+    function get_hours_of_diners() {
+      var count_list = [];
+      var count = 0;
+
+      while (count < diners_hour.length) {
+        count_list.push(parseFloat(diners_hour[count].count));
+        count++;
+      }
+      return count_list;
+    }
+
+    function get_diners_day() {
+      var entries_list = [];
+      var count = 0;
+
+      while (count < diners_week.length) {
+        entries_list.push(parseFloat(diners_week[count].entries));
+        count++;
+      }
+      return entries_list;
+    }
+
+<<<<<<< HEAD
+    var chart_days = new Chart(ctx_diners_day, {
+=======
+    function get_diners_day_list(initial_hour, final_hour, separation_time, diners_list) {
+      var initial_hour_minutes,
+            final_hour_minutes;
+      var list_formated = [],
+          elements_ok = [];
+      var entries = 0;
+
+      initial_hour_minutes = hours_to_minutes(initial_hour);
+      final_hour_minutes = hours_to_minutes(final_hour);
+
+      while(initial_hour_minutes < final_hour_minutes) {
+        start_hour_f = minutes_to_hours(initial_hour_minutes);
+        end_hour_f = minutes_to_hours(initial_hour_minutes + separation_time);
+
+        for (var i = 0; i < diners_list.length; i++) {
+          hour_sale = convert_datetime_to_hour(diners_list[i].datetime);
+          
+          if(is_time_in_range(hour_sale, start_hour_f, end_hour_f)) {
+            entries += 1;
+            elements_ok.push(diners_list[i]);
+          }
+        }
+
+        list_formated.push(entries);
+        initial_hour_minutes += separation_time;
+        entries = 0;
+      }
+
+      // Searches the times outside the time range
+      for(var i = 0; i < diners_list.length; i++) {
+        if(elements_ok.indexOf(diners_list[i]) == -1) {
+          entries += 1;
+        }
+      }
+      list_formated.push(entries)
+      return list_formated.reverse();
+    }
+
+    /**
+     * returns a list with the entries of the week per day with the days to set
+     */
+    function get_diners_week_range(diners_list) {
+      week_list = [0, 0, 0, 0, 0, 0, 0,]
+      for (var i = 0; i < 7; i++) {
+        for (var j = 0; j < diners_list.length; j++) {
+          if (diners_list[j].number_day == i) {
+            week_list[i] = diners_list[j].entries;
+          };
+        };
+      };
+      return week_list;
+    }
+
+    /**
+     * Get's the earnings of the selected day in week chart and
+     * show the results in diners day chart
+     */
+    function set_diners_day_chart(date) {
+      var earnings_list = [];
+      $.ajax({
+        url: "{% url 'diners:diners_logs' %}",
+        type: 'POST',
+        data: {
+          csrfmiddlewaretoken: '{{ csrf_token }}',
+          'date': date,
+          'type': 'diners_logs_day',
+        },
+        traditional: true,
+        datatype: 'jsonp',
+        beforeSend: function(){
+          // swal({
+          //     title: "Generando gráficas",
+          //     text: "Espere mientras se calculan los datos",
+          //   });
+          // swal.enableLoading();
+        },
+        success: function(result) {
+          var access_logs_day_list = result['access_logs_day_list'];
+          var initial_hour = '11:00',
+              final_hour = '17:00',
+              separation_time = 60; // In minutes
+          var total_datas = access_logs_day_list.length;
+
+          diners_access_day_list = get_diners_day_list(initial_hour, final_hour, separation_time, access_logs_day_list);
+          diners_day_chart.data.datasets[0].data = diners_access_day_list;
+          diners_day_chart.update();
+
+          swal({
+            title: "Éxito",
+            text: "Gráfica generada",
+            type: "success",
+            timer: 600,
+            showConfirmButton: false
+          }).then(
+          function(){},
+          function(dismiss){}
+          );
+        },
+
+        error: function(result, jqXHR, textStatus, errorThrown) {
+          console.log(result);
+        },
+      });
+    }
+
+    diners_week_chart = new Chart(ctx_diners_day, {
+>>>>>>> develop
+      type: 'bar',
+      data: {
+        labels: ["Lunes", "Martes", "Miercoles", "Juevez", "Viernes", "Sabado", "Domingo"],
+        datasets: [{
+          label: 'Comensales por dia',
+          data: get_diners_day(),
+          backgroundColor: [
+            'rgba(255, 99, 132, 0.6)',
+            'rgba(54, 162, 235, 0.6)',
+            'rgba(255, 206, 86, 0.6)',
+            'rgba(75, 192, 192, 0.6)',
+            'rgba(153, 102, 255, 0.6)',
+            'rgba(255, 206, 86, 0.6)',
+            'rgba(255, 159, 64, 0.6)'
+          ],
+          borderColor: [
+            'rgba(255,99,132,1)',
+            'rgba(54,162,235,1)',
+            'rgba(255,206,86,1)',
+            'rgba(75,192,192,1)',
+            'rgba(153,102,255,1)',
+            'rgba(255,206,86,1)',
+            'rgba(255,159,64,1)'
+          ],
+          borderWidth: 1
+        }]
+      },
+      options: {
+        responsive: true,
+        onClick: function(event, legendItem) {
+          try {
+            var selected_day = legendItem[0]._index;
+            for (var i = 0; i < diners_week.length; i++) {
+              if (diners_week[i].number_day == selected_day) {
+                set_diners_day_chart(diners_week[i].date);
+              }
+            };
+          } catch (error) {
+            console.log(error.message);
+          }
+        },
+        scales: {
+          yAxes: [{
+            ticks: {
+              beginAtZero: true,
+            },
+          }]
+        }
+      }
+    });
+
+    diners_day_chart = new Chart(ctx_diners_hour, {
+      type: 'horizontalBar',
+      data: {
+        labels: [
+        "Out",
+        "16:00 - 17:00", "15:00 - 16:00", "14:00 - 15:00", "13:00 - 14:00", "12:00 - 13:00", "11:00 - 12:00",
+        ],
+        datasets: [{
+          label: 'Comensales por hora',
+          data: get_hours_of_diners(),
+          backgroundColor: [
+            'rgba(54, 162, 235, 0.6)',
+            'rgba(75, 192, 192, 0.6)',
+            'rgba(255, 206, 86, 0.6)',
+            'rgba(75, 192, 192, 0.6)',
+            'rgba(153, 102, 255, 0.6)',
+            'rgba(75, 192, 192, 0.6)',
+            'rgba(255, 159, 64, 0.6)'
+          ],
+          borderColor: [
+            'rgba(54, 162, 235, 1)',
+            'rgba(75, 192, 192, 1)',
+            'rgba(255, 206, 86, 1)',
+            'rgba(75, 192, 192, 1)',
+            'rgba(153, 102, 255, 1)',
+            'rgba(75, 192, 192, 1)',
+            'rgba(255, 159, 64, 1)'
+          ],
+          borderWidth: 1
+        }]
+      },
+      options: {
+        responsive: true,
+        scales: {
+          xAxes: [{
+            ticks: {
+              beginAtZero: true
+            }
+          }]
+        }
+      }
+    });
+
+
     /** 
      * Refresh the page with de dates of the year and week selected
      */
@@ -250,7 +429,7 @@
           csrfmiddlewaretoken: '{{ csrf_token }}',
           'dt_year': dt_year,
           'dt_week': dt_week,
-          'type': 'diners_logs',
+          'type': 'diners_logs_week',
         },
         beforeSend: function(){
           swal({
@@ -262,10 +441,11 @@
         traditional: true,
         datatype: 'jsonp',
         success: function(result, status, XHR) {
-          var list_length = result.length;
+          diners_week = result['entries']
+          var diners_list = result['diners'];
+          var list_length = diners_list.length;
           var access_logs_table = $('#access-logs-table').find('tbody');
           access_logs_table.empty();
-          console.log(result);
           swal({
             title: "Éxito",
             text: "Datos obtenidos",
@@ -276,17 +456,22 @@
           function(){},
           function(dismiss){}
           );
+          
+          /**
+           * Filling the diners table
+           */
           for (var i = 0; i < list_length; i++) {
             access_logs_table.append("" +
               "<tr>" +
-              "<th>" + result[i].rfid + "</th>" +
-              "<td>" + result[i].SAP + "</td>" +
-              "<td>" + result[i].name + "</td>" +
-              "<td>" + result[i].access + "</td>" +
+              "<th>" + diners_list[i].rfid + "</th>" +
+              "<td>" + diners_list[i].SAP + "</td>" +
+              "<td>" + diners_list[i].name + "</td>" +
+              "<td>" + diners_list[i].access + "</td>" +
               "</tr>" +
             "");
           };
 
+<<<<<<< HEAD
           for (var i = 0; i < sales_week.length; i++) {
             var sales_day_earnings_list = [];
 
@@ -294,6 +479,14 @@
             chart_days.data.datasets[0].data = sales_week_earnings_list;
             chart_days.update();
           };
+=======
+          /**
+           * Filling the diners chart
+           */
+          diners_logs_week_list = get_diners_week_range(diners_week);
+          diners_week_chart.data.datasets[0].data = diners_logs_week_list;
+          diners_week_chart.update();
+>>>>>>> develop
 
         },
         error: function(result, jqXHR, textStatus, errorThrown) {
@@ -324,6 +517,7 @@
         }
       }
     });
+<<<<<<< HEAD
 
     $(this).on('click', '#btn-save-ticket-csv', function(event) {
       /**
@@ -381,6 +575,10 @@
 
     fill_dates_range_form();
     
+=======
+    fill_dates_range_form();
+    set_diners_day_chart(today_date);
+>>>>>>> develop
 });
 </script>
 {% endblock javascript %}

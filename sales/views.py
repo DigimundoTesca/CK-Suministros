@@ -211,7 +211,7 @@ def sales(request):
         count = 1
         total_earnings = 0
 
-        while count < total_days:
+        while count <= total_days:
             tickets = all_tickets.filter(created_at__range=[start_date, limit_day])
             day_object = {
                 'date': str(start_date.date().strftime('%d-%m-%Y')),
@@ -252,7 +252,6 @@ def sales(request):
             day_object = {
                 'date': str(start_datetime(days_to_count).date().strftime('%d-%m-%Y')),
                 'day_name': None,
-                'entries': None,
                 'earnings': None,
                 'number_day': get_number_day(start_datetime(days_to_count).date()),
             }
@@ -382,7 +381,7 @@ def sales(request):
                     if ticket_detail.ticket == ticket:
                         earnings_sale_object['earnings'] += ticket_detail.price
                 sales_day_list.append(earnings_sale_object)
-
+            print(sales_day_list)
             return JsonResponse({'sales_day_list': sales_day_list})
 
         if request.POST['type'] == 'ticket_details':
@@ -460,7 +459,7 @@ def sales(request):
             final_date = request.POST['dt_week'].split(',')[1]
             initial_date = parse_to_datetime(initial_date)
             final_date = parse_to_datetime(final_date) + timedelta(days=1)
-
+            
             sales = get_sales(initial_date, final_date)
             tickets = get_tickets(initial_date, final_date)
             data = {

@@ -302,7 +302,8 @@ small {
 .container-sales-reports .sales-details .card {
   max-height: 40vh;
 }
-.container-sales-reports .sales-details span.btn-reports {
+.container-sales-reports .sales-details span.btn-reports,
+.container-diners span.btn-reports {
   display: flex;
   justify-content: center;
 }

@@ -7,7 +7,7 @@ import  pytz, json
 from datetime import date, datetime, timedelta, time
 from django.conf import settings
 
-
+from django.utils import timezone
 from django.http import HttpResponse, JsonResponse
 from django.shortcuts import render, redirect, get_object_or_404
 from diners.models import AccessLog
@@ -32,6 +32,28 @@ def naive_to_datetime(nd):
         new_date = datetime.combine(d, t)
         return pytz.timezone('America/Mexico_City').localize(new_date)
 
+
+def get_diners(initial_date, final_date):
+    diners_logs_list = []
+
+    diners_logs_objects = get_access_logs(initial_date, final_date)
+
+    for diner_log in diners_logs_objects:
+        diner_log_object = {
+            'rfid': diner_log.RFID,
+            'access': datetime.strftime(diner_log.access_to_room, "%B %d, %I, %H:%M:%S %p"),
+            'number_day': get_number_day(diner_log.access_to_room),
+        }
+        if diner_log.diner:
+            diner_log_object['SAP'] = diner_log.diner.employee_number
+            diner_log_object['name'] = diner_log.diner.name
+        else:
+            diner_log_object['SAP'] = ''
+            diner_log_object['name'] = ''
+        diners_logs_list.append(diner_log_object)
+    return diners_logs_list
+
+
 def get_name_day(datetime_now):
     days_list = {
         'MONDAY': 'Lunes',
@@ -46,11 +68,12 @@ def get_name_day(datetime_now):
     return days_list[name_day.strftime('%A').upper()]
 
 
-def get_number_day():
+def get_number_day(dt):
     days = {
         'Lunes': 0, 'Martes': 1, 'Miércoles': 2, 'Jueves': 3, 'Viernes': 4, 'Sábado': 5, 'Domingo': 6,
     }
-    return days[get_name_day(datetime.now())]
+    return days[get_name_day(dt)]
+
 
 def start_datetime(back_days):
     start_date = date.today() - timedelta(days=back_days) 
@@ -74,6 +97,7 @@ def naive_to_datetime(nd):
         t = time(0,0)
         new_date = datetime.combine(d, t)
         return pytz.timezone('America/Mexico_City').localize(new_date)
+
 
 def diners_paginator(request, queryset, num_pages):
     result_list = Paginator(queryset, num_pages)
@@ -112,6 +136,7 @@ def parse_to_datetime(dt):
     parse_date = date(year, month, day)
     return  naive_to_datetime(parse_date)
 
+
 def get_access_logs(dt):
     initial_date = naive_to_datetime(dt)
     final_date = naive_to_datetime(initial_date + timedelta(days=1))
@@ -120,7 +145,6 @@ def get_access_logs(dt):
 
 def get_access_logs(initial_date, final_date):
     return AccessLog.objects.filter(access_to_room__range=(initial_date, final_date)).order_by('-access_to_room')
-
 
 
 def get_access_logs_today():
@@ -143,6 +167,68 @@ def get_start_week_day(day):
         number_day = 7
     else:
         day = naive_to_datetime(day) - timedelta(days=number_day-1)
+
+
+def get_diners_per_hour():
+    hours_list = []
+    hours_to_count = 12
+    start_hour = 5
+    customter_count = 0    
+    logs = get_access_logs_today()
+
+    while start_hour <= hours_to_count:
+
+        hour = {            
+            'count': None,
+        }
+
+        for log in logs:
+            datetime = str(log.access_to_room)
+            date,time = datetime.split(" ")    
+            if(time.startswith("0"+str(start_hour))):
+                customter_count += 1 
+            hour['count'] = customter_count
+
+        hours_list.append(hour)        
+        customter_count = 0
+        start_hour += 1
+        total_entries = 0
+
+    return json.dumps(hours_list) 
+   
+
+def get_diners_actual_week():
+    week_diners_list = []
+    total_entries = 0
+    days_to_count = get_number_day(date.today())
+    day_limit = days_to_count
+    start_date_number = 0
+    
+    while start_date_number <= day_limit:
+        day_object = {
+            'date': str(start_datetime(days_to_count).date().strftime('%d-%m-%Y')),
+            'day_name': None,
+            'entries': None,
+            'number_day': get_number_day(start_datetime(days_to_count).date())
+        }
+        
+        logs = AccessLog.objects.filter(access_to_room__range=[start_datetime(days_to_count), end_datetime(days_to_count)])
+
+        for log in logs:                
+            total_entries += 1;
+
+        day_object['entries'] = str(total_entries)
+        day_object['day_name'] = get_name_day(start_datetime(days_to_count).date())
+
+        week_diners_list.append(day_object)
+
+        # restarting counters
+        days_to_count -= 1
+        total_entries = 0
+        start_date_number += 1
+
+    return json.dumps(week_diners_list)         
+
 
 # ------------------------- Django Views ----------------------------- #
 
@@ -189,69 +275,8 @@ def RFID(request):
     else:
         return redirect('diners:diners')
 
-def get_diners_per_hour():
-    hours_list = []
-    hours_to_count = 12
-    start_hour = 5
-    customter_count = 0    
-    logs = get_access_logs_today()
 
-    while start_hour <= hours_to_count:
-
-        hour = {            
-            'count': None,
-        }
-
-        for log in logs:
-            datetime = str(log.access_to_room)
-            date,time = datetime.split(" ")    
-            if(time.startswith("0"+str(start_hour))):
-                customter_count += 1 
-            hour['count'] = customter_count
-
-        hours_list.append(hour)        
-        customter_count = 0
-        start_hour += 1
-        total_entries = 0
-
-    return json.dumps(hours_list) 
-
-            
-
-def get_diners_actual_week():
-       
-        week_diners_list = []
-        total_entries = 0
-        days_to_count = get_number_day()
-        day_limit = days_to_count
-        start_date_number = 0
-        
-        while start_date_number <= day_limit:
-            day_object = {
-                'date': str(start_datetime(days_to_count).date()),
-                'day_name': None,
-                'entries': None,
-            }
-            
-            logs = AccessLog.objects.filter(access_to_room__range=[start_datetime(days_to_count), end_datetime(days_to_count)])
-
-            for log in logs:                
-                total_entries += 1;
-
-            day_object['entries'] = str(total_entries)
-            day_object['day_name'] = get_name_day(start_datetime(days_to_count).date())
-
-            week_diners_list.append(day_object)
-
-            # restarting counters
-            days_to_count -= 1
-            total_entries = 0
-            start_date_number += 1
-
-        return json.dumps(week_diners_list)         
-
-
-def diners(request):     
+def diners(request):
     count = 0
     diners_list = []    
     total_diners = len(diners_list)
@@ -273,33 +298,79 @@ def diners(request):
 
 
 def diners_logs(request):
+    all_entries = AccessLog.objects.all()
+
+    def get_entries(initial_date, final_date):
+        """
+        Gets the following properties for each week's day: Name, Date and Earnings
+        """
+        limit_day = initial_date + timedelta(days=1)
+        week_diners_list = []
+        count = 1
+        total_entries = 0
+        total_days = (final_date - initial_date).days
+
+        while count <= total_days:
+            diners = all_entries.filter(access_to_room__range=[initial_date, limit_day])
+            day_object = {
+                'date': str(initial_date.date().strftime('%d-%m-%Y')),
+                'day_name': None,
+                'entries': None,
+                'number_day': get_number_day(initial_date),
+            }
+
+            day_object['day_name'] = get_name_day(initial_date.date())
+            day_object['entries'] = diners.count()
+
+            week_diners_list.append(day_object)
+
+            # Reset datas
+            limit_day += timedelta(days=1)
+            initial_date += timedelta(days=1)
+            total_entries = 0
+            count += 1
+
+        return week_diners_list
+
     if request.method == 'POST':
-        if request.POST['type'] == 'diners_logs':
+        if request.POST['type'] == 'diners_logs_week':
             dt_year = request.POST['dt_year']
             initial_date = request.POST['dt_week'].split(',')[0]
             final_date = request.POST['dt_week'].split(',')[1]
             initial_date = parse_to_datetime(initial_date)
             final_date = parse_to_datetime(final_date) + timedelta(days=1)
-            
-            diners_logs_list = []
 
-            diners_logs_objects = get_access_logs(initial_date, final_date)
+            diners_logs = get_diners(initial_date, final_date)
+            entries = get_entries(initial_date, final_date)
+            data = {
+                'diners': diners_logs,
+                'entries': entries,
+            }
+            return JsonResponse(data)
 
-            for diner_log in diners_logs_objects:
-                diner_log_object = {
-                    'rfid': diner_log.RFID,
-                    'access': datetime.strftime(diner_log.access_to_room, "%B %d, %I, %H:%M:%S %p"),
+        elif request.POST['type'] == 'diners_logs_day':
+            """
+            Returns a list with objects:
+            Each object has the following characteristics
+            """
+            access_logs_day_list = []
+            start_date = naive_to_datetime(datetime.strptime(request.POST['date'], '%d-%m-%Y').date())
+            end_date = naive_to_datetime(start_date + timedelta(days=1))
+            access_logs = all_entries.filter(access_to_room__range=[start_date, end_date])
+
+            for access_log in access_logs:
+                """
+                Filling in the sales list of the day
+                """
+                earnings_sale_object = {
+                    'access_id': access_log.id,
+                    'datetime': timezone.localtime(access_log.access_to_room),
+                    'number_day': get_number_day(start_date), 
                 }
-                if diner_log.diner:
-                    diner_log_object['SAP'] = diner_log.diner.employee_number
-                    diner_log_object['name'] = diner_log.diner.name
-                else:
-                    diner_log_object['SAP'] = ''
-                    diner_log_object['name'] = ''
-                diners_logs_list.append(diner_log_object)
-            return JsonResponse(diners_logs_list, safe=False)
+                
+                access_logs_day_list.append(earnings_sale_object)
+            return JsonResponse({'access_logs_day_list': access_logs_day_list})
             
-
     else:
         all_diners_objects = get_all_access_logs()
         today_diners_objects = get_access_logs_today()

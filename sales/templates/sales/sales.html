@@ -682,13 +682,9 @@
           /**
            * Filling the sales chart
            */
-          for (var i = 0; i < sales_week.length; i++) {
-            var sales_day_earnings_list = [];
-
-            sales_week_earnings_list = get_earnings_week_range(sales_week);
-            earnings_week_chart.data.datasets[0].data = sales_week_earnings_list;
-            earnings_week_chart.update();
-          };
+          sales_week_earnings_list = get_earnings_week_range(sales_week);
+          earnings_week_chart.data.datasets[0].data = sales_week_earnings_list;
+          earnings_week_chart.update();
 
           $('#total-earnings-text').text(week_earnings.toFixed(2))
           $('#week-number').text(week_number)
