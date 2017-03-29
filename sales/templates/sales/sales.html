@@ -197,6 +197,7 @@
     var sales_week = JSON.parse('{{ sales_week | safe }}');
     var dates_range = JSON.parse('{{ dates_range | safe }}');
     var today_date;
+    var days_list = {};
 
     /**
      * returns a list with the earnings of the week per day
@@ -363,6 +364,7 @@
     function set_sales_day_chart(date) {
       console.log(date);
       var earnings_list = [];
+
       $.ajax({
         url: "{% url 'sales:sales' %}",
         type: 'POST',
@@ -408,6 +410,29 @@
           console.log(result);
         },
       });
+    }
+
+    function set_days_list() {
+      var initial_date = $('#dt-week').val().split(',')[0];
+      var final_date = $('#dt-week').val().split(',')[1];
+      var initial_date_f,
+          final_date_f;
+
+      var initial_date_day = initial_date.split('-')[0];
+      var initial_date_month = initial_date.split('-')[1];
+      var initial_date_year = initial_date.split('-')[2];
+
+      var final_date_day = final_date.split('-')[0];
+      var final_date_month = final_date.split('-')[1];
+      var final_date_year = final_date.split('-')[2];
+      
+      initial_date_f = new Date(initial_date_year, initial_date_month, initial_date_day);
+      final_date_f = new Date(final_date_year, final_date_month, final_date_day);
+
+      days_to_count = (final_date_f - initial_date_f)/(1000*60*60*24) + 1;
+
+      console.log(days_to_count);
+      
     }
 
     function convert_date_to_str(date) {
@@ -967,6 +992,7 @@
      */
     fill_dates_range_form();
     set_total_earnings();
+    set_days_list();
     set_sales_day_chart(today_date);
   });
 </script>
