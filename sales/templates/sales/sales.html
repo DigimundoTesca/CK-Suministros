@@ -22,7 +22,6 @@
           </select>
           <select class="custom-select" id="dt-week" >
           </select>
-          <button id="btn-set-new-range" type="button" class="btn btn-outline-primary">Actualizar</button>
         </form>
       </div>
     </div>
@@ -30,7 +29,9 @@
   <div class="row container-sales-header">
     <div class="col-xs-12 col-md-6">
       <div class="text-xs-center">
-        <p>Ventas de la semana: <span id="total-earnings-text" class="font-weight-bold">$ </span></p>
+        <p>Ventas de la semana <span id="week-number">{{ week_number }}</span>: 
+        <span class="font-weight-bold">$</span>
+        <span id="total-earnings-text" class="font-weight-bold"></span></p>
       </div>
     </div>
     <div class="col-xs-12 col-md-6">
@@ -191,11 +192,11 @@
   $(function() {
     var ctx_week = document.getElementById("canvas-week-sales"),
         ctx_day = document.getElementById("canvas-day-sales");
-    var today_number = {{ today_number }};
-    var sales_week = JSON.parse('{{ sales_week | safe }}');
     var earnings_week_chart,
         earnings_day_chart;
+    var sales_week = JSON.parse('{{ sales_week | safe }}');
     var dates_range = JSON.parse('{{ dates_range | safe }}');
+    var today_date;
 
     /**
      * returns a list with the earnings of the week per day
@@ -209,6 +210,21 @@
         count++;
       }
       return earnings_list;
+    }
+
+    /**
+     * returns a list with the earnings of the week per day with the days to set
+     */
+    function get_earnings_week_range(sales_list) {
+      week_list = [0, 0, 0, 0, 0, 0, 0,]
+      for (var i = 0; i < 7; i++) {
+        for (var j = 0; j < sales_list.length; j++) {
+          if (sales_list[j].number_day == i) {
+            week_list[i] = sales_list[j]['earnings']
+          };
+        };
+      };
+      return week_list;
     }
 
     /**
@@ -344,10 +360,9 @@
      * Get's the earnings of the selected day in week chart and
      * show the results in sales day chart
      */
-    function get_sales_day(day_number) {
+    function set_sales_day_chart(date) {
+      console.log(date);
       var earnings_list = [];
-      date =  sales_week[day_number].date;
- 
       $.ajax({
         url: "{% url 'sales:sales' %}",
         type: 'POST',
@@ -376,6 +391,7 @@
           sales_day_earnings_list = get_sales_day_list(initial_hour, final_hour, separation_time, sales_day_object_list);
           earnings_day_chart.data.datasets[0].data = sales_day_earnings_list;
           earnings_day_chart.update();
+
           swal({
             title: "Éxito",
             text: "Gráfica generada",
@@ -428,8 +444,10 @@
           });
           return false;
         }
-      });      
+      });
+      today_date = $('#dt-week').val().split(',')[1];
     }
+
     /**
      * Draws the chart of sales of the week
      */
@@ -464,7 +482,7 @@
         responsive: true,
         onClick: function(event, legendItem) {
           try {
-            get_sales_day(legendItem[0]._index);
+            set_sales_day_chart(legendItem[0]._index);
           } catch (error) {
             console.log(error.message);
           }
@@ -562,113 +580,118 @@
       $('#total-earnings-text').append(total_earnings);
     }
 
-  /** 
-   * Refresh the page with de dates of the year and week selected
-   */
-  $(this).on('click', '#btn-set-new-range', function(event) {
-    dt_year = $('#dt-year').val();
-    dt_week = $('#dt-week').val();
-    $.ajax({
-      url: "{% url 'sales:sales' %}",
-      type: 'POST',
-      data: {
-        csrfmiddlewaretoken: '{{ csrf_token }}',
-        'dt_year': dt_year,
-        'dt_week': dt_week,
-        'type': 'sales_week',
-      },
-      beforeSend: function(){
-        swal({
-          title: "Obteniendo registros",
-          text: "Espere mientras obtenemos toda la información",
-        });
-        swal.enableLoading();
-      },
-      traditional: true,
-      datatype: 'jsonp',
-      success: function(result, status, XHR) {
-        tickets_objects = result['tickets']
-        var sales_details_table = $('#sales-details-table').find('tbody');
-        sales_details_table.empty();
-        console.log(result);
-        // console.log(tickets_objects[0].ticket_details['cartridges'].length);
-        swal({
-          title: "Éxito",
-          text: "Datos obtenidos",
-          type: "info",
-          timer: 750,
-          showConfirmButton: false
-        }).then(
-        function(){},
-        function(dismiss){});
-        
-        for (var i = 0; i < tickets_objects.length; i++) {
-          var cartridges_list = "";
-          var packages_list = "";
+    /** 
+     * Refresh the page with de dates of the year and week selected
+     */
+    $(this).on('click', '#dt-week', function(event) {
+      dt_year = $('#dt-year').val();
+      dt_week = $('#dt-week').val();
+      
+      $.ajax({
+        url: "{% url 'sales:sales' %}",
+        type: 'POST',
+        data: {
+          csrfmiddlewaretoken: '{{ csrf_token }}',
+          'dt_year': dt_year,
+          'dt_week': dt_week,
+          'type': 'sales_week',
+        },
+        beforeSend: function(){
+          swal({
+            title: "Obteniendo registros",
+            text: "Espere mientras obtenemos toda la información",
+          });
+          swal.enableLoading();
+        },
+        traditional: true,
+        datatype: 'jsonp',
+        success: function(result, status, XHR) {
+          var tickets_objects = result['tickets']
+          var sales_objects = result['sales']
+          var sales_details_table = $('#sales-details-table').find('tbody');
+          var week_earnings = 0;
+          sales_details_table.empty();
 
-          for (var j = 0; j < tickets_objects[i].ticket_details['cartridges'].length; j++) {
-            cartridges_list += "" +
-            "<span class='badge badge-success'>" +
-              "<span class='badge badge-info'>" + 
-              tickets_objects[i].ticket_details['cartridges'][j].quantity +
+          swal({
+            title: "Éxito",
+            text: "Datos obtenidos",
+            type: "info",
+            timer: 750,
+            showConfirmButton: false
+          }).then(
+          function(){},
+          function(dismiss){});
+          
+          /**
+           * Filling the sales table
+           */
+          for (var i = 0; i < tickets_objects.length; i++) {
+            week_earnings += parseFloat(tickets_objects[i].total);
+            var cartridges_list = "";
+            var packages_list = "";
+
+            for (var j = 0; j < tickets_objects[i].ticket_details['cartridges'].length; j++) {
+              cartridges_list += "" +
+              "<span class='badge badge-success'>" +
+                "<span class='badge badge-info'>" + 
+                tickets_objects[i].ticket_details['cartridges'][j].quantity +
+                "</span>" +
+                "<span class='badge badge-success'>" + 
+                tickets_objects[i].ticket_details['cartridges'][j].name +
+                "</span>" +
               "</span>" +
-              "<span class='badge badge-success'>" + 
-              tickets_objects[i].ticket_details['cartridges'][j].name +
+              "";
+            };
+
+            for (var j = 0; j < tickets_objects[i].ticket_details['packages'].length; j++) {
+              packages_list += "" +
+              "<span class='badge badge-primary'>" +
+                "<span class='badge badge-info'>" + 
+                tickets_objects[i].ticket_details['packages'][j].quantity +
+                "</span>" +
+                "<span class='badge badge-primary'>" + 
+                tickets_objects[i].ticket_details['packages'][j].name +
+                "</span>" +
               "</span>" +
-            "</span>" +
-            "";
+              "";
+            };
+
+            sales_details_table.append("" +
+              "<tr>" +
+              "<th class='header-id'>" + tickets_objects[i].id + "</th>" +
+              "<th>" + tickets_objects[i].order_number + "</th>" +
+              "<td class='header-date'>" + tickets_objects[i].created_at + "</td>" +
+              "<td class='header-products'>" + cartridges_list + "</td>" +
+              "<td class='header-packages'>" + packages_list + "</td>" +
+              "<td>" + tickets_objects[i].seller + "</td>" +
+              "<td class='td-total'>" + tickets_objects[i].total + "</td>" +
+              "<td class='header-actions'>" + 
+              "<span class='sales-actions delete-ticket'><i class='material-icons text-muted'>delete</i></span>" +
+              "<span class='sales-actions print-ticket'><i class='material-icons text-primary'>local_printshop</i></span>" + 
+              "</td>" +
+              "</tr>" +
+            "");
           };
 
-          for (var j = 0; j < tickets_objects[i].ticket_details['packages'].length; j++) {
-            packages_list += "" +
-            "<span class='badge badge-primary'>" +
-              "<span class='badge badge-info'>" + 
-              tickets_objects[i].ticket_details['packages'][j].quantity +
-              "</span>" +
-              "<span class='badge badge-primary'>" + 
-              tickets_objects[i].ticket_details['packages'][j].name +
-              "</span>" +
-            "</span>" +
-            "";
+          /**
+           * Filling the sales chart
+           */
+          for (var i = 0; i < sales_objects.length; i++) {
+            var sales_day_earnings_list = [];
+
+            sales_week_earnings_list = get_earnings_week_range(sales_objects);
+            earnings_week_chart.data.datasets[0].data = sales_week_earnings_list;
+            earnings_week_chart.update();
           };
+          $('#total-earnings-text').text(week_earnings.toFixed(2))
 
-          sales_details_table.append("" +
-            "<tr>" +
-            "<th class='header-id'>" + tickets_objects[i].id + "</th>" +
-            "<th>" + tickets_objects[i].order_number + "</th>" +
-            "<td class='header-date'>" + tickets_objects[i].created_at + "</td>" +
-            "<td class='header-products'>" + cartridges_list + "</td>" +
-            "<td class='header-packages'>" + packages_list + "</td>" +
-            "<td>" + tickets_objects[i].seller + "</td>" +
-            "<td class='td-total'>" + tickets_objects[i].total + "</td>" +
-            "<td class='header-actions'>" + 
-            "<span class='sales-actions delete-ticket'><i class='material-icons text-muted'>delete</i></span>" +
-            "<span class='sales-actions print-ticket'><i class='material-icons text-primary'>local_printshop</i></span>" + 
-            "</td>" +
-            "</tr>" +
-          "");
-        };
-      },
-      error: function(result, jqXHR, textStatus, errorThrown) {
-        console.log(result);
-      },
-      complete: function(result){
-        // ticket_details = result.responseJSON.ticket_details;
-        // $('.ticket-order-container').find('#ticket-order').text(ticket_details.ticket_order);
-        // setTimeout(function() {
-        //   show_modal(ticket_details)
-        // }, 750);
-
-        // btn_printer.on('click', function(){
-        //   var options = {
-        //     mode: 'iframe',
-        //     popClose: true,
-        //   };
-        //   $("#printer").printArea(options);
-        // });
-      }
+        },
+        error: function(result, jqXHR, textStatus, errorThrown) {
+          console.log(result);
+        },
+        complete: function(result){}
+      });
     });
-  });
 
     /**
      * Get's the ticket id for printer-icon selected 
@@ -944,7 +967,7 @@
      */
     fill_dates_range_form();
     set_total_earnings();
-    get_sales_day(today_number);
+    set_sales_day_chart(today_date);
   });
 </script>
 {% endblock javascript %}

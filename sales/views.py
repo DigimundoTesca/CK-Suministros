@@ -58,12 +58,11 @@ def get_name_day(datetime_now):
     return days_list[name_day.strftime('%A').upper()]
 
 
-def get_number_day():
+def get_number_day(day):
     days = {
         'Lunes': 0, 'Martes': 1, 'Miércoles': 2, 'Jueves': 3, 'Viernes': 4, 'Sábado': 5, 'Domingo': 6,
     }
-    return days[get_name_day(datetime.now())]
-
+    return days[get_name_day(day)]
 
 def get_week_number():
     return date.today().isocalendar()[1]
@@ -217,7 +216,8 @@ def sales(request):
             day_object = {
                 'date': str(start_date.date()),
                 'day_name': None,
-                'eanings': None,
+                'earnings': None,
+                'number_day': get_number_day(start_date),
             }
 
             for ticket in tickets:
@@ -226,7 +226,7 @@ def sales(request):
                         total_earnings += ticket_detail.price
 
             day_object['day_name'] = get_name_day(start_date.date())
-            day_object['eanings'] = str(total_earnings)
+            day_object['earnings'] = str(total_earnings)
 
             week_sales_list.append(day_object)
 
@@ -244,7 +244,7 @@ def sales(request):
         """
         week_sales_list = []
         total_earnings = 0
-        days_to_count = get_number_day()
+        days_to_count = get_number_day(datetime.now())
         day_limit = days_to_count
         start_date_number = 0
         
@@ -363,7 +363,7 @@ def sales(request):
             Each object has the following characteristics
             """
             sales_day_list = []
-            start_day = naive_to_datetime(datetime.strptime(request.POST['date'], '%Y-%m-%d').date())
+            start_day = naive_to_datetime(datetime.strptime(request.POST['date'], '%d-%m-%Y').date())
             end_date = naive_to_datetime(start_day + timedelta(days=1))
             tickets_objects = all_tickets.filter(created_at__range=[start_day, end_date])
 
@@ -478,7 +478,7 @@ def sales(request):
         'actual_year': datetime.now().year,
         'sales_week': get_sales_actual_week(),
         'today_name': get_name_day(datetime.now()),
-        'today_number': get_number_day(),
+        'today_number': get_number_day(datetime.now()),
         'week_number': get_week_number(),
         'tickets': get_tickets_today(),
         'dates_range': get_dates_range(),
@@ -516,7 +516,7 @@ def new_sale(request):
             4. Save the new object
             """
 
-            tickets = Ticket.objects.filter(created_at__gte=datetime.now() - timedelta(days=get_number_day()))
+            tickets = Ticket.objects.filter(created_at__gte=datetime.now() - timedelta(days=get_number_day(datetime.now())))
 
             for ticket in tickets:
                 order_number_ticket = ticket.order_number
