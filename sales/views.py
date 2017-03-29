@@ -211,7 +211,7 @@ def sales(request):
         count = 1
         total_earnings = 0
 
-        while count < total_days:
+        while count <= total_days:
             tickets = all_tickets.filter(created_at__range=[start_date, limit_day])
             day_object = {
                 'date': str(start_date.date().strftime('%d-%m-%Y')),
@@ -459,7 +459,6 @@ def sales(request):
             final_date = request.POST['dt_week'].split(',')[1]
             initial_date = parse_to_datetime(initial_date)
             final_date = parse_to_datetime(final_date) + timedelta(days=1)
-
             sales = get_sales(initial_date, final_date)
             tickets = get_tickets(initial_date, final_date)
             data = {

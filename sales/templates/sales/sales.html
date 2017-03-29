@@ -613,6 +613,7 @@
         success: function(result, status, XHR) {
           var tickets_objects = result['tickets']
           sales_week = result['sales']
+          console.log(sales_week);
           var week_number = result['week_number']
           var sales_details_table = $('#sales-details-table').find('tbody');
           var week_earnings = 0;
