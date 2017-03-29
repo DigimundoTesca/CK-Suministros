@@ -13,33 +13,32 @@
     <div class="col-xs-12 col-lg-8 text-xs-right  inputs-container">
       <div class="row">
         <form class="form-inline col-xs-12 " id="dates-range-form">
-          <div class="col-xs-12 col-lg-2 container-select">
+          <div class="col-xs-12 col-lg-3 container-select">
             <select class="custom-select col-xs-12" id="dt-year">
             </select>
           </div>
-          <div class="col-xs-12 col-lg-6 container-select">
+          <div class="col-xs-12 col-lg-9 container-select">
             <select class="custom-select col-xs-12" id="dt-week" >
             </select>
           </div>
-          <button class="btn btn-outline-primary col-xs-12 col-lg-3" id="btn-set-new-range" type="button">Actualizar</button>
         </form>
       </div>
     </div>
      
   </div>
   <div class="row">
-      <div class="col-xs-12 col-lg-6">
-        <div class="canvas-holder">
-          <canvas id="dinners_by_day"></canvas>
-        </div>
-       </div>
-       <div class="col-xs-12 col-lg-6">
-        <div class="canvas-holder">
-          <canvas id="dinners_by_hour"></canvas>
-        </div>
-       </div>         
-    </div> 
-  <div class="row">
+    <div class="col-xs-12 col-lg-6">
+      <div class="canvas-holder">
+        <canvas id="dinners_by_day"></canvas>
+      </div>
+    </div>
+    <div class="col-xs-12 col-lg-6">
+      <div class="canvas-holder">
+        <canvas id="dinners_by_hour"></canvas>
+      </div>
+    </div>         
+  </div> 
+  <div class="row mt-2">
     <div class="col-xs-12">
       <h3 class="col-xs-12 col-sm-8 col-xl-10">Comensales hasta hoy: <span class="badge badge-blue">{{ total_diners }}</span></h3>
       <button id="btn-save-ticket-csv" class="col-xs-12 col-sm-4 col-xl-2 btn btn-primary d-flex">
@@ -240,7 +239,7 @@
     /** 
      * Refresh the page with de dates of the year and week selected
      */
-    $(this).on('click', '#btn-set-new-range', function(event) {
+    $(this).on('click', '#dt-week', function(event) {
       dt_year = $('#dt-year').val();
       dt_week = $('#dt-week').val();
 
