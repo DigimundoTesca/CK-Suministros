@@ -36,6 +36,14 @@ def naive_to_datetime(nd):
         return pytz.timezone('America/Mexico_City').localize(new_date)
 
 
+def parse_to_datetime(dt):
+    day = int(dt.split('-')[0])
+    month = int(dt.split('-')[1])
+    year = int(dt.split('-')[2])
+    parse_date = date(year, month, day)
+    return  naive_to_datetime(parse_date)
+
+
 def get_name_day(datetime_now):
     days_list = {
         'MONDAY': 'Lunes',
@@ -194,7 +202,7 @@ def sales(request):
         # End while
         return json.dumps(years_list)
 
-    def get_sales_range(start_date, final_date):
+    def get_sales(start_date, final_date):
         
         return json.dumps({'hola': 'ajajja'})
 
@@ -234,7 +242,7 @@ def sales(request):
 
         return json.dumps(week_sales_list)
 
-    def get_tickets():
+    def get_tickets_today():
         tickets_details = TicketDetail.objects.select_related(
             'ticket', 'ticket__seller', 'cartridge', 'package_cartridge').filter()
         tickets = Ticket.objects.filter(created_at__gte=naive_to_datetime(date.today()))
@@ -269,6 +277,44 @@ def sales(request):
             tickets_list.append(ticket_object)
 
         return tickets_list
+
+    def get_tickets(initial_date, final_date):
+        tickets = all_tickets.filter(created_at__range=(initial_date, final_date)).order_by('-created_at')
+        tickets_details = all_ticket_details
+        tickets_list = []
+
+        for ticket in tickets:
+            ticket_object = {
+                'id': ticket.id,
+                'order_number': ticket.order_number,
+                'created_at': datetime.strftime(ticket.created_at, "%B %d, %I, %H:%M:%S %p"),
+                'seller': ticket.seller.username,
+                'ticket_details': [],
+            }
+
+            for ticket_detail in tickets_details:
+                if ticket_detail.ticket == ticket:
+                    print('ES IGUAL!')
+                    if ticket_detail.cartridge:
+                        ticket_detail_object = {
+                            'name': ticket_detail.cartridge.name,
+                            'quantity': ticket_detail.quantity,
+                            'price': float(ticket_detail.price),
+                        }
+                    elif ticket_detail.package_cartridge:
+                        ticket_detail_object = {
+                            'name': ticket_detail.package_cartridge.name,
+                            'quantity': ticket_detail.quantity,
+                            'price': float(ticket_detail.price),
+                        }
+                    try:
+                        ticket_object['ticket_details'].append(ticket_detail_object)
+                    except Exception as e:
+                        pass
+            tickets_list.append(ticket_object)
+        print(tickets_list)
+        return tickets_list
+        
 
     if request.method == 'POST':
         if request.POST['type'] == 'sales_day':
@@ -368,9 +414,13 @@ def sales(request):
             return JsonResponse({'ticket': tickets_objects_list})
 
         if request.POST['type'] == 'sales_week':
-            dt_year = request.POST['dt_year']
-            dt_week = request.POST['dt_week']
-            return JsonResponse({'hola':'jajajja'})
+            initial_date = request.POST['dt_week'].split(',')[0]
+            final_date = request.POST['dt_week'].split(',')[1]
+            initial_date = parse_to_datetime(initial_date)
+            final_date = parse_to_datetime(final_date) + timedelta(days=1)
+
+            get_tickets(initial_date, final_date)
+            return JsonResponse({'hola':'jajajja'}, safe=False)
 
     # Any other request method:
     template = 'sales/sales.html'
@@ -383,7 +433,7 @@ def sales(request):
         'today_name': get_name_day(datetime.now()),
         'today_number': get_number_day(),
         'week_number': get_week_number(),
-        'tickets': get_tickets(),
+        'tickets': get_tickets_today(),
         'dates_range': get_dates_range(),
 
     }

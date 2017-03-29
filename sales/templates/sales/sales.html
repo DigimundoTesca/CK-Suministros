@@ -65,7 +65,7 @@
     </div>
     <div class="col-xs-12">
       <div class="card card-scroll-x mt-1">
-        <table class="table table-hover table-sales-details">
+        <table id="sales-details-table" class="table table-hover table-sales-details">
           <thead class="thead-inverse">
             <tr>
               <th>Id</th>
@@ -562,40 +562,77 @@
       $('#total-earnings-text').append(total_earnings);
     }
 
-    /** 
-     * Refresh the page with de dates of the year and week selected
-     */
-    $(this).on('click', '#btn-set-new-range', function(event) {
-      dt_year = $('#dt-year').val();
-      dt_week = $('#dt-week').val();
-      $.ajax({
-        url: "{% url 'sales:sales' %}",
-        type: 'POST',
-        data: {
-          csrfmiddlewaretoken: '{{ csrf_token }}',
-          'dt_year': dt_year,
-          'dt_week': dt_week,
-          'type': 'sales_week',
-        },
-        traditional: true,
-        datatype: 'jsonp',
-        success: function(result) {
-          swal({
-            title: 'Oops!',
-            type: 'info',
-            text: 'Estamos dando mantenimiento a este modulo, volveremos a la brevedad.',
-            timer: 2000
-          }).then( function () {}, function (dismiss) {
-            if (dismiss === 'timer') {
-            }
-          })
-        },
+  /** 
+   * Refresh the page with de dates of the year and week selected
+   */
+  $(this).on('click', '#btn-set-new-range', function(event) {
+    dt_year = $('#dt-year').val();
+    dt_week = $('#dt-week').val();
+    $.ajax({
+      url: "{% url 'sales:sales' %}",
+      type: 'POST',
+      data: {
+        csrfmiddlewaretoken: '{{ csrf_token }}',
+        'dt_year': dt_year,
+        'dt_week': dt_week,
+        'type': 'sales_week',
+      },
+      beforeSend: function(){
+        swal({
+          title: "Obteniendo registros",
+          text: "Espere mientras obtenemos toda la información",
+        });
+        swal.enableLoading();
+      },
+      traditional: true,
+      datatype: 'jsonp',
+      success: function(result, status, XHR) {
+        var list_length = result.length;
+        var sales_details_table = $('#sales-details-table').find('tbody');
+        sales_details_table.empty();
+        console.log(result);
+        swal({
+          title: "Éxito",
+          text: "Datos obtenidos",
+          type: "info",
+          timer: 750,
+          showConfirmButton: false
+        }).then(
+        function(){},
+        function(dismiss){}
+        );
+        for (var i = 0; i < list_length; i++) {
+          sales_details_table.append("" +
+            "<tr>" +
+            "<th>" + result[i].rfid + "</th>" +
+            "<td>" + result[i].SAP + "</td>" +
+            "<td>" + result[i].name + "</td>" +
+            "<td>" + result[i].access + "</td>" +
+            "</tr>" +
+          "");
+        };
 
-        error: function(result, jqXHR, textStatus, errorThrown) {
-          console.log(result);
-        },
-      });
+      },
+      error: function(result, jqXHR, textStatus, errorThrown) {
+        console.log(result);
+      },
+      complete: function(result){
+        // ticket_details = result.responseJSON.ticket_details;
+        // $('.ticket-order-container').find('#ticket-order').text(ticket_details.ticket_order);
+        // setTimeout(function() {
+        //   show_modal(ticket_details)
+        // }, 750);
+
+        // btn_printer.on('click', function(){
+        //   var options = {
+        //     mode: 'iframe',
+        //     popClose: true,
+        //   };
+        //   $("#printer").printArea(options);
+        // });
+      }
     });
+  });
 
     /**
      * Get's the ticket id for printer-icon selected 
