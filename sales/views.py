@@ -289,30 +289,38 @@ def sales(request):
                 'order_number': ticket.order_number,
                 'created_at': datetime.strftime(ticket.created_at, "%B %d, %I, %H:%M:%S %p"),
                 'seller': ticket.seller.username,
-                'ticket_details': [],
+                'ticket_details': {
+                    'cartridges': [],
+                    'packages': [],
+                },
+                'total': 0,
             }
 
             for ticket_detail in tickets_details:
                 if ticket_detail.ticket == ticket:
-                    print('ES IGUAL!')
                     if ticket_detail.cartridge:
                         ticket_detail_object = {
                             'name': ticket_detail.cartridge.name,
                             'quantity': ticket_detail.quantity,
                             'price': float(ticket_detail.price),
                         }
+                        ticket_object['ticket_details']['cartridges'].append(ticket_detail_object)
                     elif ticket_detail.package_cartridge:
                         ticket_detail_object = {
                             'name': ticket_detail.package_cartridge.name,
                             'quantity': ticket_detail.quantity,
                             'price': float(ticket_detail.price),
                         }
+                        ticket_object['ticket_details']['packages'].append(ticket_detail_object)
+
+                    ticket_object['total'] += float(ticket_detail.price)                        
+                    
                     try:
                         ticket_object['ticket_details'].append(ticket_detail_object)
                     except Exception as e:
                         pass
+            ticket_object['total'] = str(ticket_object['total'])
             tickets_list.append(ticket_object)
-        print(tickets_list)
         return tickets_list
         
 
@@ -418,9 +426,13 @@ def sales(request):
             final_date = request.POST['dt_week'].split(',')[1]
             initial_date = parse_to_datetime(initial_date)
             final_date = parse_to_datetime(final_date) + timedelta(days=1)
-
-            get_tickets(initial_date, final_date)
-            return JsonResponse({'hola':'jajajja'}, safe=False)
+            sales = get_sales(initial_date, final_date)
+            tickets = get_tickets(initial_date, final_date)
+            data = {
+                'sales': sales,
+                'tickets': tickets,
+            }
+            return JsonResponse(data)
 
     # Any other request method:
     template = 'sales/sales.html'

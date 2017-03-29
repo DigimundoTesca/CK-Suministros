@@ -587,10 +587,11 @@
       traditional: true,
       datatype: 'jsonp',
       success: function(result, status, XHR) {
-        var list_length = result.length;
+        tickets_objects = result['tickets']
         var sales_details_table = $('#sales-details-table').find('tbody');
         sales_details_table.empty();
         console.log(result);
+        // console.log(tickets_objects[0].ticket_details['cartridges'].length);
         swal({
           title: "Éxito",
           text: "Datos obtenidos",
@@ -599,19 +600,54 @@
           showConfirmButton: false
         }).then(
         function(){},
-        function(dismiss){}
-        );
-        for (var i = 0; i < list_length; i++) {
+        function(dismiss){});
+        
+        for (var i = 0; i < tickets_objects.length; i++) {
+          var cartridges_list = "";
+          var packages_list = "";
+
+          for (var j = 0; j < tickets_objects[i].ticket_details['cartridges'].length; j++) {
+            cartridges_list += "" +
+            "<span class='badge badge-success'>" +
+              "<span class='badge badge-info'>" + 
+              tickets_objects[i].ticket_details['cartridges'][j].quantity +
+              "</span>" +
+              "<span class='badge badge-success'>" + 
+              tickets_objects[i].ticket_details['cartridges'][j].name +
+              "</span>" +
+            "</span>" +
+            "";
+          };
+
+          for (var j = 0; j < tickets_objects[i].ticket_details['packages'].length; j++) {
+            packages_list += "" +
+            "<span class='badge badge-primary'>" +
+              "<span class='badge badge-info'>" + 
+              tickets_objects[i].ticket_details['packages'][j].quantity +
+              "</span>" +
+              "<span class='badge badge-primary'>" + 
+              tickets_objects[i].ticket_details['packages'][j].name +
+              "</span>" +
+            "</span>" +
+            "";
+          };
+
           sales_details_table.append("" +
             "<tr>" +
-            "<th>" + result[i].rfid + "</th>" +
-            "<td>" + result[i].SAP + "</td>" +
-            "<td>" + result[i].name + "</td>" +
-            "<td>" + result[i].access + "</td>" +
+            "<th class='header-id'>" + tickets_objects[i].id + "</th>" +
+            "<th>" + tickets_objects[i].order_number + "</th>" +
+            "<td class='header-date'>" + tickets_objects[i].created_at + "</td>" +
+            "<td class='header-products'>" + cartridges_list + "</td>" +
+            "<td class='header-packages'>" + packages_list + "</td>" +
+            "<td>" + tickets_objects[i].seller + "</td>" +
+            "<td class='td-total'>" + tickets_objects[i].total + "</td>" +
+            "<td class='header-actions'>" + 
+            "<span class='sales-actions delete-ticket'><i class='material-icons text-muted'>delete</i></span>" +
+            "<span class='sales-actions print-ticket'><i class='material-icons text-primary'>local_printshop</i></span>" + 
+            "</td>" +
             "</tr>" +
           "");
         };
-
       },
       error: function(result, jqXHR, textStatus, errorThrown) {
         console.log(result);
