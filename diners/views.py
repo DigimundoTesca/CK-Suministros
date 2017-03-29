@@ -319,11 +319,8 @@ def diners_logs(request):
                 'number_day': get_number_day(initial_date),
             }
 
-            for diner in diners:
-                total_entries += 1
-
             day_object['day_name'] = get_name_day(initial_date.date())
-            day_object['entries'] = str(total_entries)
+            day_object['entries'] = diners.count()
 
             week_diners_list.append(day_object)
 

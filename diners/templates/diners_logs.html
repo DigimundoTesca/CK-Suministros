@@ -256,7 +256,7 @@
       for (var i = 0; i < 7; i++) {
         for (var j = 0; j < diners_list.length; j++) {
           if (diners_list[j].number_day == i) {
-            week_list[i] += 1
+            week_list[i] = diners_list[j].entries;
           };
         };
       };
@@ -437,8 +437,6 @@
         traditional: true,
         datatype: 'jsonp',
         success: function(result, status, XHR) {
-          console.log(result);
-          console.log(diners_week);
           diners_week = result['entries']
           var diners_list = result['diners'];
           var list_length = diners_list.length;
@@ -472,7 +470,7 @@
           /**
            * Filling the diners chart
            */
-          diners_logs_week_list = get_diners_week_range(diners_list);
+          diners_logs_week_list = get_diners_week_range(diners_week);
           diners_week_chart.data.datasets[0].data = diners_logs_week_list;
           diners_week_chart.update();
 
