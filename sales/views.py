@@ -252,6 +252,7 @@ def sales(request):
             day_object = {
                 'date': str(start_datetime(days_to_count).date().strftime('%d-%m-%Y')),
                 'day_name': None,
+                'entries': None,
                 'earnings': None,
                 'number_day': get_number_day(start_datetime(days_to_count).date()),
             }
