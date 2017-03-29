@@ -7,7 +7,7 @@ class DinerAdmin(admin.ModelAdmin):
     list_display = ('id', 'name', 'RFID', 'employee_number', 'created_at',)    
     ordering = ('created_at', 'name') 
     list_editable = ('name', 'RFID', 'employee_number')
-    search_fields = ('name', 'RFID')
+    search_fields = ('name', 'RFID', 'employee_number')
 
 
 @admin.register(AccessLog)
