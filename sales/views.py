@@ -214,7 +214,7 @@ def sales(request):
         while count < total_days:
             tickets = all_tickets.filter(created_at__range=[start_date, limit_day])
             day_object = {
-                'date': str(start_date.date()),
+                'date': str(start_date.date().strftime('%d-%m-%Y')),
                 'day_name': None,
                 'earnings': None,
                 'number_day': get_number_day(start_date),
@@ -250,9 +250,10 @@ def sales(request):
         
         while start_date_number <= day_limit:
             day_object = {
-                'date': str(start_datetime(days_to_count).date()),
+                'date': str(start_datetime(days_to_count).date().strftime('%d-%m-%Y')),
                 'day_name': None,
                 'earnings': None,
+                'number_day': get_number_day(start_datetime(days_to_count).date()),
             }
 
             tickets = all_tickets.filter(created_at__range=[start_datetime(days_to_count), end_datetime(days_to_count)])

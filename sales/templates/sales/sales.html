@@ -197,7 +197,6 @@
     var sales_week = JSON.parse('{{ sales_week | safe }}');
     var dates_range = JSON.parse('{{ dates_range | safe }}');
     var today_date;
-    var days_list = {};
 
     /**
      * returns a list with the earnings of the week per day
@@ -362,7 +361,6 @@
      * show the results in sales day chart
      */
     function set_sales_day_chart(date) {
-      console.log(date);
       var earnings_list = [];
 
       $.ajax({
@@ -410,29 +408,6 @@
           console.log(result);
         },
       });
-    }
-
-    function set_days_list() {
-      var initial_date = $('#dt-week').val().split(',')[0];
-      var final_date = $('#dt-week').val().split(',')[1];
-      var initial_date_f,
-          final_date_f;
-
-      var initial_date_day = initial_date.split('-')[0];
-      var initial_date_month = initial_date.split('-')[1];
-      var initial_date_year = initial_date.split('-')[2];
-
-      var final_date_day = final_date.split('-')[0];
-      var final_date_month = final_date.split('-')[1];
-      var final_date_year = final_date.split('-')[2];
-      
-      initial_date_f = new Date(initial_date_year, initial_date_month, initial_date_day);
-      final_date_f = new Date(final_date_year, final_date_month, final_date_day);
-
-      days_to_count = (final_date_f - initial_date_f)/(1000*60*60*24) + 1;
-
-      console.log(days_to_count);
-      
     }
 
     function convert_date_to_str(date) {
@@ -507,7 +482,12 @@
         responsive: true,
         onClick: function(event, legendItem) {
           try {
-            set_sales_day_chart(legendItem[0]._index);
+            var selected_day = legendItem[0]._index;
+            for (var i = 0; i < sales_week.length; i++) {
+              if (sales_week[i].number_day == selected_day) {
+                set_sales_day_chart(sales_week[i].date);
+              }
+            };
           } catch (error) {
             console.log(error.message);
           }
@@ -632,7 +612,7 @@
         datatype: 'jsonp',
         success: function(result, status, XHR) {
           var tickets_objects = result['tickets']
-          var sales_objects = result['sales']
+          sales_week = result['sales']
           var sales_details_table = $('#sales-details-table').find('tbody');
           var week_earnings = 0;
           sales_details_table.empty();
@@ -701,15 +681,14 @@
           /**
            * Filling the sales chart
            */
-          for (var i = 0; i < sales_objects.length; i++) {
+          for (var i = 0; i < sales_week.length; i++) {
             var sales_day_earnings_list = [];
 
-            sales_week_earnings_list = get_earnings_week_range(sales_objects);
+            sales_week_earnings_list = get_earnings_week_range(sales_week);
             earnings_week_chart.data.datasets[0].data = sales_week_earnings_list;
             earnings_week_chart.update();
           };
           $('#total-earnings-text').text(week_earnings.toFixed(2))
-
         },
         error: function(result, jqXHR, textStatus, errorThrown) {
           console.log(result);
@@ -992,7 +971,6 @@
      */
     fill_dates_range_form();
     set_total_earnings();
-    set_days_list();
     set_sales_day_chart(today_date);
   });
 </script>
