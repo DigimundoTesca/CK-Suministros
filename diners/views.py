@@ -33,6 +33,26 @@ def naive_to_datetime(nd):
         return pytz.timezone('America/Mexico_City').localize(new_date)
 
 
+def get_diners(initial_date, final_date):
+    diners_logs_list = []
+
+    diners_logs_objects = get_access_logs(initial_date, final_date)
+
+    for diner_log in diners_logs_objects:
+        diner_log_object = {
+            'rfid': diner_log.RFID,
+            'access': datetime.strftime(diner_log.access_to_room, "%B %d, %I, %H:%M:%S %p"),
+        }
+        if diner_log.diner:
+            diner_log_object['SAP'] = diner_log.diner.employee_number
+            diner_log_object['name'] = diner_log.diner.name
+        else:
+            diner_log_object['SAP'] = ''
+            diner_log_object['name'] = ''
+        diners_logs_list.append(diner_log_object)
+    return diners_logs_list
+
+
 def get_name_day(datetime_now):
     days_list = {
         'MONDAY': 'Lunes',
@@ -279,30 +299,19 @@ def diners(request):
 def diners_logs(request):
     all_entries = AccessLog.objects.all()
     if request.method == 'POST':
-        if request.POST['type'] == 'diners_logs':
+        if request.POST['type'] == 'diners_logs_week':
             dt_year = request.POST['dt_year']
             initial_date = request.POST['dt_week'].split(',')[0]
             final_date = request.POST['dt_week'].split(',')[1]
             initial_date = parse_to_datetime(initial_date)
             final_date = parse_to_datetime(final_date) + timedelta(days=1)
-            
-            diners_logs_list = []
 
-            diners_logs_objects = get_access_logs(initial_date, final_date)
+            diners_logs = get_diners(initial_date, final_date)
 
-            for diner_log in diners_logs_objects:
-                diner_log_object = {
-                    'rfid': diner_log.RFID,
-                    'access': datetime.strftime(diner_log.access_to_room, "%B %d, %I, %H:%M:%S %p"),
-                }
-                if diner_log.diner:
-                    diner_log_object['SAP'] = diner_log.diner.employee_number
-                    diner_log_object['name'] = diner_log.diner.name
-                else:
-                    diner_log_object['SAP'] = ''
-                    diner_log_object['name'] = ''
-                diners_logs_list.append(diner_log_object)
-            return JsonResponse(diners_logs_list, safe=False)
+            data = {
+                'diners': diners_logs
+            }
+            return JsonResponse(data)
 
         elif request.POST['type'] == 'diners_logs_day':
             """
