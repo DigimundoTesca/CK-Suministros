@@ -203,8 +203,40 @@ def sales(request):
         return json.dumps(years_list)
 
     def get_sales(start_date, final_date):
-        
-        return json.dumps({'hola': 'ajajja'})
+        """
+        Gets the following properties for each week's day: Name, Date and Earnings
+        """
+        limit_day = start_date + timedelta(days=1)
+        total_days = (final_date - start_date).days
+        week_sales_list = []
+        count = 1
+        total_earnings = 0
+
+        while count < total_days:
+            tickets = all_tickets.filter(created_at__range=[start_date, limit_day])
+            day_object = {
+                'date': str(start_date.date()),
+                'day_name': None,
+                'eanings': None,
+            }
+
+            for ticket in tickets:
+                for ticket_detail in all_ticket_details:
+                    if ticket_detail.ticket == ticket:
+                        total_earnings += ticket_detail.price
+
+            day_object['day_name'] = get_name_day(start_date.date())
+            day_object['eanings'] = str(total_earnings)
+
+            week_sales_list.append(day_object)
+
+            # Reset datas
+            limit_day += timedelta(days=1)
+            start_date += timedelta(days=1)
+            total_earnings = 0
+            count += 1
+
+        return week_sales_list
 
     def get_sales_actual_week():
         """
@@ -426,12 +458,15 @@ def sales(request):
             final_date = request.POST['dt_week'].split(',')[1]
             initial_date = parse_to_datetime(initial_date)
             final_date = parse_to_datetime(final_date) + timedelta(days=1)
+
             sales = get_sales(initial_date, final_date)
             tickets = get_tickets(initial_date, final_date)
+
             data = {
                 'sales': sales,
                 'tickets': tickets,
             }
+            print(sales)
             return JsonResponse(data)
 
     # Any other request method:
