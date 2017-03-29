@@ -92,6 +92,18 @@
     var diners_hour = JSON.parse('{{ diners_hour | safe }}');
     var diners_week = JSON.parse('{{ diners_week | safe }}');    
     var dates_range = JSON.parse('{{ dates_range | safe }}');
+    console.log(dates_range);
+
+
+    function convert_date_to_str(date) {
+      months = {
+        1: 'Ene', 2: 'Feb', 3: 'Mar', 4: 'Abr', 5: 'May', 6: 'Jun',
+        7: 'Jul', 8: 'Ago', 9: 'Sep', 10: 'Oct', 11: 'Nov', 12: 'Dic', 
+      }
+      date = date.split('-')
+      fdate = date[0] + " " + months[parseInt(date[1])] + " " + date[2];
+      return fdate;
+    }
 
     function get_hours_of_diners() {
       var count_list = [];
@@ -113,7 +125,6 @@
         count++;
       }
       return entries_list;
-
     }
 
     var myChart = new Chart(ctx_diners_day, {
@@ -202,49 +213,19 @@
       var dates_range_form = $(this).find('#dt-year');
       var selected_year;
       $.each(dates_range, function(index, item) {
-        $('#dates-range-form').find('#dt-year').append(
-          "<option value=" + item.year + ">" + item.year + "</option>"
-        );
+         $('#dates-range-form').find('#dt-year').append(
+            "<option value=" + item.year + ">" + item.year + "</option>"
+          );
       });
 
-
-      /**
-       * Receives a datetime with format from python.
-       * Returns an hour converted into 24-hours format: hh:mm ith Timezone +06:00
-       */
-      function convert_datetime_to_hour(original_datetime) {
-        hour_formated = original_datetime.split('T')[1].split('.')[0].substr(0, 5);
-        return hour_formated;
-      }
-
-      function convert_date_to_str(date) {
-        months = {
-          1: 'Ene',
-          2: 'Feb',
-          3: 'Mar',
-          4: 'Abr',
-          5: 'May',
-          6: 'Jun',
-          7: 'Jul',
-          8: 'Ago',
-          9: 'Sep',
-          10: 'Oct',
-          11: 'Nov',
-          12: 'Dic',
-        }
-        date = date.split('-')
-        fdate = date[0] + " " + months[parseInt(date[1])] + " " + date[2];
-        return fdate;
-      }
-
       selected_year = $('#dates-range-form').find('#dt-year').val();
-
+      
       $.each(dates_range, function(index, item) {
-        if (dates_range[index].year == selected_year) {
-          $.each(dates_range[index].weeks_list, function(index, item) {
+        if (dates_range[index].year ==  selected_year) {
+          $.each(dates_range[index].weeks_list, function(index, item) { 
             $('#dates-range-form').find('#dt-week').append(
-              "<option value=" + item.start_date + "," + item.end_date + ">" +
-              "Semana " + item.week_number + ": " +
+              "<option value=" + item.start_date + "," + item.end_date + ">" + 
+              "Semana " + item.week_number + ": " + 
               convert_date_to_str(item.start_date) +
               " - " + convert_date_to_str(item.end_date) +
               "</option>"
@@ -252,67 +233,68 @@
           });
           return false;
         }
+      });
+      today_date = $('#dt-week').val().split(',')[1];    
+    }
 
-      });      
-  }
+    /** 
+     * Refresh the page with de dates of the year and week selected
+     */
+    $(this).on('click', '#btn-set-new-range', function(event) {
+      dt_year = $('#dt-year').val();
+      dt_week = $('#dt-week').val();
 
-  /** 
-   * Refresh the page with de dates of the year and week selected
-   */
-  $(this).on('click', '#btn-set-new-range', function(event) {
-    dt_year = $('#dt-year').val();
-    dt_week = $('#dt-week').val();
-    $.ajax({
-      url: "{% url 'diners:diners_logs' %}",
-      type: 'POST',
-      data: {
-        csrfmiddlewaretoken: '{{ csrf_token }}',
-        'dt_year': dt_year,
-        'dt_week': dt_week,
-        'type': 'diners_logs',
-      },
-      beforeSend: function(){
-        swal({
-          title: "Obteniendo registros",
-          text: "Espere mientras obtenemos toda la información",
-        });
-        swal.enableLoading();
-      },
-      traditional: true,
-      datatype: 'jsonp',
-      success: function(result, status, XHR) {
-        var list_length = result.length;
-        var access_logs_table = $('#access-logs-table').find('tbody');
-        access_logs_table.empty();
-        console.log(result);
-        swal({
-          title: "Éxito",
-          text: "Datos obtenidos",
-          type: "info",
-          timer: 750,
-          showConfirmButton: false
-        }).then(
-        function(){},
-        function(dismiss){}
-        );
-        for (var i = 0; i < list_length; i++) {
-          access_logs_table.append("" +
-            "<tr>" +
-            "<th>" + result[i].rfid + "</th>" +
-            "<td>" + result[i].SAP + "</td>" +
-            "<td>" + result[i].name + "</td>" +
-            "<td>" + result[i].access + "</td>" +
-            "</tr>" +
-          "");
-        };
+      $.ajax({
+        url: "{% url 'diners:diners_logs' %}",
+        type: 'POST',
+        data: {
+          csrfmiddlewaretoken: '{{ csrf_token }}',
+          'dt_year': dt_year,
+          'dt_week': dt_week,
+          'type': 'diners_logs',
+        },
+        beforeSend: function(){
+          swal({
+            title: "Obteniendo registros",
+            text: "Espere mientras obtenemos toda la información",
+          });
+          swal.enableLoading();
+        },
+        traditional: true,
+        datatype: 'jsonp',
+        success: function(result, status, XHR) {
+          var list_length = result.length;
+          var access_logs_table = $('#access-logs-table').find('tbody');
+          access_logs_table.empty();
+          console.log(result);
+          swal({
+            title: "Éxito",
+            text: "Datos obtenidos",
+            type: "info",
+            timer: 750,
+            showConfirmButton: false
+          }).then(
+          function(){},
+          function(dismiss){}
+          );
+          for (var i = 0; i < list_length; i++) {
+            access_logs_table.append("" +
+              "<tr>" +
+              "<th>" + result[i].rfid + "</th>" +
+              "<td>" + result[i].SAP + "</td>" +
+              "<td>" + result[i].name + "</td>" +
+              "<td>" + result[i].access + "</td>" +
+              "</tr>" +
+            "");
+          };
 
-      },
-      error: function(result, jqXHR, textStatus, errorThrown) {
-        console.log(result);
-      },
-      complete: function(result){
-      }
-
+        },
+        error: function(result, jqXHR, textStatus, errorThrown) {
+          console.log(result);
+        },
+        complete: function(result){
+        }
+      });
     });
 
     $(this).on('keyup', '#input-diners-search', function(event) {
@@ -336,7 +318,7 @@
       }
     });
     fill_dates_range_form();
-  });
+
 });
 </script>
 {% endblock javascript %}
