@@ -40,7 +40,7 @@
           <p class="float-xs-right">Hoy es: <span class="font-weight-bold">{{ today_name }}</span></p>
         </div>
         <div class="col-xs-6">
-          <p class="float-xs-right">Semana: <span class="font-weight-bold">{{ week_number }}</span></p>
+          <p class="float-xs-right">Semana Actual: <span class="font-weight-bold">{{ week_number }}</span></p>
         </div>
       </div>
     </div>
@@ -613,6 +613,7 @@
         success: function(result, status, XHR) {
           var tickets_objects = result['tickets']
           sales_week = result['sales']
+          var week_number = result['week_number']
           var sales_details_table = $('#sales-details-table').find('tbody');
           var week_earnings = 0;
           sales_details_table.empty();
@@ -688,7 +689,10 @@
             earnings_week_chart.data.datasets[0].data = sales_week_earnings_list;
             earnings_week_chart.update();
           };
+
           $('#total-earnings-text').text(week_earnings.toFixed(2))
+          $('#week-number').text(week_number)
+
         },
         error: function(result, jqXHR, textStatus, errorThrown) {
           console.log(result);

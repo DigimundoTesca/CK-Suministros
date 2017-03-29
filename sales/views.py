@@ -64,8 +64,8 @@ def get_number_day(day):
     }
     return days[get_name_day(day)]
 
-def get_week_number():
-    return date.today().isocalendar()[1]
+def get_week_number(dt):
+    return dt.isocalendar()[1]
 
 
 def start_datetime(back_days):
@@ -462,12 +462,11 @@ def sales(request):
 
             sales = get_sales(initial_date, final_date)
             tickets = get_tickets(initial_date, final_date)
-
             data = {
                 'sales': sales,
                 'tickets': tickets,
+                'week_number': get_week_number(initial_date)
             }
-            print(sales)
             return JsonResponse(data)
 
     # Any other request method:
@@ -480,7 +479,7 @@ def sales(request):
         'sales_week': get_sales_actual_week(),
         'today_name': get_name_day(datetime.now()),
         'today_number': get_number_day(datetime.now()),
-        'week_number': get_week_number(),
+        'week_number': get_week_number(date.today()),
         'tickets': get_tickets_today(),
         'dates_range': get_dates_range(),
 
