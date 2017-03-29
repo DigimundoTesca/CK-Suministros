@@ -249,6 +249,21 @@
     }
 
     /**
+     * returns a list with the entries of the week per day with the days to set
+     */
+    function get_diners_week_range(diners_list) {
+      week_list = [0, 0, 0, 0, 0, 0, 0,]
+      for (var i = 0; i < 7; i++) {
+        for (var j = 0; j < diners_list.length; j++) {
+          if (diners_list[j].number_day == i) {
+            week_list[i] += 1
+          };
+        };
+      };
+      return week_list;
+    }
+
+    /**
      * Get's the earnings of the selected day in week chart and
      * show the results in diners day chart
      */
@@ -422,6 +437,9 @@
         traditional: true,
         datatype: 'jsonp',
         success: function(result, status, XHR) {
+          console.log(result);
+          console.log(diners_week);
+          diners_week = result['entries']
           var diners_list = result['diners'];
           var list_length = diners_list.length;
           var access_logs_table = $('#access-logs-table').find('tbody');
@@ -454,9 +472,9 @@
           /**
            * Filling the diners chart
            */
-          sales_week_earnings_list = get_earnings_week_range(sales_week);
-          earnings_week_chart.data.datasets[0].data = sales_week_earnings_list;
-          earnings_week_chart.update();
+          diners_logs_week_list = get_diners_week_range(diners_list);
+          diners_week_chart.data.datasets[0].data = diners_logs_week_list;
+          diners_week_chart.update();
 
         },
         error: function(result, jqXHR, textStatus, errorThrown) {

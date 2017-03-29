@@ -42,6 +42,7 @@ def get_diners(initial_date, final_date):
         diner_log_object = {
             'rfid': diner_log.RFID,
             'access': datetime.strftime(diner_log.access_to_room, "%B %d, %I, %H:%M:%S %p"),
+            'number_day': get_number_day(diner_log.access_to_room),
         }
         if diner_log.diner:
             diner_log_object['SAP'] = diner_log.diner.employee_number
@@ -298,6 +299,42 @@ def diners(request):
 
 def diners_logs(request):
     all_entries = AccessLog.objects.all()
+
+    def get_entries(initial_date, final_date):
+        """
+        Gets the following properties for each week's day: Name, Date and Earnings
+        """
+        limit_day = initial_date + timedelta(days=1)
+        week_diners_list = []
+        count = 1
+        total_entries = 0
+        total_days = (final_date - initial_date).days
+
+        while count <= total_days:
+            diners = all_entries.filter(access_to_room__range=[initial_date, limit_day])
+            day_object = {
+                'date': str(initial_date.date().strftime('%d-%m-%Y')),
+                'day_name': None,
+                'entries': None,
+                'number_day': get_number_day(initial_date),
+            }
+
+            for diner in diners:
+                total_entries += 1
+
+            day_object['day_name'] = get_name_day(initial_date.date())
+            day_object['entries'] = str(total_entries)
+
+            week_diners_list.append(day_object)
+
+            # Reset datas
+            limit_day += timedelta(days=1)
+            initial_date += timedelta(days=1)
+            total_entries = 0
+            count += 1
+
+        return week_diners_list
+
     if request.method == 'POST':
         if request.POST['type'] == 'diners_logs_week':
             dt_year = request.POST['dt_year']
@@ -307,9 +344,10 @@ def diners_logs(request):
             final_date = parse_to_datetime(final_date) + timedelta(days=1)
 
             diners_logs = get_diners(initial_date, final_date)
-
+            entries = get_entries(initial_date, final_date)
             data = {
-                'diners': diners_logs
+                'diners': diners_logs,
+                'entries': entries,
             }
             return JsonResponse(data)
 
