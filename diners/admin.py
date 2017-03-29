@@ -1,6 +1,8 @@
 from django.contrib import admin
 from diners.models import Diner, AccessLog
 
+from actions import export_as_excel
+
 
 @admin.register(Diner)
 class DinerAdmin(admin.ModelAdmin):
@@ -8,6 +10,7 @@ class DinerAdmin(admin.ModelAdmin):
     ordering = ('created_at', 'name') 
     list_editable = ('name', 'RFID', 'employee_number')
     search_fields = ('name', 'RFID', 'employee_number')
+    actions = (export_as_excel,)
 
 
 @admin.register(AccessLog)
