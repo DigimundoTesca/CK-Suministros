@@ -375,15 +375,20 @@ def diners_logs(request):
             diners_objects_list = []
 
             for entry in all_entries:
+                diner_object = {
+                    'id': entry.id,
+                    'Nombre': '',
+                    'RFID': entry.RFID,
+                    'SAP': '',
+                    'Fecha de Acceso': entry.access_to_room.date(),
+                    'Hora de Acceso': entry.access_to_room.time(),
+                }
                 for diner in diners:
                     if entry.RFID == diner.RFID:
-                        diner_object = {
-                            'RFID': entry.RFID,
-                            'Hora': entry.access_to_room.time(),
-                            'Fecha': entry.access_to_room.date(),
-                        }
+                        diner_object['SAP'] = diner.employee_number
+                        diner_object['Nombre'] = diner.name
 
-                        diners_objects_list.append(diner_object)
+                diners_objects_list.append(diner_object)
 
             return JsonResponse({'diner_logs': diners_objects_list})
             

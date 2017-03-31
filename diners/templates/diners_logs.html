@@ -508,48 +508,51 @@
       /**
        * Convert JSON TO CSV
        */
-        var diners_json = null
-        $.ajax({
-          url: "{% url 'diners:diners_logs' %}",
-          type: 'POST',
-          dataType: 'json',
-          data: {
-            type: 'diners_logs',
-            csrfmiddlewaretoken: '{{ csrf_token }}',
-          },
-          beforeSend: function(){
-            swal({
-                title: "Generando Excel",
-                text: "Espere mientras obtenemos toda la información",
-              });
-            swal.enableLoading();
-          },
-          success: function(result, status, XHR) {
-            diner_details = Papa.unparse(result.diner_logs);
-            console.log(diner_details);
+      var diners_json = null;
 
-            var blob = new Blob([ diner_details ], {
-              type: "text/csv;charset=UTF-8" }
-              );
-            var datetime = new Date();
-            saveAs(blob, datetime + '.csv');
+      $.ajax({
+        url: "{% url 'diners:diners_logs' %}",
+        type: 'POST',
+        dataType: 'json',
+        data: {
+          type: 'diners_logs',
+          csrfmiddlewaretoken: '{{ csrf_token }}',
+        },
+        beforeSend: function(){
+          swal({
+              title: "Generando Excel",
+              text: "Espere mientras obtenemos toda la información",
+            });
+          swal.enableLoading();
+        },
+        success: function(result, status, XHR) {
+          console.log(result);
+          diner_details = Papa.unparse(result.diner_logs);
+          console.log(diner_details);
 
-            swal({
-              title: "Éxito",
-              text: "Datos obtenidos",
-              type: "info",
-              timer: 750,
-              showConfirmButton: false
-            }).then(
-              function(){},
-              function(dismiss){}
+          var blob = new Blob([ diner_details ], {
+            type: "text/csv;charset=UTF-8" }
             );
-          },
-          complete: function(result){
-            setTimeout(function() {
-            }, 750);
-          }
-        });
+
+          var datetime = new Date();
+          saveAs(blob, datetime + '.csv');
+
+          swal({
+            title: "Éxito",
+            text: "Datos obtenidos",
+            type: "info",
+            timer: 750,
+            showConfirmButton: false
+          }).then(
+            function(){},
+            function(dismiss){}
+          );
+        },
+        complete: function(result){
+          setTimeout(function() {
+          }, 750);
+        }
+      });
     });
 
     fill_dates_range_form();
