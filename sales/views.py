@@ -381,7 +381,6 @@ def sales(request):
                     if ticket_detail.ticket == ticket:
                         earnings_sale_object['earnings'] += ticket_detail.price
                 sales_day_list.append(earnings_sale_object)
-            print(sales_day_list)
             return JsonResponse({'sales_day_list': sales_day_list})
 
         if request.POST['type'] == 'ticket_details':

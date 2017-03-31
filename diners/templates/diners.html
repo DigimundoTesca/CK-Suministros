@@ -3,8 +3,6 @@
 
 {% block content %}
   <div class="container-fluid">
-    <input class="container-fluid" type="text" id="input-diners-search" placeholder="Buscar Comensal por ID">
-
     <div class="row">
       <div class="col xs 12 mt-1 mb-1">
         <h3 class="text-xs-right">Comensales de Hoy: <span class="badge badge-blue">{{ total_diners }}</span></h3>
@@ -97,28 +95,6 @@
 
     setTimeout(rel, 3000);
     
-
-    $(this).on('keyup', '#input-diners-search', function(event) {
-      /** Declare variables */
-      var input, filter, table, tr, td, i;
-      input = document.getElementById("input-diners-search");
-      filter = input.value.toUpperCase();
-      table = document.getElementById("myTable");
-      tr = table.getElementsByTagName("tr");
-
-      /** Loop through all table rows, and hide those who don't match the search query */
-      for (i = 0; i < tr.length; i++) {
-        td = tr[i].getElementsByTagName("td")[0];
-        if (td) {
-          if (td.innerHTML.toUpperCase().indexOf(filter) > -1) {
-            tr[i].style.display = "";
-          } else {
-            tr[i].style.display = "none";
-          }
-        }
-
-      }
-    });
   });
 </script>
 {% endblock javascript %}
