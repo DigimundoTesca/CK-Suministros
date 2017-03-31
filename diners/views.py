@@ -227,7 +227,8 @@ def get_diners_actual_week():
         total_entries = 0
         start_date_number += 1
 
-    return json.dumps(week_diners_list)         
+    return json.dumps(week_diners_list)
+
 
 
 # ------------------------- Django Views ----------------------------- #
@@ -275,7 +276,6 @@ def RFID(request):
     else:
         return redirect('diners:diners')
 
-
 def diners(request):
     count = 0
     diners_list = []    
@@ -294,11 +294,11 @@ def diners(request):
         'paginator': pag,
         'total_diners': total_diners,
     }
-    return render(request, template, context)    
-
+    return render(request, template, context)
 
 def diners_logs(request):
     all_entries = AccessLog.objects.all()
+    diners = Diner.objects.all()
 
     def get_entries(initial_date, final_date):
         """
@@ -370,6 +370,22 @@ def diners_logs(request):
                 
                 access_logs_day_list.append(earnings_sale_object)
             return JsonResponse({'access_logs_day_list': access_logs_day_list})
+
+        if request.POST['type'] == 'diners_logs':
+            diners_objects_list = []
+
+            for entry in all_entries:
+                for diner in diners:
+                    if entry.RFID == diner.RFID:
+                        diner_object = {
+                            'RFID': entry.RFID,
+                            'Hora': entry.access_to_room.time(),
+                            'Fecha': entry.access_to_room.date(),
+                        }
+
+                        diners_objects_list.append(diner_object)
+
+            return JsonResponse({'diner_logs': diners_objects_list})
             
     else:
         all_diners_objects = get_all_access_logs()
@@ -460,18 +476,19 @@ def diners_logs(request):
         context={
             'title': PAGE_TITLE + ' | ' + title,
             'page_title': title,
-            'diners' : pag['queryset'],
+            'diners': pag['queryset'],
             'paginator': pag,
             'total_diners': total_diners,
             'total_diners_today': total_diners_today,
-            'diners_hour' : get_diners_per_hour(),
-            'diners_week' : get_diners_actual_week(),
+            'diners_hour': get_diners_per_hour(),
+            'diners_week': get_diners_actual_week(),
             'dates_range': get_dates_range(),
         }
         return render(request, template, context)    
 
 
 # --------------------------- TEST ------------------------
+
 def test(request):
     rfids = [ 52661 ,]
 
