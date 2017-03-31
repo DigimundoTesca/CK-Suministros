@@ -210,9 +210,6 @@
       return entries_list;
     }
 
-<<<<<<< HEAD
-    var chart_days = new Chart(ctx_diners_day, {
-=======
     function get_diners_day_list(initial_hour, final_hour, separation_time, diners_list) {
       var initial_hour_minutes,
             final_hour_minutes;
@@ -302,7 +299,7 @@
 
           swal({
             title: "Éxito",
-            text: "Gráfica generada",
+            text: "Datos Cargados",
             type: "success",
             timer: 600,
             showConfirmButton: false
@@ -319,7 +316,6 @@
     }
 
     diners_week_chart = new Chart(ctx_diners_day, {
->>>>>>> develop
       type: 'bar',
       data: {
         labels: ["Lunes", "Martes", "Miercoles", "Juevez", "Viernes", "Sabado", "Domingo"],
@@ -471,22 +467,12 @@
             "");
           };
 
-<<<<<<< HEAD
-          for (var i = 0; i < sales_week.length; i++) {
-            var sales_day_earnings_list = [];
-
-            sales_week_earnings_list = get_earnings_week_range(sales_week);
-            chart_days.data.datasets[0].data = sales_week_earnings_list;
-            chart_days.update();
-          };
-=======
           /**
            * Filling the diners chart
            */
           diners_logs_week_list = get_diners_week_range(diners_week);
           diners_week_chart.data.datasets[0].data = diners_logs_week_list;
           diners_week_chart.update();
->>>>>>> develop
 
         },
         error: function(result, jqXHR, textStatus, errorThrown) {
@@ -517,68 +503,10 @@
         }
       }
     });
-<<<<<<< HEAD
 
-    $(this).on('click', '#btn-save-ticket-csv', function(event) {
-      /**
-       * Convert JSON TO CSV
-       */
-        var tickets_json = null
-        $.ajax({
-          url: "{% url 'diners:diners_logs %}",
-          type: 'POST',
-          dataType: 'json',
-          data: {
-            type: 'tickets',
-            csrfmiddlewaretoken: '{{ csrf_token }}',
-          },
-          beforeSend: function(){
-            swal({
-                title: "Generando Excel",
-                text: "Espere mientras obtenemos toda la información",
-              });
-            swal.enableLoading();
-          },
-          success: function(result, status, XHR) {
-            ticket_details = Papa.unparse(result.ticket);
-            // console.log(ticket_details);
-            // typeof(ticket_details)
-            // var tmpElemento = document.createElement('a');
-            // var data_type = 'data:application/vnd.ms-excel';
-            // tmpElemento.href = data_type + ', ' + ticket_details;
-            // tmpElemento.download = 'Nombre_De_Mi_Excel.xls';
-            // tmpElemento.click();
-
-            var blob = new Blob([ ticket_details ], { 
-              type: "text/csv;charset=UTF-8" }
-              );
-            var datetime = new Date();
-            saveAs(blob, datetime + '.csv');
-
-            swal({
-              title: "Éxito",
-              text: "Datos obtenidos",
-              type: "info",
-              timer: 750,
-              showConfirmButton: false
-            }).then(
-              function(){},
-              function(dismiss){}
-            );
-          },
-          complete: function(result){
-            setTimeout(function() {
-            }, 750);
-          }
-        });
-    });
-
-    fill_dates_range_form();
-    
-=======
     fill_dates_range_form();
     set_diners_day_chart(today_date);
->>>>>>> develop
+
 });
 </script>
 {% endblock javascript %}
