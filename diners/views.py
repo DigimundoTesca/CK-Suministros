@@ -313,7 +313,7 @@ def diners_logs(request):
         while count <= total_days:
             diners = all_entries.filter(access_to_room__range=[initial_date, limit_day])
             day_object = {
-                'date': str(timezone.localtime(initial_date.date()).strftime('%d-%m-%Y')),
+                'date': str(timezone.localtime(initial_date).date().strftime('%d-%m-%Y')),
                 'day_name': None,
                 'entries': None,
                 'number_day': get_number_day(initial_date),
