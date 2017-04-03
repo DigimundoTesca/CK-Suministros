@@ -41,7 +41,7 @@ def get_diners(initial_date, final_date):
     for diner_log in diners_logs_objects:
         diner_log_object = {
             'rfid': diner_log.RFID,
-            'access': datetime.strftime(diner_log.access_to_room, "%B %d, %I, %H:%M:%S %p"),
+            'access': datetime.strftime(timezone.localtime(diner_log.access_to_room), "%B %d, %I, %H:%M:%S %p"),
             'number_day': get_number_day(diner_log.access_to_room),
         }
         if diner_log.diner:
@@ -313,7 +313,7 @@ def diners_logs(request):
         while count <= total_days:
             diners = all_entries.filter(access_to_room__range=[initial_date, limit_day])
             day_object = {
-                'date': str(initial_date.date().strftime('%d-%m-%Y')),
+                'date': str(timezone.localtime(initial_date.date()).strftime('%d-%m-%Y')),
                 'day_name': None,
                 'entries': None,
                 'number_day': get_number_day(initial_date),
@@ -380,8 +380,8 @@ def diners_logs(request):
                     'Nombre': '',
                     'RFID': entry.RFID,
                     'SAP': '',
-                    'Fecha de Acceso': (entry.access_to_room - timedelta(hours=5)).date(),
-                    'Hora de Acceso': (entry.access_to_room - timedelta(hours=5)).time(),
+                    'Fecha de Acceso': timezone.localtime(entry.access_to_room).date(),
+                    'Hora de Acceso': timezone.localtime(entry.access_to_room).time(),
                 }
                 for diner in diners:
                     if entry.RFID == diner.RFID:
