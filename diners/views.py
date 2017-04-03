@@ -380,8 +380,8 @@ def diners_logs(request):
                     'Nombre': '',
                     'RFID': entry.RFID,
                     'SAP': '',
-                    'Fecha de Acceso': entry.access_to_room.date(),
-                    'Hora de Acceso': entry.access_to_room.strftime('%H:%M:%s'),
+                    'Fecha de Acceso': (entry.access_to_room - timedelta(hours=5)).date(),
+                    'Hora de Acceso': (entry.access_to_room - timedelta(hours=5)).time(),
                 }
                 for diner in diners:
                     if entry.RFID == diner.RFID:
