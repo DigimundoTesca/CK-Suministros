@@ -429,8 +429,8 @@ def sales(request):
                     if ticket_detail.ticket == ticket:
                         ticket_object = {
                             'ID': ticket.id,
-                            'Fecha': ticket.created_at.date(),
-                            'Hora': ticket.created_at.time(),
+                            'Fecha': timezone.localtime(ticket.created_at).date(),
+                            'Hora': timezone.localtime(ticket.created_at).time(),
                             'Vendedor': ticket.seller.username,
                         }
                         if ticket.payment_type == 'CA':
