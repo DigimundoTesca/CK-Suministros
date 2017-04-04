@@ -2,120 +2,97 @@
 {% load static %}
 
 {% block content %}
-<div class="container-fluid">
-  <input type="text" id="myInput" placeholder="Buscar Comensal por ID">
-  <div class="row">
-    <div class="col xs 12 mt-1 mb-1">
-      <h3 class="text-xs-right">Comensales de Hoy: <span class="badge badge-blue">{{ total_diners }}</span></h3>
-    </div>
-  </div>
-  <div class="row">
-    <table class="table" id="myTable">
-      <thead class="thead-inverse">
-        <tr>
-          <th>RFID</th>
-          <th>SAP</th>
-          <th>Nombre</th>
-          <th>Fecha de Acceso</th>                 
-        </tr>
-      </thead>      
-      <tbody>      
-        {%for diner in diners %}        
-        <tr>       
-          <th>{{ diner.RFID }}</th> 
-          <td>{{ diner.diner.employee_number }}</td>          
-          <td>{{ diner.diner.name }}</td>          
-          <td>{{ diner.access_to_room }}</td>
-        </tr>      
-        {% endfor %}        
+  <div class="container-fluid diners-logs-container">
+    <div class="row">
+      <div class="col xs 12 mt-1 mb-1">
+        <h3 class="text-xs-right">Comensales de Hoy: <span class="badge badge-blue">{{ total_diners }}</span></h3>
+      </div>
+    </div>            
+
+    <div class="row">
+      <table class="table" id="diners-table">
+        <thead class="thead-inverse">
+          <tr>
+            <th>RFID</th>
+            <th>SAP</th>
+            <th>Nombre</th>
+            <th>Fecha de Acceso</th>
+          </tr>
+        </thead>
+        <tbody id="diners-table-body">
+          {%for diner in diners %}
+          <tr>
+            <th>{{ diner.RFID }}</th>
+            <td>{{ diner.diner.employee_number }}</td>
+            <td>{{ diner.diner.name }}</td>
+            <td>{{ diner.access_to_room }}</td>
+          </tr>
+        {% endfor %}
       </tbody>
     </table>
   </div>
-
-  <div class="container-fluid mt-2 mb-2">
-    <div class="col-xs-12">
-      <div class="text-xs-center">
-      <small>Página {{ paginator.num_page }} de {{ paginator.pages }}</small>
-      <nav aria-label="Page navigation example">
-        <ul class="pagination justify-content-right">
-          {% if  paginator.has_prev %}
-          <li class="page-item ">
-            <a class="page-link" href="#" aria-label="Previous">
-              <span aria-hidden="true">&laquo;</span>
-              <span class="sr-only">Previous</span>
-            </a>
-          </li>
-          {% else %}
-          <li class="page-item disabled">
-            <a class="page-link" href="#" aria-label="Previous">
-              <span aria-hidden="true">&laquo;</span>
-              <span class="sr-only">Previous</span>
-            </a>
-          </li>
-          {% endif %}
-
-          <li class="page-item"><a class="page-link" href="{% url 'diners:diners' %}?num_page={{ paginator.prev_page }}">{{ paginator.prev_page }}</a></li>
-          <li class="page-item active">
-            <span class="page-link">
-              {{ paginator.num_page }}
-              <span class="sr-only">(current)</span>
-            </span>
-          </li>
-          <li class="page-item"><a class="page-link" href="#{% url 'diners:diners' %}?num_page={{ paginator.next_page }}">{{ paginator.next_page }}</a></li>
-          {% if paginator.has_next %}
-          <li class="page-item">
-            <a class="page-link" href="{% url 'diners:diners' %}?num_page={{ paginator.next_page }}" aria-label="Next">
-              <span aria-hidden="true">&raquo;</span>
-              <span class="sr-only">Next</span>
-            </a>
-          </li>
-          {% else %}
-          <li class="page-item disbled">
-            <a class="page-link" href="#" aria-label="Next">
-              <span aria-hidden="true">&raquo;</span>
-
-              <span class="sr-only">Next</span>
-            </a>
-          </li>
-          {% endif %}
-        </ul>
-      </nav>
-    </div>
-    </div>
-  </div>
-</div> 
-
+</div>
 {% endblock %} 
 
 {% block javascript %}
+
+
 <script type="text/javascript" charset="utf-8" async>
   $(function() {
+    
+    function get_diners_logs() {
 
-    function rel(){
-      location.reload();
-    }
-    setTimeout(rel, 3000);
+      $.ajax({
+          url: "{% url 'diners:diners' %}",
+          type: 'POST',
+          dataType: 'json',
+          data: {
+            type: 'diners_logs_today',
+            csrfmiddlewaretoken: '{{ csrf_token }}',
+          },
+          success: function(result, status, XHR) {
+          },
+          complete: function(result){
+            var diners_objects = result.responseJSON;
 
-    $(this).on('keyup', '#myInput', function(event) {
-      /** Declare variables */
-      var input, filter, table, tr, td, i;
-      input = document.getElementById("myInput");
-      filter = input.value.toUpperCase();
-      table = document.getElementById("myTable");
-      tr = table.getElementsByTagName("tr");
+            var diners_table = document.getElementById('diners-table-body');
+            if (diners_table.hasChildNodes()) {
+              while (diners_table.childNodes.length >= 1) {
+                diners_table.removeChild(diners_table.firstChild);
+              }
+            }
 
-      /** Loop through all table rows, and hide those who don't match the search query */
-      for (i = 0; i < tr.length; i++) {
-        td = tr[i].getElementsByTagName("td")[0];
-        if (td) {
-          if (td.innerHTML.toUpperCase().indexOf(filter) > -1) {
-            tr[i].style.display = "";
-          } else {
-            tr[i].style.display = "none";
+            for (var i = 0; i < diners_objects.total_diners; i++) {
+              var element = document.createElement('tr');
+              var element_rfid = document.createElement('th');
+              var element_sap = document.createElement('td');
+              var element_name = document.createElement('td');
+              var element_date = document.createElement('td');
+
+              var rfid = document.createTextNode(diners_objects.diners_list[i].rfid);
+              var sap = document.createTextNode(diners_objects.diners_list[i].sap);
+              var name = document.createTextNode(diners_objects.diners_list[i].name);
+              var date = document.createTextNode(diners_objects.diners_list[i].date);
+
+              element_rfid.appendChild(rfid);
+              element_sap.appendChild(sap);
+              element_name.appendChild(name);
+              element_date.appendChild(date);
+
+              element.appendChild(element_rfid);
+              element.appendChild(element_sap);
+              element.appendChild(element_name);
+              element.appendChild(element_date);
+              
+              diners_table.appendChild(element)
+            };
+            setTimeout(get_diners_logs, 1200);
           }
-        } 
-      }
-    });
+        });
+    }
+
+    setTimeout(get_diners_logs, 1200);
+    
   });
 </script>
 {% endblock javascript %}

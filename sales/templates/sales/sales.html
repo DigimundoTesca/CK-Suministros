@@ -3,7 +3,6 @@
 {% load static %}
 
 {% block link %}
-  <link rel="stylesheet" type="text/css" href="https://cdnjs.cloudflare.com/ajax/libs/limonte-sweetalert2/6.3.8/sweetalert2.min.css">
   <!--
   <link rel="stylesheet" href="{% static 'css/sweetalert.css' %}">
   -->
@@ -14,7 +13,7 @@
 {% endblock %}
 
 {% block content %}
-  <div class="container-fluid container-sales-reports">
+<div class="container-fluid container-sales-reports">
   <div class="row">
     <div class="col-xs-12">
       <div class="text-xs-right mb-2">
@@ -23,97 +22,97 @@
           </select>
           <select class="custom-select" id="dt-week" >
           </select>
-          <button id="btn-set-new-range" type="button" class="btn btn-outline-primary">Actualizar</button>
         </form>
       </div>
     </div>
   </div>
-    <div class="row container-sales-header">
-      <div class="col-xs-12 col-md-6">
-        <div class="text-xs-center">
-          <p>Ventas de la semana: <span id="total-earnings-text" class="font-weight-bold">$ </span></p>
-        </div>
+  <div class="row container-sales-header">
+    <div class="col-xs-12 col-md-6">
+      <div class="text-xs-center">
+        <p>Ventas de la semana <span id="week-number">{{ week_number }}</span>: 
+        <span class="font-weight-bold">$</span>
+        <span id="total-earnings-text" class="font-weight-bold"></span></p>
       </div>
-      <div class="col-xs-12 col-md-6">
-        <div class="row">
-          <div class="col-xs-6">
-            <p class="float-xs-right">Hoy es: <span class="font-weight-bold">{{ today_name }}</span></p>
-          </div>
-          <div class="col-xs-6">
-            <p class="float-xs-right">Semana: <span class="font-weight-bold">{{ week_number }}</span></p>
-          </div>
+    </div>
+    <div class="col-xs-12 col-md-6">
+      <div class="row">
+        <div class="col-xs-6">
+          <p class="float-xs-right">Hoy es: <span class="font-weight-bold">{{ today_name }}</span></p>
+        </div>
+        <div class="col-xs-6">
+          <p class="float-xs-right">Semana Actual: <span class="font-weight-bold">{{ week_number }}</span></p>
         </div>
       </div>
     </div>
-    <div class="row sales-graphics">
-      <div class="col-xs-12 col-lg-6">
-        <div class="canvas-holder">
-          <canvas id="canvas-week-sales"></canvas>
-        </div>
-      </div>
-      <div class="col-xs-12 col-lg-6">
-        <div class="canvas-holder">
-          <canvas id="canvas-day-sales"></canvas>
-        </div>
+  </div>
+  <div class="row sales-graphics">
+    <div class="col-xs-12 col-lg-6">
+      <div class="canvas-holder">
+        <canvas id="canvas-week-sales"></canvas>
       </div>
     </div>
-    <div class="row sales-details">
-      <div class="col-xs-12">
-        <h4 class="col-xs-12 col-sm-8 col-xl-10">Ventas de hoy</h4>
-        <button id="btn-save-ticket-csv" class="col-xs-12 col-sm-4 col-xl-2 btn btn-primary d-flex">
-          <span class="btn-reports d-flex align-items-center"><i class="material-icons">file_download</i>Generar Reporte</span>
-        </button>
+    <div class="col-xs-12 col-lg-6">
+      <div class="canvas-holder">
+        <canvas id="canvas-day-sales"></canvas>
       </div>
-      <div class="col-xs-12">
-        <div class="card card-scroll-x mt-1">
-          <table class="table table-hover table-sales-details">
-            <thead class="thead-inverse">
-              <tr>
-                <th>Id</th>
-                <th>Orden</th>
-                <th class="header-date">Fecha</th>
-                <th class="header-products">Productos</th>
-                <th class="header-packages">Paquetes</th>
-                <th>Vendedor</th>
-                <th>Total</th>
-                <th>Acciones</th>
-              </tr>
-            </thead>
-            <tbody>
-              {% for ticket in tickets %}
-                <tr>
-                  <th class="header-id">{{ ticket.ticket_parent }}</th>
-                  <th>{{ ticket.order_number }}</th>
-                  <td class="header-date">{{ ticket.ticket_parent.created_at }}</td>
-                  <td class="header-products">
-                    {% for cartridge in ticket.cartridges %}
-                      <span class="badge badge-success">
-                        <span class="badge badge-info" >{{ cartridge.quantity }}</span>
-                        <span class="badge badge-success ">{{ cartridge.cartridge }}</span>
-                      </span>
-                    {% endfor %}
-                  </td>
-                  <td class="header-packages">
-                    {% for package in ticket.packages %}
-                      <span class="badge badge-primary">
-                        <span class="badge badge-info">{{ package.quantity}}</span>
-                        <span class="badge badge-primary">{{ package.package }}</span>
-                      </span>
-                    {% endfor %}
-                  </td>
-                  <td>{{ ticket.ticket_parent.seller }}</td>
-                  <td class="td-total">
-                    {{ ticket.total }}
-                  </td>
-                  <td class="header-actions">
-                    <span class="sales-actions delete-ticket"><i class="material-icons text-muted">delete</i></span>
-                    <span class="sales-actions print-ticket"><i class="material-icons text-primary">local_printshop</i></span>
-                  </td>
-                </tr>
-              {% endfor %}
-            </tbody>
-          </table>
-        </div>
+    </div>
+  </div>
+  <div class="row sales-details">
+    <div class="col-xs-12">
+      <h4 class="col-xs-12 col-sm-8 col-xl-10">Ventas de hoy</h4>
+      <button id="btn-save-ticket-csv" class="col-xs-12 col-sm-4 col-xl-2 btn btn-primary d-flex">
+        <span class="btn-reports d-flex align-items-center"><i class="material-icons">file_download</i>Generar Reporte</span>
+      </button>
+    </div>
+    <div class="col-xs-12">
+      <div class="card card-scroll-x mt-1">
+        <table id="sales-details-table" class="table table-hover table-sales-details">
+          <thead class="thead-inverse">
+            <tr>
+              <th>Id</th>
+              <th>Orden</th>
+              <th class="header-date">Fecha</th>
+              <th class="header-products">Productos</th>
+              <th class="header-packages">Paquetes</th>
+              <th>Vendedor</th>
+              <th>Total</th>
+              <th>Acciones</th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for ticket in tickets %}
+            <tr>
+              <th class="header-id">{{ ticket.ticket_parent }}</th>
+              <th>{{ ticket.order_number }}</th>
+              <td class="header-date">{{ ticket.ticket_parent.created_at }}</td>
+              <td class="header-products">
+                {% for cartridge in ticket.cartridges %}
+                <span class="badge badge-success">
+                  <span class="badge badge-info" >{{ cartridge.quantity }}</span>
+                  <span class="badge badge-success ">{{ cartridge.cartridge }}</span>
+                </span>
+                {% endfor %}
+              </td>
+              <td class="header-packages">
+                {% for package in ticket.packages %}
+                <span class="badge badge-primary">
+                  <span class="badge badge-info">{{ package.quantity}}</span>
+                  <span class="badge badge-primary">{{ package.package }}</span>
+                </span>
+                {% endfor %}
+              </td>
+              <td>{{ ticket.ticket_parent.seller }}</td>
+              <td class="td-total">
+                {{ ticket.total }}
+              </td>
+              <td class="header-actions">
+                <span class="sales-actions delete-ticket"><i class="material-icons text-muted">delete</i></span>
+                <span class="sales-actions print-ticket"><i class="material-icons text-primary">local_printshop</i></span>
+              </td>
+            </tr>
+            {% endfor %}
+          </tbody>
+        </table>
       </div>
     </div>
   </div>
@@ -180,7 +179,6 @@
 {% endblock content %}
 
 {% block javascript %}
-<script src="https://cdnjs.cloudflare.com/ajax/libs/limonte-sweetalert2/6.3.8/sweetalert2.min.js"></script>
 <!--
 <script src="{% static 'js/sweetalert.min.js' %}">
 -->
@@ -194,11 +192,11 @@
   $(function() {
     var ctx_week = document.getElementById("canvas-week-sales"),
         ctx_day = document.getElementById("canvas-day-sales");
-    var today_number = {{ today_number }};
-    var sales_week = JSON.parse('{{ sales_week | safe }}');
     var earnings_week_chart,
         earnings_day_chart;
+    var sales_week = JSON.parse('{{ sales_week | safe }}');
     var dates_range = JSON.parse('{{ dates_range | safe }}');
+    var today_date;
 
     /**
      * returns a list with the earnings of the week per day
@@ -212,6 +210,21 @@
         count++;
       }
       return earnings_list;
+    }
+
+    /**
+     * returns a list with the earnings of the week per day with the days to set
+     */
+    function get_earnings_week_range(sales_list) {
+      week_list = [0, 0, 0, 0, 0, 0, 0,]
+      for (var i = 0; i < 7; i++) {
+        for (var j = 0; j < sales_list.length; j++) {
+          if (sales_list[j].number_day == i) {
+            week_list[i] = sales_list[j]['earnings']
+          };
+        };
+      };
+      return week_list;
     }
 
     /**
@@ -347,10 +360,9 @@
      * Get's the earnings of the selected day in week chart and
      * show the results in sales day chart
      */
-    function get_sales_day(day_number) {
+    function set_sales_day_chart(date) {
       var earnings_list = [];
-      date =  sales_week[day_number].date;
- 
+
       $.ajax({
         url: "{% url 'sales:sales' %}",
         type: 'POST',
@@ -371,7 +383,7 @@
         success: function(result) {
           var sales_day_earnings_list = [];
           var initial_hour = '08:00',
-              final_hour = '22:00',
+              final_hour = '16:00',
               separation_time = 60; // In minutes
           var sales_day_object_list = result['sales_day_list'];
           var total_datas = sales_day_object_list.length;
@@ -379,11 +391,12 @@
           sales_day_earnings_list = get_sales_day_list(initial_hour, final_hour, separation_time, sales_day_object_list);
           earnings_day_chart.data.datasets[0].data = sales_day_earnings_list;
           earnings_day_chart.update();
+
           swal({
             title: "Éxito",
             text: "Gráfica generada",
             type: "success",
-            timer: 750,
+            timer: 600,
             showConfirmButton: false
           }).then(
           function(){},
@@ -414,7 +427,7 @@
          $('#dates-range-form').find('#dt-year').append(
             "<option value=" + item.year + ">" + item.year + "</option>"
           );
-      });;
+      });
 
       selected_year = $('#dates-range-form').find('#dt-year').val();
       
@@ -431,8 +444,10 @@
           });
           return false;
         }
-      });      
+      });
+      today_date = $('#dt-week').val().split(',')[1];
     }
+
     /**
      * Draws the chart of sales of the week
      */
@@ -467,7 +482,12 @@
         responsive: true,
         onClick: function(event, legendItem) {
           try {
-            get_sales_day(legendItem[0]._index);
+            var selected_day = legendItem[0]._index;
+            for (var i = 0; i < sales_week.length; i++) {
+              if (sales_week[i].number_day == selected_day) {
+                set_sales_day_chart(sales_week[i].date);
+              }
+            };
           } catch (error) {
             console.log(error.message);
           }
@@ -490,7 +510,6 @@
       data: {
         labels: [
         "Out",
-        "21:00 - 22:00", "20:00 - 21:00", "19:00 - 20:00", "18:00 - 19:00", "17:00 - 18:00", "16:00 - 17:00",
         "15:00 - 16:00", "14:00 - 15:00", "13:00 - 14:00", "12:00 - 13:00", "11:00 - 12:00", "10:00 - 11:00", "09:00 - 10:00", "08:00 - 09:00",
         ],
         datasets: [{
@@ -498,22 +517,14 @@
           data: [],
           backgroundColor: [
           'rgba(247,202,24,0.7)',
-          'rgba(103,65,114,0.7)',
-          'rgba(65,131,215,0.7)',
-          'rgba(246,36,89,0.7)',
-          'rgba(103,65,114,0.7)',
-          'rgba(54,215,183,0.7)',
-          'rgba(46,204,113,0.7)',
           'rgba(247,202,24,0.7)',
-          'rgba(249,105,14,0.7)',
-          'rgba(242,38,19,0.7)',
-          'rgba(246,36,89,0.7)',
-          'rgba(103,65,114,0.7)',
-          'rgba(65,131,215,0.7)',
-          'rgba(54,215,183,0.7)',
-          'rgba(46,204,113,0.7)',
           'rgba(247,202,24,0.7)',
-          'rgba(249,105,14,0.7)',
+          'rgba(247,202,24,0.7)',
+          'rgba(247,202,24,0.7)',
+          'rgba(46,204,113,0.7)',
+          'rgba(46,204,113,0.7)',
+          'rgba(46,204,113,0.7)',
+          'rgba(46,204,113,0.7)',
           ],
           borderWidth: 0
         }]
@@ -577,9 +588,10 @@
     /** 
      * Refresh the page with de dates of the year and week selected
      */
-    $(this).on('click', '#btn-set-new-range', function(event) {
+    $(this).on('change', '#dt-week', function(event) {
       dt_year = $('#dt-year').val();
       dt_week = $('#dt-week').val();
+      
       $.ajax({
         url: "{% url 'sales:sales' %}",
         type: 'POST',
@@ -589,18 +601,101 @@
           'dt_week': dt_week,
           'type': 'sales_week',
         },
+        beforeSend: function(){
+          swal({
+            title: "Obteniendo registros",
+            text: "Espere mientras obtenemos toda la información",
+          });
+          swal.enableLoading();
+        },
         traditional: true,
         datatype: 'jsonp',
-        success: function(result) {
-          console.log(result);
-        },
+        success: function(result, status, XHR) {
+          var tickets_objects = result['tickets']
+          sales_week = result['sales']
+          var week_number = result['week_number']
+          var sales_details_table = $('#sales-details-table').find('tbody');
+          var week_earnings = 0;
+          sales_details_table.empty();
 
+          swal({
+            title: "Éxito",
+            text: "Datos obtenidos",
+            type: "info",
+            timer: 750,
+            showConfirmButton: false
+          }).then(
+          function(){},
+          function(dismiss){});
+          
+          /**
+           * Filling the sales table
+           */
+          for (var i = 0; i < tickets_objects.length; i++) {
+            week_earnings += parseFloat(tickets_objects[i].total);
+            var cartridges_list = "";
+            var packages_list = "";
+
+            for (var j = 0; j < tickets_objects[i].ticket_details['cartridges'].length; j++) {
+              cartridges_list += "" +
+              "<span class='badge badge-success'>" +
+                "<span class='badge badge-info'>" + 
+                tickets_objects[i].ticket_details['cartridges'][j].quantity +
+                "</span>" +
+                "<span class='badge badge-success'>" + 
+                tickets_objects[i].ticket_details['cartridges'][j].name +
+                "</span>" +
+              "</span>" +
+              "";
+            };
+
+            for (var j = 0; j < tickets_objects[i].ticket_details['packages'].length; j++) {
+              packages_list += "" +
+              "<span class='badge badge-primary'>" +
+                "<span class='badge badge-info'>" + 
+                tickets_objects[i].ticket_details['packages'][j].quantity +
+                "</span>" +
+                "<span class='badge badge-primary'>" + 
+                tickets_objects[i].ticket_details['packages'][j].name +
+                "</span>" +
+              "</span>" +
+              "";
+            };
+
+            sales_details_table.append("" +
+              "<tr>" +
+              "<th class='header-id'>" + tickets_objects[i].id + "</th>" +
+              "<th>" + tickets_objects[i].order_number + "</th>" +
+              "<td class='header-date'>" + tickets_objects[i].created_at + "</td>" +
+              "<td class='header-products'>" + cartridges_list + "</td>" +
+              "<td class='header-packages'>" + packages_list + "</td>" +
+              "<td>" + tickets_objects[i].seller + "</td>" +
+              "<td class='td-total'>" + tickets_objects[i].total + "</td>" +
+              "<td class='header-actions'>" + 
+              "<span class='sales-actions delete-ticket'><i class='material-icons text-muted'>delete</i></span>" +
+              "<span class='sales-actions print-ticket'><i class='material-icons text-primary'>local_printshop</i></span>" + 
+              "</td>" +
+              "</tr>" +
+            "");
+          };
+
+          /**
+           * Filling the sales chart
+           */
+          sales_week_earnings_list = get_earnings_week_range(sales_week);
+          earnings_week_chart.data.datasets[0].data = sales_week_earnings_list;
+          earnings_week_chart.update();
+
+          $('#total-earnings-text').text(week_earnings.toFixed(2))
+          $('#week-number').text(week_number)
+
+        },
         error: function(result, jqXHR, textStatus, errorThrown) {
           console.log(result);
         },
+        complete: function(result){}
       });
     });
-
 
     /**
      * Get's the ticket id for printer-icon selected 
@@ -876,7 +971,7 @@
      */
     fill_dates_range_form();
     set_total_earnings();
-    get_sales_day(today_number);
+    set_sales_day_chart(today_date);
   });
 </script>
 {% endblock javascript %}

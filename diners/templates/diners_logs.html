@@ -1,0 +1,626 @@
+{% extends 'base/base_nav_footer.html' %}
+{% load static %}
+
+{% block content %}
+<div class="container-fluid container-diners">
+  <div class="row mb-2">
+    <div class="form-inline col-xs-12 col-lg-4 diners-id-form mb-1">
+      <div class="input-group">
+        <div class="input-group-addon"><i class="material-icons">search</i></div>
+        <input type="text" class="form-control" id="input-diners-search" placeholder="Buscar Comensal por ID">
+      </div>
+    </div>
+    <div class="col-xs-12 col-lg-8 text-xs-right  inputs-container">
+      <div class="row">
+        <form class="form-inline col-xs-12 " id="dates-range-form">
+          <div class="col-xs-12 col-lg-3 container-select">
+            <select class="custom-select col-xs-12" id="dt-year">
+            </select>
+          </div>
+          <div class="col-xs-12 col-lg-9 container-select">
+            <select class="custom-select col-xs-12" id="dt-week" >
+            </select>
+          </div>
+        </form>
+      </div>
+    </div>
+     
+  </div>
+  <div class="row">
+    <div class="col-xs-12 col-lg-6">
+      <div class="canvas-holder">
+        <canvas id="dinners_by_day"></canvas>
+      </div>
+    </div>
+    <div class="col-xs-12 col-lg-6">
+      <div class="canvas-holder">
+        <canvas id="dinners_by_hour"></canvas>
+      </div>
+    </div>         
+  </div> 
+  <div class="row mt-2">
+    <div class="col-xs-12">
+      <h3 class="col-xs-12 col-sm-8 col-xl-10">Comensales hasta hoy: <span class="badge badge-blue">{{ total_diners }}</span></h3>
+      <button id="btn-save-ticket-csv" class="col-xs-12 col-sm-4 col-xl-2 btn btn-primary d-flex">
+        <span class="btn-reports d-flex align-items-center"><i class="material-icons">file_download</i>Generar Reporte</span>
+      </button>
+    </div>
+
+  </div>
+  <div class="row">
+    <div class="col-xs-12">
+      <div class="card card-scroll-x mt-1">
+        <table class="table" id="access-logs-table">
+          <thead class="thead-inverse">
+            <tr>
+              <th>RFID</th>
+              <th>SAP</th>
+              <th>Nombre</th>
+              <th>Fecha de Acceso</th>                 
+            </tr>
+          </thead>      
+          <tbody>      
+            {%for diner in diners %}        
+            <tr>       
+              <th>{{ diner.RFID }}</th> 
+              <td>{{ diner.diner.employee_number }}</td>          
+              <td>{{ diner.diner.name }}</td>          
+              <td>{{ diner.access_to_room }}</td>
+            </tr>      
+            {% endfor %}        
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
+  <div class="container-fluid mt-2 mb-2">
+    <div class="col-xs-12">
+      <div class="text-xs-center">
+        <small>Página {{ paginator.num_page }} de {{ paginator.pages }}</small>
+        <nav aria-label="Page navigation example">
+          <ul class="pagination justify-content-right">
+            <!-- Previous arrow -->
+            {% if  paginator.has_prev %}
+              <li class="page-item ">
+                <a class="page-link" href="?num_page={{ paginator.first_page }}" aria-label="Previous">
+                  <span aria-hidden="true">&laquo;</span>
+                  <span class="sr-only">Previous</span>
+                </a>
+              </li>
+            {% else %}
+              <li class="page-item disabled">
+                <a class="page-link" href="#" aria-label="Previous">
+                  <span aria-hidden="true">&laquo;</span>
+                  <span class="sr-only">Previous</span>
+                </a>
+              </li>
+            {% endif %}
+            <!-- Previous number -->
+            {% if paginator.has_prev %}
+              <li class="page-item">
+                <a class="page-link" href="{% url 'diners:diners_logs' %}?num_page={{ paginator.prev_page }}">
+                  {{ paginator.prev_page }}
+                </a>
+              </li>
+            {% endif %}
+            <!-- Actual Number -->
+            <li class="page-item active">
+              <span class="page-link">
+                {{ paginator.num_page }}
+                <span class="sr-only">(current)</span>
+              </span>
+            </li>
+            <!-- Next Number -->
+            {% if paginator.has_next %}
+              <li class="page-item">
+                <a class="page-link" href="{% url 'diners:diners_logs' %}?num_page={{ paginator.next_page }}">
+                  {{ paginator.next_page }}
+                </a>
+              </li>
+              <li class="page-item">
+                <a class="page-link" href="{% url 'diners:diners_logs' %}?num_page={{ paginator.pages }}" aria-label="Next">
+                  <span aria-hidden="true">&raquo;</span>
+                  <span class="sr-only">Next</span>
+                </a>
+              </li>
+              <!-- Second Nex Number -->
+            {% else %}
+              <li class="page-item disabled">
+                <a class="page-link" href="#" aria-label="Next">
+                  <span aria-hidden="true">&raquo;</span>
+                  <span class="sr-only">Next</span>
+                </a>
+              </li>
+            {% endif %}
+          </ul>
+        </nav>      
+    </div>
+  </div>
+</div> 
+{% endblock %} 
+
+{% block javascript %}
+
+<script src="{% static 'js/Chart.bundle.min.js' %}" defer></script>
+<script src="{% static 'js/papaparse.min.js' %}" defer></script>
+<script src="{% static 'js/blob.js' %}" defer></script>
+<script src="{% static 'js/fileSaver.min.js' %}" defer></script>
+
+<script type="text/javascript" charset="utf-8" async>
+  $(function() {
+    var ctx_diners_hour = document.getElementById("dinners_by_hour");
+    var ctx_diners_day = document.getElementById("dinners_by_day");
+    var diners_week_chart,
+        diners_day_chart;
+    var diners_hour = JSON.parse('{{ diners_hour | safe }}');
+    var diners_week = JSON.parse('{{ diners_week | safe }}');    
+    var dates_range = JSON.parse('{{ dates_range | safe }}');
+
+    function convert_date_to_str(date) {
+      months = {
+        1: 'Ene', 2: 'Feb', 3: 'Mar', 4: 'Abr', 5: 'May', 6: 'Jun',
+        7: 'Jul', 8: 'Ago', 9: 'Sep', 10: 'Oct', 11: 'Nov', 12: 'Dic', 
+      }
+      date = date.split('-')
+      fdate = date[0] + " " + months[parseInt(date[1])] + " " + date[2];
+      return fdate;
+    }
+
+    /**
+     * Receives a datetime with format from python.
+     * Returns an hour converted into 24-hours format: hh:mm ith Timezone +06:00
+     */
+    function convert_datetime_to_hour(original_datetime){
+      hour_formated = original_datetime.split('T')[1].split('.')[0].substr(0,5);
+      return hour_formated;
+    }
+    
+    function fill_dates_range_form() {
+      var dates_range_form = $(this).find('#dt-year');
+      var selected_year;
+      $.each(dates_range, function(index, item) {
+         $('#dates-range-form').find('#dt-year').append(
+            "<option value=" + item.year + ">" + item.year + "</option>"
+          );
+      });
+
+      selected_year = $('#dates-range-form').find('#dt-year').val();
+      
+      $.each(dates_range, function(index, item) {
+        if (dates_range[index].year ==  selected_year) {
+          $.each(dates_range[index].weeks_list, function(index, item) { 
+            $('#dates-range-form').find('#dt-week').append(
+              "<option value=" + item.start_date + "," + item.end_date + ">" + 
+              "Semana " + item.week_number + ": " + 
+              convert_date_to_str(item.start_date) +
+              " - " + convert_date_to_str(item.end_date) +
+              "</option>"
+            );
+          });
+          return false;
+        }
+      });
+      today_date = $('#dt-week').val().split(',')[1];    
+    }
+
+    /**
+     * Receives an hour in 24-hour format and returns the same hour but
+     * converted into minutes.
+     * The string must have to have the following format: hh:mm
+     */
+    function hours_to_minutes(original_time) {
+      var hours,
+      minutes;
+      hours = parseInt(original_time.split(':')[0])*60;
+      minutes = parseInt(original_time.split(':')[1]);
+      return parseInt(hours + minutes);
+    }
+
+    /**
+     * Receives an hour and verifies if it't is in the offered time range.
+     * The hours received must have the following format: hh:mm
+     * Returns true if the condition is met. Otherwise returns false.
+     */
+    function is_time_in_range(hour, start_hour, end_hour) {
+      hour_in_minutes = hours_to_minutes(hour);
+      start_hour_in_minutes = hours_to_minutes(start_hour);
+      end_hour_in_minutes = hours_to_minutes(end_hour);
+
+      if(hour_in_minutes >= start_hour_in_minutes && hour_in_minutes < end_hour_in_minutes)
+        return true;
+      return false;
+    }
+
+    /**
+     * Receives an hour in minutes format and returns the same hour but
+     * converted into 24-hour format.
+     * The string returned have the next format: hh:mm
+     */
+    function minutes_to_hours(original_time) {
+      hours = parseInt(original_time / 60);
+      minutes = parseInt(original_time % 60);
+      
+      if (hours.toString().length < 2) {
+        hours = "0"+hours;
+      }
+      
+      if (minutes.toString().length < 2) {
+        minutes = "0"+minutes;
+      }
+        return hours + ':' + minutes;
+    }
+
+    function get_hours_of_diners() {
+      var count_list = [];
+      var count = 0;
+
+      while (count < diners_hour.length) {
+        count_list.push(parseFloat(diners_hour[count].count));
+        count++;
+      }
+      return count_list;
+    }
+
+    function get_diners_day() {
+      var entries_list = [];
+      var count = 0;
+
+      while (count < diners_week.length) {
+        entries_list.push(parseFloat(diners_week[count].entries));
+        count++;
+      }
+      return entries_list;
+    }
+
+    function get_diners_day_list(initial_hour, final_hour, separation_time, diners_list) {
+      var initial_hour_minutes,
+            final_hour_minutes;
+      var list_formated = [],
+          elements_ok = [];
+      var entries = 0;
+
+      initial_hour_minutes = hours_to_minutes(initial_hour);
+      final_hour_minutes = hours_to_minutes(final_hour);
+
+      while(initial_hour_minutes < final_hour_minutes) {
+        start_hour_f = minutes_to_hours(initial_hour_minutes);
+        end_hour_f = minutes_to_hours(initial_hour_minutes + separation_time);
+
+        for (var i = 0; i < diners_list.length; i++) {
+          hour_sale = convert_datetime_to_hour(diners_list[i].datetime);
+          
+          if(is_time_in_range(hour_sale, start_hour_f, end_hour_f)) {
+            entries += 1;
+            elements_ok.push(diners_list[i]);
+          }
+        }
+
+        list_formated.push(entries);
+        initial_hour_minutes += separation_time;
+        entries = 0;
+      }
+
+      // Searches the times outside the time range
+      for(var i = 0; i < diners_list.length; i++) {
+        if(elements_ok.indexOf(diners_list[i]) == -1) {
+          entries += 1;
+        }
+      }
+      list_formated.push(entries)
+      return list_formated.reverse();
+    }
+
+    /**
+     * returns a list with the entries of the week per day with the days to set
+     */
+    function get_diners_week_range(diners_list) {
+      week_list = [0, 0, 0, 0, 0, 0, 0,]
+      for (var i = 0; i < 7; i++) {
+        for (var j = 0; j < diners_list.length; j++) {
+          if (diners_list[j].number_day == i) {
+            week_list[i] = diners_list[j].entries;
+          };
+        };
+      };
+      return week_list;
+    }
+
+    /**
+     * Get's the earnings of the selected day in week chart and
+     * show the results in diners day chart
+     */
+    function set_diners_day_chart(date) {
+      var earnings_list = [];
+      $.ajax({
+        url: "{% url 'diners:diners_logs' %}",
+        type: 'POST',
+        data: {
+          csrfmiddlewaretoken: '{{ csrf_token }}',
+          'date': date,
+          'type': 'diners_logs_day',
+        },
+        traditional: true,
+        datatype: 'jsonp',
+        beforeSend: function(){
+          // swal({
+          //     title: "Generando gráficas",
+          //     text: "Espere mientras se calculan los datos",
+          //   });
+          // swal.enableLoading();
+        },
+        success: function(result) {
+          var access_logs_day_list = result['access_logs_day_list'];
+          var initial_hour = '11:00',
+              final_hour = '17:00',
+              separation_time = 60; // In minutes
+          var total_datas = access_logs_day_list.length;
+
+          diners_access_day_list = get_diners_day_list(initial_hour, final_hour, separation_time, access_logs_day_list);
+          diners_day_chart.data.datasets[0].data = diners_access_day_list;
+          diners_day_chart.update();
+
+          swal({
+            title: "Éxito",
+            text: "Datos Cargados",
+            type: "success",
+            timer: 600,
+            showConfirmButton: false
+          }).then(
+          function(){},
+          function(dismiss){}
+          );
+        },
+
+        error: function(result, jqXHR, textStatus, errorThrown) {
+          console.log(result);
+        },
+      });
+    }
+
+    diners_week_chart = new Chart(ctx_diners_day, {
+      type: 'bar',
+      data: {
+        labels: ["Lunes", "Martes", "Miercoles", "Jueves", "Viernes", "Sabado", "Domingo"],
+        datasets: [{
+          label: 'Comensales por dia',
+          data: get_diners_day(),
+          backgroundColor: [
+            'rgba(255, 99, 132, 0.6)',
+            'rgba(54, 162, 235, 0.6)',
+            'rgba(255, 206, 86, 0.6)',
+            'rgba(75, 192, 192, 0.6)',
+            'rgba(153, 102, 255, 0.6)',
+            'rgba(255, 206, 86, 0.6)',
+            'rgba(255, 159, 64, 0.6)'
+          ],
+          borderColor: [
+            'rgba(255,99,132,1)',
+            'rgba(54,162,235,1)',
+            'rgba(255,206,86,1)',
+            'rgba(75,192,192,1)',
+            'rgba(153,102,255,1)',
+            'rgba(255,206,86,1)',
+            'rgba(255,159,64,1)'
+          ],
+          borderWidth: 1
+        }]
+      },
+      options: {
+        responsive: true,
+        onClick: function(event, legendItem) {
+          try {
+            var selected_day = legendItem[0]._index;
+            for (var i = 0; i < diners_week.length; i++) {
+              if (diners_week[i].number_day == selected_day) {
+                set_diners_day_chart(diners_week[i].date);
+              }
+            };
+          } catch (error) {
+            console.log(error.message);
+          }
+        },
+        scales: {
+          yAxes: [{
+            ticks: {
+              beginAtZero: true,
+            },
+          }]
+        }
+      }
+    });
+
+    diners_day_chart = new Chart(ctx_diners_hour, {
+      type: 'horizontalBar',
+      data: {
+        labels: [
+        "Out",
+        "16:00 - 17:00", "15:00 - 16:00", "14:00 - 15:00", "13:00 - 14:00", "12:00 - 13:00", "11:00 - 12:00",
+        ],
+        datasets: [{
+          label: 'Comensales por hora',
+          data: get_hours_of_diners(),
+          backgroundColor: [
+            'rgba(54, 162, 235, 0.6)',
+            'rgba(75, 192, 192, 0.6)',
+            'rgba(255, 206, 86, 0.6)',
+            'rgba(75, 192, 192, 0.6)',
+            'rgba(153, 102, 255, 0.6)',
+            'rgba(75, 192, 192, 0.6)',
+            'rgba(255, 159, 64, 0.6)'
+          ],
+          borderColor: [
+            'rgba(54, 162, 235, 1)',
+            'rgba(75, 192, 192, 1)',
+            'rgba(255, 206, 86, 1)',
+            'rgba(75, 192, 192, 1)',
+            'rgba(153, 102, 255, 1)',
+            'rgba(75, 192, 192, 1)',
+            'rgba(255, 159, 64, 1)'
+          ],
+          borderWidth: 1
+        }]
+      },
+      options: {
+        responsive: true,
+        scales: {
+          xAxes: [{
+            ticks: {
+              beginAtZero: true
+            }
+          }]
+        }
+      }
+    });
+
+
+    /** 
+     * Refresh the page with de dates of the year and week selected
+     */
+    $(this).on('change', '#dt-week', function(event) {
+      dt_year = $('#dt-year').val();
+      dt_week = $('#dt-week').val();
+
+      $.ajax({
+        url: "{% url 'diners:diners_logs' %}",
+        type: 'POST',
+        data: {
+          csrfmiddlewaretoken: '{{ csrf_token }}',
+          'dt_year': dt_year,
+          'dt_week': dt_week,
+          'type': 'diners_logs_week',
+        },
+        beforeSend: function(){
+          swal({
+            title: "Obteniendo registros",
+            text: "Espere mientras obtenemos toda la información",
+          });
+          swal.enableLoading();
+        },
+        traditional: true,
+        datatype: 'jsonp',
+        success: function(result, status, XHR) {
+          diners_week = result['entries']
+          var diners_list = result['diners'];
+          var list_length = diners_list.length;
+          var access_logs_table = $('#access-logs-table').find('tbody');
+          access_logs_table.empty();
+          swal({
+            title: "Éxito",
+            text: "Datos obtenidos",
+            type: "info",
+            timer: 750,
+            showConfirmButton: false
+          }).then(
+          function(){},
+          function(dismiss){}
+          );
+          
+          /**
+           * Filling the diners table
+           */
+          for (var i = 0; i < list_length; i++) {
+            access_logs_table.append("" +
+              "<tr>" +
+              "<th>" + diners_list[i].rfid + "</th>" +
+              "<td>" + diners_list[i].SAP + "</td>" +
+              "<td>" + diners_list[i].name + "</td>" +
+              "<td>" + diners_list[i].access + "</td>" +
+              "</tr>" +
+            "");
+          };
+
+          /**
+           * Filling the diners chart
+           */
+          diners_logs_week_list = get_diners_week_range(diners_week);
+          diners_week_chart.data.datasets[0].data = diners_logs_week_list;
+          diners_week_chart.update();
+
+        },
+        error: function(result, jqXHR, textStatus, errorThrown) {
+          console.log(result);
+        },
+        complete: function(result){
+        }
+      });
+    });
+
+    $(this).on('keyup', '#input-diners-search', function(event) {
+      /** Declare variables */
+      var input, filter, table, tr, td, i;
+      input = document.getElementById("input-diners-search");
+      filter = input.value.toUpperCase();
+      table = document.getElementById("access-logs-table");
+      tr = table.getElementsByTagName("tr");
+
+      /** Loop through all table rows, and hide those who don't match the search query */
+      for (i = 0; i < tr.length; i++) {
+        td = tr[i].getElementsByTagName("td")[0];
+        if (td) {
+          if (td.innerHTML.toUpperCase().indexOf(filter) > -1) {
+            tr[i].style.display = "";
+          } else {
+            tr[i].style.display = "none";
+          }
+        }
+      }
+    });
+
+    $(this).on('click', '#btn-save-ticket-csv', function(event) {
+      /**
+       * Convert JSON TO CSV
+       */
+      var diners_json = null;
+
+      $.ajax({
+        url: "{% url 'diners:diners_logs' %}",
+        type: 'POST',
+        dataType: 'json',
+        data: {
+          type: 'diners_logs',
+          csrfmiddlewaretoken: '{{ csrf_token }}',
+        },
+        beforeSend: function(){
+          swal({
+              title: "Generando Excel",
+              text: "Espere mientras obtenemos toda la información",
+            });
+          swal.enableLoading();
+        },
+        success: function(result, status, XHR) {
+          console.log(result);
+          diner_details = Papa.unparse(result.diner_logs);
+          console.log(diner_details);
+
+          var blob = new Blob([ diner_details ], {
+            type: "text/csv;charset=UTF-8" }
+            );
+
+          var datetime = new Date();
+          saveAs(blob, datetime + '.csv');
+
+          swal({
+            title: "Éxito",
+            text: "Datos obtenidos",
+            type: "info",
+            timer: 750,
+            showConfirmButton: false
+          }).then(
+            function(){},
+            function(dismiss){}
+          );
+        },
+        complete: function(result){
+          setTimeout(function() {
+          }, 750);
+        }
+      });
+    });
+
+    fill_dates_range_form();
+    set_diners_day_chart(today_date);
+
+});
+</script>
+{% endblock javascript %}
