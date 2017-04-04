@@ -200,9 +200,36 @@ def get_diners_actual_week():
     return json.dumps(week_diners_list)
 
 
+def diners_paginator(request, queryset, num_pages):
+    result_list = Paginator(queryset, num_pages)
+
+    try:
+        num_page = int(request.GET['num_page'])
+    except:
+        num_page = 1
+
+    if num_page <= 0:
+        num_page = 1
+
+    if num_page > result_list.num_pages:
+        num_page = result_list.num_pages
+    
+    if result_list.num_pages >= num_page:
+        page = result_list.page(num_page)
+    
+        context = {
+            'queryset': page.object_list,
+            'num_page': num_page,
+            'pages': result_list.num_pages,
+            'has_next': page.has_next(),
+            'has_prev': page.has_previous(),
+            'next_page': num_page + 1,
+            'prev_page': num_page - 1,
+            'first_page': 1,
+        }
+    return context
 
 # ------------------------- Django Views ----------------------------- #
-
 @csrf_exempt
 def RFID(request):
     if request.method == 'POST':
@@ -249,35 +276,6 @@ def RFID(request):
 
 @login_required(login_url='users:login')
 def diners(request):
-    def diners_paginator(request, queryset, num_pages):
-        result_list = Paginator(queryset, num_pages)
-
-        try:
-            num_page = int(request.GET['num_page'])
-        except:
-            num_page = 1
-
-        if num_page <= 0:
-            num_page = 1
-
-        if num_page > result_list.num_pages:
-            num_page = result_list.num_pages
-        
-        if result_list.num_pages >= num_page:
-            page = result_list.page(num_page)
-        
-            context = {
-                'queryset': page.object_list,
-                'num_page': num_page,
-                'pages': result_list.num_pages,
-                'has_next': page.has_next(),
-                'has_prev': page.has_previous(),
-                'next_page': num_page + 1,
-                'prev_page': num_page - 1,
-                'first_page': 1,
-            }
-        return context
-
     if request.method == 'POST':
         pass
 
@@ -377,7 +375,7 @@ def diners_logs(request):
                 access_logs_day_list.append(earnings_sale_object)
             return JsonResponse({'access_logs_day_list': access_logs_day_list})
 
-        if request.POST['type'] == 'diners_logs':
+        elif request.POST['type'] == 'diners_logs':
             diners_objects_list = []
 
             for entry in all_entries:
