@@ -276,15 +276,39 @@ def RFID(request):
 
 @login_required(login_url='users:login')
 def diners(request):
+    access_logs_today = get_access_logs_today()
+    total_diners = access_logs_today.count()
+
     if request.method == 'POST':
-        pass
+        if request.POST['type'] == 'diners_logs_today':
+
+            diners = Diner.objects.all()
+
+            diners_objects = {
+                'total_diners': total_diners,
+                'diners_list': [],
+            }
+
+            for diner_log in access_logs_today:
+                diner_object = {
+                    'rfid': diner_log.RFID,
+                    'sap': '',
+                    'name': '',
+                    'date': timezone.localtime(diner_log.access_to_room).strftime("%B %d, %Y, %I:%M:%S %p"),
+                }
+
+                for diner in diners:
+                    if diner_log.RFID == diner.RFID:
+                        print(diner)
+                        diner_object['sap'] = diner.employee_number
+                        diner_object['name'] = diner.name
+                        break
+
+                diners_objects['diners_list'].append(diner_object)
+            
+            return JsonResponse(diners_objects)
 
     else:
-        diners_list = []    
-        total_diners = len(diners_list)
-        diners_objects = get_access_logs_today()
-        total_diners = diners_objects.count()
-        pag = diners_paginator(request, diners_objects, 50)
         template = 'diners.html'
         title = 'Comensales del Dia'
         page_title = PAGE_TITLE
@@ -292,8 +316,7 @@ def diners(request):
         context = {
             'title': PAGE_TITLE + ' | ' + title,
             'page_title': title,
-            'diners' : pag['queryset'],                
-            'paginator': pag,
+            'diners' : access_logs_today,
             'total_diners': total_diners,
         }
         return render(request, template, context)

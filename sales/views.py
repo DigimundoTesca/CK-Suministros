@@ -320,7 +320,7 @@ def sales(request):
             ticket_object = {
                 'id': ticket.id,
                 'order_number': ticket.order_number,
-                'created_at': datetime.strftime(ticket.created_at, "%B %d, %I, %H:%M:%S %p"),
+                'created_at': datetime.strftime(ticket.created_at, "%B %d, %Y, %H:%M:%S %p"),
                 'seller': ticket.seller.username,
                 'ticket_details': {
                     'cartridges': [],

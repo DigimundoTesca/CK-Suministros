@@ -2,7 +2,7 @@
 {% load static %}
 
 {% block content %}
-  <div class="container-fluid">
+  <div class="container-fluid diners-logs-container">
     <div class="row">
       <div class="col xs 12 mt-1 mb-1">
         <h3 class="text-xs-right">Comensales de Hoy: <span class="badge badge-blue">{{ total_diners }}</span></h3>
@@ -10,7 +10,7 @@
     </div>            
 
     <div class="row">
-      <table class="table" id="myTable">
+      <table class="table" id="diners-table">
         <thead class="thead-inverse">
           <tr>
             <th>RFID</th>
@@ -19,7 +19,7 @@
             <th>Fecha de Acceso</th>
           </tr>
         </thead>
-        <tbody>
+        <tbody id="diners-table-body">
           {%for diner in diners %}
           <tr>
             <th>{{ diner.RFID }}</th>
@@ -31,73 +31,7 @@
       </tbody>
     </table>
   </div>
-
-  <div class="container-fluid mt-2 mb-2">
-    <div class="col-xs-12">
-      <div class="text-xs-center">
-        <small>Página {{ paginator.num_page }} de {{ paginator.pages }}</small>
-        <nav aria-label="Page navigation example">
-          <ul class="pagination justify-content-right">
-            <!-- Previous arrow -->
-            {% if  paginator.has_prev %}
-              <li class="page-item ">
-                <a class="page-link" href="?num_page={{ paginator.first_page }}" aria-label="Previous">
-                  <span aria-hidden="true">&laquo;</span>
-                  <span class="sr-only">Previous</span>
-                </a>
-              </li>
-            {% else %}
-              <li class="page-item disabled">
-                <a class="page-link" href="#" aria-label="Previous">
-                  <span aria-hidden="true">&laquo;</span>
-                  <span class="sr-only">Previous</span>
-                </a>
-              </li>
-            {% endif %}
-            <!-- Previous number -->
-            {% if paginator.has_prev %}
-              <li class="page-item">
-                <a class="page-link" href="{% url 'diners:diners' %}?num_page={{ paginator.prev_page }}">
-                  {{ paginator.prev_page }}
-                </a>
-              </li>
-            {% endif %}
-            <!-- Actual Number -->
-            <li class="page-item active">
-              <span class="page-link">
-                {{ paginator.num_page }}
-                <span class="sr-only">(current)</span>
-              </span>
-            </li>
-            <!-- Next Number -->
-            {% if paginator.has_next %}
-              <li class="page-item">
-                <a class="page-link" href="{% url 'diners:diners' %}?num_page={{ paginator.next_page }}">
-                  {{ paginator.next_page }}
-                </a>
-              </li>
-              <li class="page-item">
-                <a class="page-link" href="{% url 'diners:diners' %}?num_page={{ paginator.pages }}" aria-label="Next">
-                  <span aria-hidden="true">&raquo;</span>
-                  <span class="sr-only">Next</span>
-                </a>
-              </li>
-              <!-- Second Nex Number -->
-            {% else %}
-              <li class="page-item disabled">
-                <a class="page-link" href="#" aria-label="Next">
-                  <span aria-hidden="true">&raquo;</span>
-                  <span class="sr-only">Next</span>
-                </a>
-              </li>
-            {% endif %}
-          </ul>
-        </nav>      
-    </div>
-  </div>
 </div>
-                {{ queryset }}
-
 {% endblock %} 
 
 {% block javascript %}
@@ -108,13 +42,56 @@
     
     function get_diners_logs() {
 
-      console.log("hola");
+      $.ajax({
+          url: "{% url 'diners:diners' %}",
+          type: 'POST',
+          dataType: 'json',
+          data: {
+            type: 'diners_logs_today',
+            csrfmiddlewaretoken: '{{ csrf_token }}',
+          },
+          success: function(result, status, XHR) {
+          },
+          complete: function(result){
+            var diners_objects = result.responseJSON;
 
-      setTimeout(get_diners_logs, 1500);
+            var diners_table = document.getElementById('diners-table-body');
+            if (diners_table.hasChildNodes()) {
+              while (diners_table.childNodes.length >= 1) {
+                diners_table.removeChild(diners_table.firstChild);
+              }
+            }
 
+            for (var i = 0; i < diners_objects.total_diners; i++) {
+              var element = document.createElement('tr');
+              var element_rfid = document.createElement('th');
+              var element_sap = document.createElement('td');
+              var element_name = document.createElement('td');
+              var element_date = document.createElement('td');
+
+              var rfid = document.createTextNode(diners_objects.diners_list[i].rfid);
+              var sap = document.createTextNode(diners_objects.diners_list[i].sap);
+              var name = document.createTextNode(diners_objects.diners_list[i].name);
+              var date = document.createTextNode(diners_objects.diners_list[i].date);
+
+              element_rfid.appendChild(rfid);
+              element_sap.appendChild(sap);
+              element_name.appendChild(name);
+              element_date.appendChild(date);
+
+              element.appendChild(element_rfid);
+              element.appendChild(element_sap);
+              element.appendChild(element_name);
+              element.appendChild(element_date);
+              
+              diners_table.appendChild(element)
+            };
+            setTimeout(get_diners_logs, 1200);
+          }
+        });
     }
 
-    setTimeout(get_diners_logs, 1500);
+    setTimeout(get_diners_logs, 1200);
     
   });
 </script>
