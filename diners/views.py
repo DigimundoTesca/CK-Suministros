@@ -299,7 +299,6 @@ def diners(request):
 
                 for diner in diners:
                     if diner_log.RFID == diner.RFID:
-                        print(diner)
                         diner_object['sap'] = diner.employee_number
                         diner_object['name'] = diner.name
                         break
