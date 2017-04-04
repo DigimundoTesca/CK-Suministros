@@ -587,7 +587,7 @@ small {
   z-index: 1030;
 }
 .navbar-base {
-  /*margin-top: 2.2em;*/
+  margin-top: 2.2em;
 }
 .modal#extra-ingredient-modal .modal-header {
   height: 4rem;
