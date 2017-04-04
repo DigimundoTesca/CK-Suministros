@@ -6,7 +6,7 @@ from time import sleep
 import  pytz, json
 from datetime import date, datetime, timedelta, time
 from django.conf import settings
-
+from django.contrib.auth.decorators import login_required
 from django.utils import timezone
 from django.http import HttpResponse, JsonResponse
 from django.shortcuts import render, redirect, get_object_or_404
@@ -97,36 +97,6 @@ def naive_to_datetime(nd):
         t = time(0,0)
         new_date = datetime.combine(d, t)
         return pytz.timezone('America/Mexico_City').localize(new_date)
-
-
-def diners_paginator(request, queryset, num_pages):
-    result_list = Paginator(queryset, num_pages)
-
-    try:
-        num_page = int(request.GET['num_page'])
-    except:
-        num_page = 1
-
-    if num_page <= 0:
-        num_page = 1
-
-    if num_page > result_list.num_pages:
-        num_page = result_list.num_pages
-    
-    if result_list.num_pages >= num_page:
-        page = result_list.page(num_page)
-    
-        context = {
-            'queryset': page.object_list,
-            'num_page': num_page,
-            'pages': result_list.num_pages,
-            'has_next': page.has_next(),
-            'has_prev': page.has_previous(),
-            'next_page': num_page + 1,
-            'prev_page': num_page - 1,
-            'first_page': 1,
-        }
-    return context
 
 
 def parse_to_datetime(dt):
@@ -276,26 +246,62 @@ def RFID(request):
     else:
         return redirect('diners:diners')
 
+
+@login_required(login_url='users:login')
 def diners(request):
-    count = 0
-    diners_list = []    
-    total_diners = len(diners_list)
-    diners_objects = get_access_logs_today()
-    total_diners = diners_objects.count()
-    pag = diners_paginator(request, diners_objects, 50)
-    template = 'diners.html'
-    title = 'Comensales del Dia'
-    page_title = PAGE_TITLE
+    def diners_paginator(request, queryset, num_pages):
+        result_list = Paginator(queryset, num_pages)
 
-    context={
-        'title': PAGE_TITLE + ' | ' + title,
-        'page_title': title,
-        'diners' : pag['queryset'],                
-        'paginator': pag,
-        'total_diners': total_diners,
-    }
-    return render(request, template, context)
+        try:
+            num_page = int(request.GET['num_page'])
+        except:
+            num_page = 1
 
+        if num_page <= 0:
+            num_page = 1
+
+        if num_page > result_list.num_pages:
+            num_page = result_list.num_pages
+        
+        if result_list.num_pages >= num_page:
+            page = result_list.page(num_page)
+        
+            context = {
+                'queryset': page.object_list,
+                'num_page': num_page,
+                'pages': result_list.num_pages,
+                'has_next': page.has_next(),
+                'has_prev': page.has_previous(),
+                'next_page': num_page + 1,
+                'prev_page': num_page - 1,
+                'first_page': 1,
+            }
+        return context
+
+    if request.method == 'POST':
+        pass
+
+    else:
+        diners_list = []    
+        total_diners = len(diners_list)
+        diners_objects = get_access_logs_today()
+        total_diners = diners_objects.count()
+        pag = diners_paginator(request, diners_objects, 50)
+        template = 'diners.html'
+        title = 'Comensales del Dia'
+        page_title = PAGE_TITLE
+
+        context = {
+            'title': PAGE_TITLE + ' | ' + title,
+            'page_title': title,
+            'diners' : pag['queryset'],                
+            'paginator': pag,
+            'total_diners': total_diners,
+        }
+        return render(request, template, context)
+
+
+@login_required(login_url='users:login')
 def diners_logs(request):
     all_entries = AccessLog.objects.all()
     diners = Diner.objects.all()

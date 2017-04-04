@@ -38,9 +38,10 @@
         <small>Página {{ paginator.num_page }} de {{ paginator.pages }}</small>
         <nav aria-label="Page navigation example">
           <ul class="pagination justify-content-right">
+            <!-- Previous arrow -->
             {% if  paginator.has_prev %}
               <li class="page-item ">
-                <a class="page-link" href="#" aria-label="Previous">
+                <a class="page-link" href="?num_page={{ paginator.first_page }}" aria-label="Previous">
                   <span aria-hidden="true">&laquo;</span>
                   <span class="sr-only">Previous</span>
                 </a>
@@ -53,23 +54,37 @@
                 </a>
               </li>
             {% endif %}
-            <li class="page-item"><a class="page-link" href="{% url 'diners:diners' %}?num_page={{ paginator.prev_page }}">{{ paginator.prev_page }}</a></li>
+            <!-- Previous number -->
+            {% if paginator.has_prev %}
+              <li class="page-item">
+                <a class="page-link" href="{% url 'diners:diners' %}?num_page={{ paginator.prev_page }}">
+                  {{ paginator.prev_page }}
+                </a>
+              </li>
+            {% endif %}
+            <!-- Actual Number -->
             <li class="page-item active">
               <span class="page-link">
                 {{ paginator.num_page }}
                 <span class="sr-only">(current)</span>
               </span>
             </li>
-            <li class="page-item"><a class="page-link" href="#{% url 'diners:diners' %}?num_page={{ paginator.next_page }}">{{ paginator.next_page }}</a></li>
+            <!-- Next Number -->
             {% if paginator.has_next %}
               <li class="page-item">
-                <a class="page-link" href="{% url 'diners:diners' %}?num_page={{ paginator.next_page }}" aria-label="Next">
+                <a class="page-link" href="{% url 'diners:diners' %}?num_page={{ paginator.next_page }}">
+                  {{ paginator.next_page }}
+                </a>
+              </li>
+              <li class="page-item">
+                <a class="page-link" href="{% url 'diners:diners' %}?num_page={{ paginator.pages }}" aria-label="Next">
                   <span aria-hidden="true">&raquo;</span>
                   <span class="sr-only">Next</span>
                 </a>
               </li>
+              <!-- Second Nex Number -->
             {% else %}
-              <li class="page-item disbled">
+              <li class="page-item disabled">
                 <a class="page-link" href="#" aria-label="Next">
                   <span aria-hidden="true">&raquo;</span>
                   <span class="sr-only">Next</span>
@@ -81,6 +96,8 @@
     </div>
   </div>
 </div>
+                {{ queryset }}
+
 {% endblock %} 
 
 {% block javascript %}
@@ -89,11 +106,15 @@
 <script type="text/javascript" charset="utf-8" async>
   $(function() {
     
-    function rel() {
-      location.reload();
+    function get_diners_logs() {
+
+      console.log("hola");
+
+      setTimeout(get_diners_logs, 1500);
+
     }
 
-    setTimeout(rel, 1500);
+    setTimeout(get_diners_logs, 1500);
     
   });
 </script>
