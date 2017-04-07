@@ -26,4 +26,9 @@ $(function() {
   else if (path == '/diners/' || path == '/diners/logs/') {
     $('#link-diners').addClass('active');
   }
+
+  /** Countdown */
+  $('#countdown').countdown('2017/04/14', function(event) {
+    $(this).html(event.strftime('%d Days %H:%M:%S to Shutdown'));
+  });
 });
