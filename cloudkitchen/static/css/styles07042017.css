@@ -548,6 +548,19 @@ small {
 .container-error .alert {
   margin-top: 2rem;
 }
+.counter-container {
+  display: flex;
+  flex-direction: row;
+  justify-content: center;
+  font-weight: bold;
+}
+.counter-container .gif-container {
+  margin: 0 1rem;
+  padding-bottom: 1rem;
+}
+.counter-container .gif-container img {
+  height: 35px;
+}
 .custom-select {
   display: inline-block;
   max-width: 100%;
@@ -587,7 +600,7 @@ small {
   z-index: 1030;
 }
 .navbar-base {
-  margin-top: 2.2em;
+  margin-top: 5.7rem;
 }
 .modal#extra-ingredient-modal .modal-header {
   height: 4rem;

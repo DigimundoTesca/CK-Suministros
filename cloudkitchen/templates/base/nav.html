@@ -1,7 +1,19 @@
+{% load static %}
 <nav class="navbar fixed-top navbar-light bg-faded msg-warning">
-  <marquee behavior="" direction="">
+  <marquee behavior="alternate" scrolldelay="1"  scrollamount="10">
     Su compañia tiene un adeudo con nosotros. Favor de ponerse al corriente.
   </marquee>
+  <div class="text-xs-center counter-container">
+    <!-- COUNTDOWN -->
+    <div class="gif-container">
+      <img src="{% static 'images/walking_bob.gif' %}" alt="">
+    </div>
+    <div id="countdown" class="text-xs-center">
+    </div>
+    <div class="gif-container">
+      <img src="{% static 'images/walking_bob.gif' %}" alt="">
+    </div>
+  </div>
 </nav>
 <nav class="navbar navbar-full navbar-dark navbar-base">
   <div class="container-fluid">
