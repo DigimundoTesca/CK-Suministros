@@ -587,7 +587,7 @@ small {
   margin-top: 2rem;
 }
 .msg-warning {
-  background-color: red;
+  background-color: orange;
   color: white;
   font-size: 1.2em;
   padding: 0;
@@ -600,7 +600,7 @@ small {
   z-index: 1030;
 }
 .navbar-base {
-  margin-top: 5.7rem;
+  margin-top: 2.4rem;
 }
 .modal#extra-ingredient-modal .modal-header {
   height: 4rem;
