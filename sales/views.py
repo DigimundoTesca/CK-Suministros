@@ -521,13 +521,11 @@ def new_sale(request):
                 order_number_ticket = ticket.order_number
                 if order_number_ticket >= order_number:
                     order_number = order_number_ticket + 1
-            print('1')
 
             new_ticket_object = Ticket(
                 cash_register=cash_register, seller=user_profile_object, 
                 payment_type=payment_type, order_number=order_number)
             new_ticket_object.save()
-            print('2')
 
             """
             Saves the tickets details for cartridges

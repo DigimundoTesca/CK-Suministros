@@ -229,6 +229,7 @@ def diners_paginator(request, queryset, num_pages):
         }
     return context
 
+
 # ------------------------- Django Views ----------------------------- #
 @csrf_exempt
 def RFID(request):
