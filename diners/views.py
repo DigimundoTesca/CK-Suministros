@@ -269,7 +269,7 @@ def RFID(request):
                         print('RFID Inválido\n')
                     return HttpResponse('RFID Inválido\n')
 
-        return HttpResponse('Operacion Terminada\n')
+        return HttpResponse('Acceso almacenado\n')
 
     else:
         return redirect('diners:diners')
