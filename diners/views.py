@@ -522,42 +522,12 @@ def diners_logs(request):
 # --------------------------- TEST ------------------------
 
 def test(request):
-    rfids = [ 52661 ,]
-
-
-
-    for rfid in rfids:
-        dt = naive_to_datetime(datetime(2017,3,23,13,30))
-        rfid = str(rfid)
-        if rfid is None:
-            print('No se recibió RFID\n')
+    diners = Diner.objects.all()
+    rfids = []
+    for diner in diners:
+        if diner.RFID not in rfids:
+            rfids.append(diner.RFID)
         else:
-            access_logs = get_access_logs(dt)
-            exists = False
-            
-            for log in access_logs:
-                if rfid == log.RFID:
-                    exists = True
-                    if settings.DEBUG:
-                        print('es identico...........')
-                    break
-
-            if exists:
-                if settings.DEBUG:
-                    print('El usuario ya se ha registrado')
-            else:
-                if len(rfid) < 7:
-                    try:
-                        diner = Diner.objects.get(RFID=rfid)
-                        new_access_log = AccessLog(diner=diner, RFID=rfid, access_to_room=dt)
-                        new_access_log.save()
-                    except Diner.DoesNotExist:
-                        new_access_log = AccessLog(diner=None, RFID=rfid, access_to_room=dt)
-                        new_access_log.save()
-                        if settings.DEBUG:   
-                            print('Nuevo comensal\n')
-                else:
-                    if settings.DEBUG:
-                        print('RFID Inválido\n')
-
+            print('malas noticias :( ')
+            print(diner.RFID)
     return HttpResponse('Hola')
