@@ -10,6 +10,8 @@ DATABASES = {
     }
 }
 
+MIDDLEWARE += ('debug_toolbar.middleware.DebugToolbarMiddleware',)
+
 GRAPH_MODELS = {
   'all_applications': True,
   'group_models': True,
@@ -21,6 +23,7 @@ INSTALLED_APPS += (
     'django_extensions',
     'debug_toolbar',
 )
+
 
 DEBUG_TOOLBAR_PANELS = [
     'debug_toolbar.panels.versions.VersionsPanel',

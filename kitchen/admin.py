@@ -10,6 +10,7 @@ class AdminProcessedCartridge(admin.ModelAdmin):
     raw_id_fields = ('ticket',)
     search_fields = ('id', 'ticket__id',)
     ordering = ('-created_at',)
+    list_per_page = 500
 
 
 @admin.register(Warehouse)
