@@ -68,7 +68,6 @@
               var element_sap = document.createElement('td');
               var element_name = document.createElement('td');
               var element_date = document.createElement('td');
-
               var rfid = document.createTextNode(diners_objects.diners_list[i].rfid);
               var sap = document.createTextNode(diners_objects.diners_list[i].sap);
               var name = document.createTextNode(diners_objects.diners_list[i].name);
@@ -91,7 +90,7 @@
         });
     }
 
-    setTimeout(get_diners_logs, 1200);
+    setTimeout(get_diners_logs, 600);
     
   });
 </script>
