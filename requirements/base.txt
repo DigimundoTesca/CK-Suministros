@@ -2,7 +2,7 @@
 
 # Django minimum required
 # -------------------------------------------------------
-Django>=1.10.1
+Django==1.11
 
 # Django Rest Framework
 # -------------------------------------------------------
@@ -10,11 +10,11 @@ django-fcm==0.1.1
 
 # Django Admin Template
 # -------------------------------------------------------
-django-jet==1.0.4
+django-jet==1.0.6
 
 # Images
 # -------------------------------------------------------
-Pillow==3.4.2
+Pillow==3.4
 
 # Creates a tablib database from django models ['xls', 'json', 'yaml', 'csv', 'html' ]
 # -------------------------------------------------------
@@ -22,5 +22,5 @@ tablib==0.11.4
 
 # World Timezone Detinitions for Python
 # -------------------------------------------------------
-pytz==2016.10
+pytz==2017.2
 
