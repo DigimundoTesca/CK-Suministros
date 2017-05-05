@@ -163,7 +163,8 @@ def diners_paginator(request, queryset, num_pages):
 @csrf_exempt
 def rfid(request):
     diners_helper = DinersHelper()
-
+    diners_helper.set_all_access_logs()
+    
     if request.method == 'POST':
         rfid = str(request.body).split('"')[3].replace(" ", "")
         if settings.DEBUG:
