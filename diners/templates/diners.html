@@ -54,7 +54,7 @@
           },
           complete: function(result){
             var diners_objects = result.responseJSON;
-            console.log(diners_objects);
+            $('#total_diners').text(diners_objects.total_diners)
             var diners_table = document.getElementById('diners-table-body');
             if (diners_table.hasChildNodes()) {
               while (diners_table.childNodes.length >= 1) {
