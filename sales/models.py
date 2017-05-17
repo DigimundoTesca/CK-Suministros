@@ -97,6 +97,7 @@ class TicketDetail(models.Model):
         verbose_name = 'Ticket Details'
         verbose_name_plural = 'Tickets Details'
 
+
 class TicketExtraIngredient(models.Model):
     ticket_detail = models.ForeignKey(TicketDetail, null=True)
     extra_ingredient = models.ForeignKey(ExtraIngredient, on_delete=models.CASCADE, blank=True, null=True)

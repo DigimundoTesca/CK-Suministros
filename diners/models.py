@@ -14,6 +14,7 @@ class Diner(models.Model):
     def __str__(self):
         return self.name
 
+
 class AccessLog(models.Model):
     diner = models.ForeignKey(Diner, null=True, blank=True)
     RFID = models.CharField(default='', max_length=24)
