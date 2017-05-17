@@ -5,7 +5,7 @@
   <div class="container-fluid diners-logs-container">
     <div class="row">
       <div class="col xs 12 mt-1 mb-1">
-        <h3 class="text-xs-right">Comensales de Hoy: <span class="badge badge-blue">{{ total_diners }}</span></h3>
+        <h3 class="text-xs-right">Comensales de Hoy: <span id="total_diners" class="badge badge-blue">{{ total_diners }}</span></h3>
       </div>
     </div>            
 
@@ -54,7 +54,7 @@
           },
           complete: function(result){
             var diners_objects = result.responseJSON;
-
+            $('#total_diners').text(diners_objects.total_diners)
             var diners_table = document.getElementById('diners-table-body');
             if (diners_table.hasChildNodes()) {
               while (diners_table.childNodes.length >= 1) {
@@ -68,7 +68,6 @@
               var element_sap = document.createElement('td');
               var element_name = document.createElement('td');
               var element_date = document.createElement('td');
-
               var rfid = document.createTextNode(diners_objects.diners_list[i].rfid);
               var sap = document.createTextNode(diners_objects.diners_list[i].sap);
               var name = document.createTextNode(diners_objects.diners_list[i].name);
@@ -86,12 +85,12 @@
               
               diners_table.appendChild(element)
             };
-            setTimeout(get_diners_logs, 1200);
+            setTimeout(get_diners_logs, 600);
           }
         });
     }
 
-    setTimeout(get_diners_logs, 1200);
+    setTimeout(get_diners_logs, 600);
     
   });
 </script>
