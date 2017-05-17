@@ -9,6 +9,7 @@ from django.core.paginator import Paginator
 from django.utils import timezone
 from django.http import HttpResponse, JsonResponse
 from django.shortcuts import render, redirect
+from django.utils.datastructures import MultiValueDictKeyError
 from django.views.decorators.csrf import csrf_exempt
 from django.db.models import Max, Min
 
@@ -23,6 +24,8 @@ def diners_paginator(request, queryset, num_pages):
     try:
         num_page = int(request.GET['num_page'])
     except ValueError:
+        num_page = 1
+    except MultiValueDictKeyError:
         num_page = 1
 
     if num_page <= 0:
@@ -46,6 +49,7 @@ def diners_paginator(request, queryset, num_pages):
         }
         return context
     return False
+
 
 # ------------------------- Django Views ----------------------------- #
 @csrf_exempt
