@@ -1,4 +1,3 @@
-
 # -*- encoding: utf-8 -*-
 from __future__ import unicode_literals
 
@@ -10,69 +9,74 @@ from branchoffices.models import Supplier
 from cloudkitchen.settings.base import PAGE_TITLE
 from products.forms import SupplyForm, SuppliesCategoryForm, CartridgeForm
 from products.models import Cartridge, Supply, SuppliesCategory
-from django.urls import reverse
-from django.http import HttpResponseRedirect
-from django.urls import reverse_lazy
-
 from django.views.generic import UpdateView
 from django.views.generic import DeleteView
 from django.views.generic import CreateView
 
-class Create_Supply(CreateView):
-    model = Supply
-    fields = ['name','category','barcode','supplier','storage_required','presentation_unit','presentation_cost',
-        'measurement_quantity','measurement_unit','optimal_duration','optimal_duration_unit','location','image']
-    template_name = 'new_supply.html'   
 
-    def form_valid(self,form):
-        self.object = form.save()        
-        return redirect('/supplies/')
-
-class Update_Supply(UpdateView):
+class CreateSupply(CreateView):
     model = Supply
-    fields = ['name','category','barcode','supplier','storage_required','presentation_unit','presentation_cost',
-        'measurement_quantity','measurement_unit','optimal_duration','optimal_duration_unit','location','image']
+    fields = ['name', 'category', 'barcode', 'supplier', 'storage_required', 'presentation_unit', 'presentation_cost',
+              'measurement_quantity', 'measurement_unit', 'optimal_duration', 'optimal_duration_unit', 'location',
+              'image']
     template_name = 'new_supply.html'
 
-    def form_valid(self,form):
+    def form_valid(self, form):
         self.object = form.save()
         return redirect('/supplies/')
 
-class Delete_Supply(DeleteView):
+
+class UpdateSupply(UpdateView):
+    model = Supply
+    fields = ['name', 'category', 'barcode', 'supplier', 'storage_required', 'presentation_unit', 'presentation_cost',
+              'measurement_quantity', 'measurement_unit', 'optimal_duration', 'optimal_duration_unit', 'location',
+              'image']
+    template_name = 'new_supply.html'
+
+    def form_valid(self, form):
+        self.object = form.save()
+        return redirect('/supplies/')
+
+
+class DeleteSupply(DeleteView):
     model = Supply
     template_name = 'delete_supply.html'
 
-    def delete(self, request, *args, **kwargs):        
-        self.object = self.get_object()        
+    def delete(self, request, *args, **kwargs):
+        self.object = self.get_object()
         self.object.delete()
         return redirect('/supplies/')
 
-class Create_Cartridge(CreateView):
-    model = Cartridge
-    fields = ['name','price','category','image']
-    template_name = 'new_cartridge.html'     
 
-    def form_valid(self,form):
-        self.object = form.save()
-        return redirect('/cartridges/')
-
-class Update_Cartridge(UpdateView):
+class CreateCartridge(CreateView):
     model = Cartridge
-    fields = ['name','price','category','image']
+    fields = ['name', 'price', 'category', 'image']
     template_name = 'new_cartridge.html'
 
-    def form_valid(self,form):
+    def form_valid(self, form):
         self.object = form.save()
         return redirect('/cartridges/')
 
-class Delete_Cartridge(DeleteView):
+
+class UpdateCartridge(UpdateView):
+    model = Cartridge
+    fields = ['name', 'price', 'category', 'image']
+    template_name = 'new_cartridge.html'
+
+    def form_valid(self, form):
+        self.object = form.save()
+        return redirect('/cartridges/')
+
+
+class DeleteCartridge(DeleteView):
     model = Cartridge
     template_name = 'delete_cartridge.html'
 
-    def delete(self, request, *args, **kwargs):        
-        self.object = self.get_object()        
+    def delete(self, request, *args, **kwargs):
+        self.object = self.get_object()
         self.object.delete()
         return redirect('/cartridges/')
+
 
 def test(request):
     # template = 'base/base_nav_footer.html'
@@ -148,11 +152,12 @@ def supply_detail(request, pk):
     }
     return render(request, template, context)
 
-@login_required(login_url='users:login')
-def supply_modify(request,pk):
-    supply = get_object_or_404(Supply, pk=pk) 
 
-    if request.method == 'POST':        
+@login_required(login_url='users:login')
+def supply_modify(request, pk):
+    supply = get_object_or_404(Supply, pk=pk)
+
+    if request.method == 'POST':
         form = SupplyForm(request.POST, request.FILES)
 
         if form.is_valid():
@@ -169,26 +174,26 @@ def supply_modify(request,pk):
             supply.optimal_duration = nuevo.optimal_duration
             supply.optimal_duration_unit = nuevo.optimal_duration_unit
             supply.location = nuevo.location
-            supply.image = nuevo.image            
+            supply.image = nuevo.image
             supply.save()
 
-            return redirect('/supply')        
-            
+            return redirect('/supply')
+
     else:
         dic = {
-            'name' : supply.name,           
-            'category' : supply.category ,
-            'barcode' : supply.barcode,
-            'supplier' : supply.supplier,
-            'storage_required' : supply.storage_required,
-            'presentation_unit' : supply.presentation_unit,
-            'presentation_cost' : supply.presentation_cost,
-            'quantity' : supply.measurement_quantity,
-            'measurement_unit' : supply.measurement_unit,
-            'optimal_duration' : supply.optimal_duration,
-            'optimal_duration_unit' : supply.optimal_duration_unit,
-            'location' : supply.location,
-            'image' : supply.image,    
+            'name': supply.name,
+            'category': supply.category,
+            'barcode': supply.barcode,
+            'supplier': supply.supplier,
+            'storage_required': supply.storage_required,
+            'presentation_unit': supply.presentation_unit,
+            'presentation_cost': supply.presentation_cost,
+            'quantity': supply.measurement_quantity,
+            'measurement_unit': supply.measurement_unit,
+            'optimal_duration': supply.optimal_duration,
+            'optimal_duration_unit': supply.optimal_duration_unit,
+            'location': supply.location,
+            'image': supply.image,
         }
         form = SupplyForm(initial=dic)
 
@@ -196,11 +201,12 @@ def supply_modify(request,pk):
     title = 'Modificar Insumo'
     context = {
         'form': form,
-        'supply' : supply,
+        'supply': supply,
         'title': title,
         'page_title': PAGE_TITLE
     }
     return render(request, template, context)
+
 
 # ------------------------------------- Categories -------------------------------------
 @login_required(login_url='users:login')
@@ -298,11 +304,12 @@ def cartridge_detail(request, pk):
     }
     return render(request, template, context)
 
+
 def cartridge_modify(request, pk):
-    cartridge = get_object_or_404(Cartridge, pk=pk)      
+    cartridge = get_object_or_404(Cartridge, pk=pk)
 
     if request.method == 'POST':
-        form = CartridgeForm(request.POST, request.FILES)  
+        form = CartridgeForm(request.POST, request.FILES)
 
         if form.is_valid():
             nuevo = form.save(commit=False)
@@ -310,14 +317,14 @@ def cartridge_modify(request, pk):
             cartridge.price = nuevo.price
             cartridge.category = nuevo.category
             cartridge.save()
-            return redirect('/cartridges')        
-            
+            return redirect('/cartridges')
+
     else:
         dic = {
-            'name' : cartridge.name, 
-            'price' : cartridge.price,
-            'category' : cartridge.category,
-            'image' : cartridge.image
+            'name': cartridge.name,
+            'price': cartridge.price,
+            'category': cartridge.category,
+            'image': cartridge.image
         }
         form = CartridgeForm(initial=dic)
 
@@ -325,7 +332,7 @@ def cartridge_modify(request, pk):
     title = 'Modificar Cartucho'
     context = {
         'form': form,
-        'cartridge' : cartridge,
+        'cartridge': cartridge,
         'title': title,
         'page_title': PAGE_TITLE
     }
