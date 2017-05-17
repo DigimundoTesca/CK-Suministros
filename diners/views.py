@@ -51,6 +51,7 @@ def diners_paginator(request, queryset, num_pages):
 @csrf_exempt
 def rfid(request):
     diners_helper = DinersHelper()
+    diners_helper.set_all_access_logs()
 
     if request.method == 'POST':
         rfid_str = str(request.body).split('"')[3].replace(" ", "")
@@ -58,6 +59,7 @@ def rfid(request):
             print(rfid_str)
 
         if rfid_str is None:
+
             if settings.DEBUG:
                 print('no se recibio rfid')
             return HttpResponse('No se recibió RFID\n')
@@ -103,7 +105,6 @@ def diners(request):
 
     if request.method == 'POST':
         if request.POST['type'] == 'diners_logs_today':
-
             diners_objects = {
                 'total_diners': total_diners,
                 'diners_list': [],
@@ -156,6 +157,7 @@ def diners_logs(request):
             entries = diners_helper.get_weeks_entries(initial_date, final_date)
             data = {
                 'diners': diners_entries,
+
                 'entries': entries,
             }
             return JsonResponse(data)
@@ -251,7 +253,7 @@ def diners_logs(request):
                         # End if
                     else:
                         """
-                        Validates if exists some week with an indentical week_number of the actual year
+                        Validates if exists some week with an identical week_number of the actual year
                         If exists a same week in the list validates the start_date and the end_date,
                         In each case valid if there is an older start date or a more current end date 
                             if it is the case, update the values.
