@@ -4,9 +4,9 @@ from django.conf.urls import url
 from products import views
 from products.views import *
 
-from products.views import Update_Cartridge
-from products.views import Delete_Cartridge
-from products.views import Create_Cartridge
+from products.views import UpdateCartridge
+from products.views import DeleteCartridge
+from products.views import CreateCartridge
 
 
 app_name = 'products'
@@ -15,17 +15,17 @@ urlpatterns = [
 
     # Supplies
     url(r'^supplies/$', views.supplies, name='supplies'),
-    url(r'^supplies/new/$', Create_Supply.as_view(), name='new_supply'),
+    url(r'^supplies/new/$', CreateSupply.as_view(), name='new_supply'),
     url(r'^supplies/(?P<pk>[0-9]+)/$', views.supply_detail, name='supply_detail'),
-    url(r'^supplies/modify/(?P<pk>[0-9]+)/$', Update_Supply.as_view(), name='supply_modify'),
-    url(r'^supplies/delete/(?P<pk>[0-9]+)/$', Delete_Supply.as_view(), name='supply_delete'),
+    url(r'^supplies/modify/(?P<pk>[0-9]+)/$', UpdateSupply.as_view(), name='supply_modify'),
+    url(r'^supplies/delete/(?P<pk>[0-9]+)/$', DeleteSupply.as_view(), name='supply_delete'),
 
     # Cartridges
     url(r'^cartridges/$', views.cartridges, name='cartridges'),
-    url(r'^cartridges/new/$', Create_Cartridge.as_view(), name='new_cartridge'),
+    url(r'^cartridges/new/$', CreateCartridge.as_view(), name='new_cartridge'),
     url(r'^cartridges/(?P<pk>[0-9]+)/$', views.cartridge_detail, name='cartridge_detail'),
-    url(r'^cartridges/modify/(?P<pk>[0-9]+)/$', Update_Cartridge.as_view(), name='cartridge_modify'),
-    url(r'^cartridges/delete/(?P<pk>[0-9]+)/$', Delete_Cartridge.as_view(), name='cartridge_delete'),
+    url(r'^cartridges/modify/(?P<pk>[0-9]+)/$', UpdateCartridge.as_view(), name='cartridge_modify'),
+    url(r'^cartridges/delete/(?P<pk>[0-9]+)/$', DeleteCartridge.as_view(), name='cartridge_delete'),
 
     # Suppliers
     url(r'^suppliers/$', views.suppliers, name='suppliers'),

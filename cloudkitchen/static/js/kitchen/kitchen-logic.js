@@ -81,5 +81,5 @@ $(function() {
   }
 
   format_tables();
-  setTimeout(rel, 15000);
+  // setTimeout(rel, 15000);
 });

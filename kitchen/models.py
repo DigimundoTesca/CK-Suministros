@@ -2,8 +2,8 @@ from django.db import models
 from django.db.models.signals import post_save
 from django.dispatch import receiver
 
-from products.models import Supply, Cartridge, PackageCartridge
-from sales.models import Ticket, TicketDetail
+from products.models import Supply
+from sales.models import Ticket
 
 
 class ProcessedProduct(models.Model):

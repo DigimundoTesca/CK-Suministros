@@ -8,7 +8,7 @@ from users.models import User as UserProfile
 
 class BranchOffice(models.Model):
     name = models.CharField(max_length=90, default='')
-    address = models.CharField(max_length=255, default='')
+    address = models.TextField(default='')
     manager = models.ForeignKey(UserProfile, on_delete=models.CASCADE)
     is_activate = models.BooleanField(default=False)
 

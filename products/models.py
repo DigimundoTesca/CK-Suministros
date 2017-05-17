@@ -211,7 +211,6 @@ class PackageCartridge(models.Model):
 
     package_recipe.allow_tags = True
 
-
     class Meta:
         ordering = ('name',)
         verbose_name = 'Paquete'
