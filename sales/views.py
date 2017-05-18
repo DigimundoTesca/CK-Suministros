@@ -88,8 +88,12 @@ def sales(request):
 
         if request.POST['type'] == 'tickets':
             tickets_objects_list = []
+            initial_dt = request.POST['dt_week'].split(',')[0]
+            final_dt = request.POST['dt_week'].split(',')[1]
+            initial_dt = helper.naive_to_datetime(datetime.strptime(initial_dt, '%d-%m-%Y').date())
+            final_dt = helper.naive_to_datetime(datetime.strptime(final_dt, '%d-%m-%Y').date())
 
-            for ticket in sales_helper.get_all_tickets():
+            for ticket in sales_helper.get_all_tickets().filter(created_at__range=[initial_dt, final_dt]):
                 for ticket_detail in sales_helper.get_all_tickets_details():
                     if ticket_detail.ticket == ticket:
                         ticket_object = {

@@ -191,8 +191,12 @@ def diners_logs(request):
 
         elif request.POST['type'] == 'diners_logs':
             diners_objects_list = []
+            initial_dt = request.POST['dt_week'].split(',')[0]
+            final_dt = request.POST['dt_week'].split(',')[1]
+            initial_dt = helper.naive_to_datetime(datetime.strptime(initial_dt, '%d-%m-%Y').date())
+            final_dt = helper.naive_to_datetime(datetime.strptime(final_dt, '%d-%m-%Y').date())
 
-            for entry in diners_helper.get_all_access_logs():
+            for entry in diners_helper.get_all_access_logs().filter(access_to_room__range=[initial_dt, final_dt]):
                 diner_object = {
                     'id': entry.id,
                     'Nombre': '',

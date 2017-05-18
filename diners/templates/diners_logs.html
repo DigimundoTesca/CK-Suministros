@@ -526,11 +526,7 @@
             "");
           }
 
-          /**
-           * Filling the diners chart
-           */
-          let diners_logs_week_list = get_diners_week_range(diners_week);
-          diners_week_chart.data.datasets[0].data = diners_logs_week_list;
+          diners_week_chart.data.datasets[0].data = get_diners_week_range(diners_week);
           diners_week_chart.update();
 
         },
@@ -567,15 +563,12 @@
      * Convert JSON TO CSV
      */
     $(this).on('click', '#btn-save-ticket-csv', function(event) {
-      let dt_year = $('#dt-year').val();
       let dt_week = $('#dt-week').val();
-
       $.ajax({
         url: "{% url 'diners:diners_logs' %}",
         type: 'POST',
         dataType: 'json',
         data: {
-          'dt_year': dt_year,
           'dt_week': dt_week,
           'type': 'diners_logs',
           'csrfmiddlewaretoken': '{{ csrf_token }}',
@@ -588,9 +581,7 @@
           swal.enableLoading();
         },
         success: function(result, status, XHR) {
-          console.log(result);
           diner_details = Papa.unparse(result.diner_logs);
-          console.log(diner_details);
 
           let blob = new Blob([ diner_details ], {
             type: "text/csv;charset=UTF-8" }
