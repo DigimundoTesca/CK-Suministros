@@ -14,11 +14,11 @@
       <div class="row">
         <form class="form-inline col-xs-12 " id="dates-range-form">
           <div class="col-xs-12 col-lg-3 container-select">
-            <select class="custom-select col-xs-12" id="dt-year">
+            <select class="custom-select col-xs-12" id="dt-year" title="dt-year">
             </select>
           </div>
           <div class="col-xs-12 col-lg-9 container-select">
-            <select class="custom-select col-xs-12" id="dt-week" >
+            <select class="custom-select col-xs-12" id="dt-week" title="dt-week">
             </select>
           </div>
         </form>
@@ -134,7 +134,8 @@
               </li>
             {% endif %}
           </ul>
-        </nav>      
+        </nav>
+      </div>
     </div>
   </div>
 </div> 
@@ -143,28 +144,29 @@
 {% block javascript %}
 
 <script src="{% static 'js/Chart.bundle.min.js' %}" defer></script>
-<script src="{% static 'js/papaparse.min.js' %}" defer></script>
-<script src="{% static 'js/blob.js' %}" defer></script>
-<script src="{% static 'js/fileSaver.min.js' %}" defer></script>
+<script src="{% static 'js/papaparse.min.js' %}" async></script>
+<script src="{% static 'js/blob.js' %}" async></script>
+<script src="{% static 'js/fileSaver.min.js' %}" async></script>
 
-<script type="text/javascript" charset="utf-8" async>
+<script type="text/javascript" charset="utf-8" defer>
   $(function() {
-    var ctx_diners_hour = document.getElementById("dinners_by_hour");
-    var ctx_diners_day = document.getElementById("dinners_by_day");
-    var diners_week_chart,
+    let ctx_diners_hour = document.getElementById("dinners_by_hour");
+    let ctx_diners_day = document.getElementById("dinners_by_day");
+    let diners_week_chart,
         diners_day_chart;
-    var diners_hour = JSON.parse('{{ diners_hour | safe }}');
-    var diners_week = JSON.parse('{{ diners_week | safe }}');    
-    var dates_range = JSON.parse('{{ dates_range | safe }}');
+    let diners_hour = JSON.parse('{{ diners_hour | safe }}');
+    let diners_week = JSON.parse('{{ diners_week | safe }}');
+    let dates_range = JSON.parse('{{ dates_range | safe }}');
+    let today_date;
 
     function convert_date_to_str(date) {
+      let months;
       months = {
         1: 'Ene', 2: 'Feb', 3: 'Mar', 4: 'Abr', 5: 'May', 6: 'Jun',
-        7: 'Jul', 8: 'Ago', 9: 'Sep', 10: 'Oct', 11: 'Nov', 12: 'Dic', 
-      }
-      date = date.split('-')
-      fdate = date[0] + " " + months[parseInt(date[1])] + " " + date[2];
-      return fdate;
+        7: 'Jul', 8: 'Ago', 9: 'Sep', 10: 'Oct', 11: 'Nov', 12: 'Dic',
+      };
+      date = date.split('-');
+      return date[0] + " " + months[parseInt(date[1])] + " " + date[2];
     }
 
     /**
@@ -172,13 +174,11 @@
      * Returns an hour converted into 24-hours format: hh:mm ith Timezone +06:00
      */
     function convert_datetime_to_hour(original_datetime){
-      hour_formated = original_datetime.split('T')[1].split('.')[0].substr(0,5);
-      return hour_formated;
+      return original_datetime.split('T')[1].split('.')[0].substr(0,5);
     }
     
     function fill_dates_range_form() {
-      var dates_range_form = $(this).find('#dt-year');
-      var selected_year;
+      let selected_year;
       $.each(dates_range, function(index, item) {
          $('#dates-range-form').find('#dt-year').append(
             "<option value=" + item.year + ">" + item.year + "</option>"
@@ -201,7 +201,7 @@
           return false;
         }
       });
-      today_date = $('#dt-week').val().split(',')[1];    
+      today_date = $('#dt-week').val().split(',')[1];
     }
 
     /**
@@ -210,8 +210,7 @@
      * The string must have to have the following format: hh:mm
      */
     function hours_to_minutes(original_time) {
-      var hours,
-      minutes;
+      let hours, minutes;
       hours = parseInt(original_time.split(':')[0])*60;
       minutes = parseInt(original_time.split(':')[1]);
       return parseInt(hours + minutes);
@@ -223,13 +222,12 @@
      * Returns true if the condition is met. Otherwise returns false.
      */
     function is_time_in_range(hour, start_hour, end_hour) {
-      hour_in_minutes = hours_to_minutes(hour);
-      start_hour_in_minutes = hours_to_minutes(start_hour);
-      end_hour_in_minutes = hours_to_minutes(end_hour);
+      let hour_in_minutes = hours_to_minutes(hour);
+      let start_hour_in_minutes = hours_to_minutes(start_hour);
+      let end_hour_in_minutes = hours_to_minutes(end_hour);
 
-      if(hour_in_minutes >= start_hour_in_minutes && hour_in_minutes < end_hour_in_minutes)
-        return true;
-      return false;
+      return hour_in_minutes >= start_hour_in_minutes && hour_in_minutes < end_hour_in_minutes;
+
     }
 
     /**
@@ -238,8 +236,8 @@
      * The string returned have the next format: hh:mm
      */
     function minutes_to_hours(original_time) {
-      hours = parseInt(original_time / 60);
-      minutes = parseInt(original_time % 60);
+      let hours = parseInt(original_time / 60);
+      let minutes = parseInt(original_time % 60);
       
       if (hours.toString().length < 2) {
         hours = "0"+hours;
@@ -252,8 +250,8 @@
     }
 
     function get_hours_of_diners() {
-      var count_list = [];
-      var count = 0;
+      let count_list = [];
+      let count = 0;
 
       while (count < diners_hour.length) {
         count_list.push(parseFloat(diners_hour[count].count));
@@ -263,8 +261,8 @@
     }
 
     function get_diners_day() {
-      var entries_list = [];
-      var count = 0;
+      let entries_list = [];
+      let count = 0;
 
       while (count < diners_week.length) {
         entries_list.push(parseFloat(diners_week[count].entries));
@@ -274,21 +272,21 @@
     }
 
     function get_diners_day_list(initial_hour, final_hour, separation_time, diners_list) {
-      var initial_hour_minutes,
+      let initial_hour_minutes,
             final_hour_minutes;
-      var list_formated = [],
+      let formatted_list = [],
           elements_ok = [];
-      var entries = 0;
+      let entries = 0;
 
       initial_hour_minutes = hours_to_minutes(initial_hour);
       final_hour_minutes = hours_to_minutes(final_hour);
 
       while(initial_hour_minutes < final_hour_minutes) {
-        start_hour_f = minutes_to_hours(initial_hour_minutes);
-        end_hour_f = minutes_to_hours(initial_hour_minutes + separation_time);
+        let start_hour_f = minutes_to_hours(initial_hour_minutes);
+        let end_hour_f = minutes_to_hours(initial_hour_minutes + separation_time);
 
-        for (var i = 0; i < diners_list.length; i++) {
-          hour_sale = convert_datetime_to_hour(diners_list[i].datetime);
+        for (let i = 0; i < diners_list.length; i++) {
+          let hour_sale = convert_datetime_to_hour(diners_list[i].datetime);
           
           if(is_time_in_range(hour_sale, start_hour_f, end_hour_f)) {
             entries += 1;
@@ -296,33 +294,33 @@
           }
         }
 
-        list_formated.push(entries);
+        formatted_list.push(entries);
         initial_hour_minutes += separation_time;
         entries = 0;
       }
 
       // Searches the times outside the time range
-      for(var i = 0; i < diners_list.length; i++) {
+      for(let i = 0; i < diners_list.length; i++) {
         if(elements_ok.indexOf(diners_list[i]) == -1) {
           entries += 1;
         }
       }
-      list_formated.push(entries)
-      return list_formated.reverse();
+      formatted_list.push(entries)
+      return formatted_list.reverse();
     }
 
     /**
      * returns a list with the entries of the week per day with the days to set
      */
     function get_diners_week_range(diners_list) {
-      week_list = [0, 0, 0, 0, 0, 0, 0,]
-      for (var i = 0; i < 7; i++) {
-        for (var j = 0; j < diners_list.length; j++) {
+      let week_list = [0, 0, 0, 0, 0, 0, 0,]
+      for (let i = 0; i < 7; i++) {
+        for (let j = 0; j < diners_list.length; j++) {
           if (diners_list[j].number_day == i) {
             week_list[i] = diners_list[j].entries;
-          };
-        };
-      };
+          }
+        }
+      }
       return week_list;
     }
 
@@ -331,7 +329,6 @@
      * show the results in diners day chart
      */
     function set_diners_day_chart(date) {
-      var earnings_list = [];
       $.ajax({
         url: "{% url 'diners:diners_logs' %}",
         type: 'POST',
@@ -350,13 +347,12 @@
           // swal.enableLoading();
         },
         success: function(result) {
-          var access_logs_day_list = result['access_logs_day_list'];
-          var initial_hour = '11:00',
+          let access_logs_day_list = result['access_logs_day_list'];
+          let initial_hour = '11:00',
               final_hour = '17:00',
               separation_time = 60; // In minutes
-          var total_datas = access_logs_day_list.length;
 
-          diners_access_day_list = get_diners_day_list(initial_hour, final_hour, separation_time, access_logs_day_list);
+          let diners_access_day_list = get_diners_day_list(initial_hour, final_hour, separation_time, access_logs_day_list);
           diners_day_chart.data.datasets[0].data = diners_access_day_list;
           diners_day_chart.update();
 
@@ -410,12 +406,12 @@
         responsive: true,
         onClick: function(event, legendItem) {
           try {
-            var selected_day = legendItem[0]._index;
-            for (var i = 0; i < diners_week.length; i++) {
+            let selected_day = legendItem[0]._index;
+            for (let i = 0; i < diners_week.length; i++) {
               if (diners_week[i].number_day == selected_day) {
                 set_diners_day_chart(diners_week[i].date);
               }
-            };
+            }
           } catch (error) {
             console.log(error.message);
           }
@@ -478,8 +474,8 @@
      * Refresh the page with de dates of the year and week selected
      */
     $(this).on('change', '#dt-week', function(event) {
-      dt_year = $('#dt-year').val();
-      dt_week = $('#dt-week').val();
+      let dt_year = $('#dt-year').val();
+      let dt_week = $('#dt-week').val();
 
       $.ajax({
         url: "{% url 'diners:diners_logs' %}",
@@ -501,9 +497,9 @@
         datatype: 'jsonp',
         success: function(result, status, XHR) {
           diners_week = result['entries']
-          var diners_list = result['diners'];
-          var list_length = diners_list.length;
-          var access_logs_table = $('#access-logs-table').find('tbody');
+          let diners_list = result['diners'];
+          let list_length = diners_list.length;
+          let access_logs_table = $('#access-logs-table').find('tbody');
           access_logs_table.empty();
           swal({
             title: "Éxito",
@@ -519,7 +515,7 @@
           /**
            * Filling the diners table
            */
-          for (var i = 0; i < list_length; i++) {
+          for (let i = 0; i < list_length; i++) {
             access_logs_table.append("" +
               "<tr>" +
               "<th>" + diners_list[i].rfid + "</th>" +
@@ -528,13 +524,9 @@
               "<td>" + diners_list[i].access + "</td>" +
               "</tr>" +
             "");
-          };
+          }
 
-          /**
-           * Filling the diners chart
-           */
-          diners_logs_week_list = get_diners_week_range(diners_week);
-          diners_week_chart.data.datasets[0].data = diners_logs_week_list;
+          diners_week_chart.data.datasets[0].data = get_diners_week_range(diners_week);
           diners_week_chart.update();
 
         },
@@ -548,7 +540,7 @@
 
     $(this).on('keyup', '#input-diners-search', function(event) {
       /** Declare variables */
-      var input, filter, table, tr, td, i;
+      let input, filter, table, tr, td, i;
       input = document.getElementById("input-diners-search");
       filter = input.value.toUpperCase();
       table = document.getElementById("access-logs-table");
@@ -567,19 +559,19 @@
       }
     });
 
+    /**
+     * Convert JSON TO CSV
+     */
     $(this).on('click', '#btn-save-ticket-csv', function(event) {
-      /**
-       * Convert JSON TO CSV
-       */
-      var diners_json = null;
-
+      let dt_week = $('#dt-week').val();
       $.ajax({
         url: "{% url 'diners:diners_logs' %}",
         type: 'POST',
         dataType: 'json',
         data: {
-          type: 'diners_logs',
-          csrfmiddlewaretoken: '{{ csrf_token }}',
+          'dt_week': dt_week,
+          'type': 'diners_logs',
+          'csrfmiddlewaretoken': '{{ csrf_token }}',
         },
         beforeSend: function(){
           swal({
@@ -589,15 +581,13 @@
           swal.enableLoading();
         },
         success: function(result, status, XHR) {
-          console.log(result);
           diner_details = Papa.unparse(result.diner_logs);
-          console.log(diner_details);
 
-          var blob = new Blob([ diner_details ], {
+          let blob = new Blob([ diner_details ], {
             type: "text/csv;charset=UTF-8" }
             );
 
-          var datetime = new Date();
+          let datetime = new Date();
           saveAs(blob, datetime + '.csv');
 
           swal({

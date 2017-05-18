@@ -899,56 +899,56 @@
      * Saves the ticket a csv file
      */
     $(this).on('click', '#btn-save-ticket-csv', function(event) {
-      /**
-       * Convert JSON TO CSV
-       */
-        $.ajax({
-          url: "{% url 'sales:sales' %}",
-          type: 'POST',
-          dataType: 'json',
-          data: {
-            type: 'tickets',
-            csrfmiddlewaretoken: '{{ csrf_token }}',
-          },
-          beforeSend: function(){
-            swal({
-                title: "Generando Excel",
-                text: "Espere mientras obtenemos toda la información",
-              });
-            swal.enableLoading();
-          },
-          success: function(result, status, XHR) {
-            let ticket_details = Papa.unparse(result.ticket);
-            // console.log(ticket_details);
-            // typeof(ticket_details)
-            // var tmpElemento = document.createElement('a');
-            // var data_type = 'data:application/vnd.ms-excel';
-            // tmpElemento.href = data_type + ', ' + ticket_details;
-            // tmpElemento.download = 'Nombre_De_Mi_Excel.xls';
-            // tmpElemento.click();
+      let dt_week = $('#dt-week').val();
 
-            let blob = new Blob([ ticket_details ], {
-              type: "text/csv;charset=UTF-8" }
-              );
-            let datetime = new Date();
-            saveAs(blob, datetime + '.csv');
+      $.ajax({
+        url: "{% url 'sales:sales' %}",
+        type: 'POST',
+        dataType: 'json',
+        data: {
+          'dt_week': dt_week,
+          type: 'tickets',
+          csrfmiddlewaretoken: '{{ csrf_token }}',
+        },
+        beforeSend: function(){
+          swal({
+              title: "Generando Excel",
+              text: "Espere mientras obtenemos toda la información",
+            });
+          swal.enableLoading();
+        },
+        success: function(result, status, XHR) {
+          let ticket_details = Papa.unparse(result.ticket);
+          // console.log(ticket_details);
+          // typeof(ticket_details)
+          // var tmpElemento = document.createElement('a');
+          // var data_type = 'data:application/vnd.ms-excel';
+          // tmpElemento.href = data_type + ', ' + ticket_details;
+          // tmpElemento.download = 'Nombre_De_Mi_Excel.xls';
+          // tmpElemento.click();
 
-            swal({
-              title: "Éxito",
-              text: "Datos obtenidos",
-              type: "info",
-              timer: 750,
-              showConfirmButton: false
-            }).then(
-              function(){},
-              function(dismiss){}
+          let blob = new Blob([ ticket_details ], {
+            type: "text/csv;charset=UTF-8" }
             );
-          },
-          complete: function(result){
-            setTimeout(function() {
-            }, 750);
-          }
-        });
+          let datetime = new Date();
+          saveAs(blob, datetime + '.csv');
+
+          swal({
+            title: "Éxito",
+            text: "Datos obtenidos",
+            type: "info",
+            timer: 750,
+            showConfirmButton: false
+          }).then(
+            function(){},
+            function(dismiss){}
+          );
+        },
+        complete: function(result){
+          setTimeout(function() {
+          }, 750);
+        }
+      });
     });
 
     /**

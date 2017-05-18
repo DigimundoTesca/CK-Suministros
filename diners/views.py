@@ -9,6 +9,7 @@ from django.core.paginator import Paginator
 from django.utils import timezone
 from django.http import HttpResponse, JsonResponse
 from django.shortcuts import render, redirect
+from django.utils.datastructures import MultiValueDictKeyError
 from django.views.decorators.csrf import csrf_exempt
 from django.db.models import Max, Min
 
@@ -23,6 +24,8 @@ def diners_paginator(request, queryset, num_pages):
     try:
         num_page = int(request.GET['num_page'])
     except ValueError:
+        num_page = 1
+    except MultiValueDictKeyError:
         num_page = 1
 
     if num_page <= 0:
@@ -46,6 +49,7 @@ def diners_paginator(request, queryset, num_pages):
         }
         return context
     return False
+
 
 # ------------------------- Django Views ----------------------------- #
 @csrf_exempt
@@ -187,8 +191,12 @@ def diners_logs(request):
 
         elif request.POST['type'] == 'diners_logs':
             diners_objects_list = []
+            initial_dt = request.POST['dt_week'].split(',')[0]
+            final_dt = request.POST['dt_week'].split(',')[1]
+            initial_dt = helper.naive_to_datetime(datetime.strptime(initial_dt, '%d-%m-%Y').date())
+            final_dt = helper.naive_to_datetime(datetime.strptime(final_dt, '%d-%m-%Y').date())
 
-            for entry in diners_helper.get_all_access_logs():
+            for entry in diners_helper.get_all_access_logs().filter(access_to_room__range=[initial_dt, final_dt]):
                 diner_object = {
                     'id': entry.id,
                     'Nombre': '',

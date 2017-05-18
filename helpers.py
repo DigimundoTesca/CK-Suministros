@@ -544,6 +544,12 @@ class DinersHelper(object):
         return weeks_list
 
     def get_access_logs(self, initial_date, final_date):
+        """
+        :rtype: django.db.models.query.QuerySet 
+        """
+        if self.__all_access_logs is None:
+            self.set_all_access_logs()
+
         return self.__all_access_logs. \
             filter(access_to_room__range=(initial_date, final_date)). \
             order_by('-access_to_room')
