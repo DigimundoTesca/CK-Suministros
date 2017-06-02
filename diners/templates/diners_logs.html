@@ -24,7 +24,7 @@
         </form>
       </div>
     </div>
-     
+
   </div>
   <div class="row">
     <div class="col-xs-12 col-lg-6">
@@ -36,14 +36,19 @@
       <div class="canvas-holder">
         <canvas id="dinners_by_hour"></canvas>
       </div>
-    </div>         
-  </div> 
+    </div>
+  </div>
   <div class="row mt-2">
     <div class="col-xs-12">
       <h3 class="col-xs-12 col-sm-8 col-xl-10">Comensales hasta hoy: <span class="badge badge-blue">{{ total_diners }}</span></h3>
       <button id="btn-save-ticket-csv" class="col-xs-12 col-sm-4 col-xl-2 btn btn-primary d-flex">
         <span class="btn-reports d-flex align-items-center"><i class="material-icons">file_download</i>Generar Reporte</span>
       </button>
+        {% if user.is_superuser %}
+          <button id="btn-fill-sap" class="col-xs-12 col-sm-4 col-xl-2 btn btn-primary mt-1">
+            <span class="btn-reports d-flex align-items-center">Rellenar SAP's</span>
+          </button>
+        {% endif %}
     </div>
 
   </div>
@@ -56,18 +61,18 @@
               <th>RFID</th>
               <th>SAP</th>
               <th>Nombre</th>
-              <th>Fecha de Acceso</th>                 
+              <th>Fecha de Acceso</th>
             </tr>
-          </thead>      
-          <tbody>      
-            {%for diner in diners %}        
-            <tr>       
-              <th>{{ diner.RFID }}</th> 
-              <td>{{ diner.diner.employee_number }}</td>          
-              <td>{{ diner.diner.name }}</td>          
+          </thead>
+          <tbody>
+            {%for diner in diners %}
+            <tr>
+              <th>{{ diner.RFID }}</th>
+              <td>{{ diner.diner.employee_number }}</td>
+              <td>{{ diner.diner.name }}</td>
               <td>{{ diner.access_to_room }}</td>
-            </tr>      
-            {% endfor %}        
+            </tr>
+            {% endfor %}
           </tbody>
         </table>
       </div>
@@ -138,8 +143,8 @@
       </div>
     </div>
   </div>
-</div> 
-{% endblock %} 
+</div>
+{% endblock %}
 
 {% block javascript %}
 
@@ -176,7 +181,7 @@
     function convert_datetime_to_hour(original_datetime){
       return original_datetime.split('T')[1].split('.')[0].substr(0,5);
     }
-    
+
     function fill_dates_range_form() {
       let selected_year;
       $.each(dates_range, function(index, item) {
@@ -186,13 +191,13 @@
       });
 
       selected_year = $('#dates-range-form').find('#dt-year').val();
-      
+
       $.each(dates_range, function(index, item) {
         if (dates_range[index].year ==  selected_year) {
-          $.each(dates_range[index].weeks_list, function(index, item) { 
+          $.each(dates_range[index].weeks_list, function(index, item) {
             $('#dates-range-form').find('#dt-week').append(
-              "<option value=" + item.start_date + "," + item.end_date + ">" + 
-              "Semana " + item.week_number + ": " + 
+              "<option value=" + item.start_date + "," + item.end_date + ">" +
+              "Semana " + item.week_number + ": " +
               convert_date_to_str(item.start_date) +
               " - " + convert_date_to_str(item.end_date) +
               "</option>"
@@ -238,11 +243,11 @@
     function minutes_to_hours(original_time) {
       let hours = parseInt(original_time / 60);
       let minutes = parseInt(original_time % 60);
-      
+
       if (hours.toString().length < 2) {
         hours = "0"+hours;
       }
-      
+
       if (minutes.toString().length < 2) {
         minutes = "0"+minutes;
       }
@@ -287,7 +292,7 @@
 
         for (let i = 0; i < diners_list.length; i++) {
           let hour_sale = convert_datetime_to_hour(diners_list[i].datetime);
-          
+
           if(is_time_in_range(hour_sale, start_hour_f, end_hour_f)) {
             entries += 1;
             elements_ok.push(diners_list[i]);
@@ -339,21 +344,14 @@
         },
         traditional: true,
         datatype: 'jsonp',
-        beforeSend: function(){
-          // swal({
-          //     title: "Generando gráficas",
-          //     text: "Espere mientras se calculan los datos",
-          //   });
-          // swal.enableLoading();
-        },
+        beforeSend: function(){},
         success: function(result) {
           let access_logs_day_list = result['access_logs_day_list'];
           let initial_hour = '11:00',
               final_hour = '17:00',
               separation_time = 60; // In minutes
 
-          let diners_access_day_list = get_diners_day_list(initial_hour, final_hour, separation_time, access_logs_day_list);
-          diners_day_chart.data.datasets[0].data = diners_access_day_list;
+          diners_day_chart.data.datasets[0].data = get_diners_day_list(initial_hour, final_hour, separation_time, access_logs_day_list);
           diners_day_chart.update();
 
           swal({
@@ -469,8 +467,7 @@
       }
     });
 
-
-    /** 
+    /**
      * Refresh the page with de dates of the year and week selected
      */
     $(this).on('change', '#dt-week', function(event) {
@@ -496,7 +493,7 @@
         traditional: true,
         datatype: 'jsonp',
         success: function(result, status, XHR) {
-          diners_week = result['entries']
+          diners_week = result['entries'];
           let diners_list = result['diners'];
           let list_length = diners_list.length;
           let access_logs_table = $('#access-logs-table').find('tbody');
@@ -511,7 +508,7 @@
           function(){},
           function(dismiss){}
           );
-          
+
           /**
            * Filling the diners table
            */
@@ -558,6 +555,45 @@
         }
       }
     });
+    $(this).on('click', '#btn-fill-sap', function(event){
+      let dt_year = $('#dt-year').val();
+      let dt_week = $('#dt-week').val();
+      $.ajax({
+        url: "{% url 'diners:diners_logs' %}",
+        type: 'POST',
+        dataType: 'json',
+        data: {
+          'dt_year': dt_year,
+          'dt_week': dt_week,
+          'type': 'fill-sap',
+          'csrfmiddlewaretoken': '{{ csrf_token }}',
+        },
+        beforeSend: function(){
+          swal({
+              title: "Rellenando Base de datos",
+              text: "Espere mientras se añaden los registros",
+            });
+          swal.enableLoading();
+        },
+        success: function(result, status, XHR) {
+          console.log(result);
+          swal({
+            title: "Éxito",
+            text: "Nuevos SAPS agregados",
+            type: "info",
+            timer: 750,
+            showConfirmButton: false
+          }).then(
+            function(){},
+            function(dismiss){}
+          );
+        },
+        complete: function(result){
+          setTimeout(function() {
+          }, 750);
+        }
+      });
+    });
 
     /**
      * Convert JSON TO CSV
@@ -581,7 +617,7 @@
           swal.enableLoading();
         },
         success: function(result, status, XHR) {
-          diner_details = Papa.unparse(result.diner_logs);
+          let diner_details = Papa.unparse(result.diner_logs);
 
           let blob = new Blob([ diner_details ], {
             type: "text/csv;charset=UTF-8" }

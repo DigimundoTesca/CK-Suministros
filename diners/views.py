@@ -194,8 +194,8 @@ def diners_logs(request):
             initial_dt = request.POST['dt_week'].split(',')[0]
             final_dt = request.POST['dt_week'].split(',')[1]
             initial_dt = helper.naive_to_datetime(datetime.strptime(initial_dt, '%d-%m-%Y').date())
-            final_dt = helper.naive_to_datetime(datetime.strptime(final_dt, '%d-%m-%Y').date())
-
+            final_dt = helper.naive_to_datetime(datetime.strptime(final_dt, '%d-%m-%Y').date() + timedelta(days=1))
+            print(final_dt)
             for entry in diners_helper.get_all_access_logs().filter(access_to_room__range=[initial_dt, final_dt]):
                 diner_object = {
                     'id': entry.id,
@@ -213,6 +213,19 @@ def diners_logs(request):
                 diners_objects_list.append(diner_object)
 
             return JsonResponse({'diner_logs': diners_objects_list})
+
+        elif request.POST['type'] == 'fill-sap':
+            access_logs = diners_helper.get_all_access_logs()
+            for access_log in access_logs:
+                exist = False
+                if access_log.diner is None:
+                    for diner in all_diners:
+                        if access_log.RFID == diner.RFID:
+                            access_log.diner = diner
+                            access_log.save()
+                            break
+            without_sap = AccessLog.objects.select_related('diner').filter(diner__isnull=True).count()
+            return JsonResponse({'Sin SAP aun': without_sap})
 
     else:
         all_diners_objects = diners_helper.get_all_access_logs()
