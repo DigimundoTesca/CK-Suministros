@@ -166,6 +166,10 @@ img.img-logo {
 main {
   flex: 1;
 }
+nav.pagination-cont {
+  display: flex;
+  justify-content: center;
+}
 small {
   font-size: 75%;
 }

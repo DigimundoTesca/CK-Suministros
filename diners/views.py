@@ -105,6 +105,8 @@ def rfid(request):
 class DinersListView(ListView):
     model = Diner
     template_name = 'diners.html'
+    paginate_by = 10
+    context_object_name = 'diners_list'
 
     def get_context_data(self, **kwargs):
         context = super(DinersListView, self).get_context_data(**kwargs)
