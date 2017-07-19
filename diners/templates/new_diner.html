@@ -2,67 +2,71 @@
 {% load static %}
 
 {% block content %}
-<div class="container">
-  <form action="" method="POST">
+<div class="container container-diners mt-1">
+  <figure class="img-container bd">
+    <img src="{% static 'images/user_logo.png' %}" alt="User Logo" class="img-logo">
+  </figure>
+  <form action="" method="POST" class="mt-3 new-diner-form">
     {% csrf_token %}
-    <div class="form-group row">
-      <div class="form-group {% if form.name.errors %}has-danger{% endif %}">
-        <label class="form-control-label" for="{{form.name.name}}">Nombre del comensal</label>
+    <div class="form-group row {% if form.name.errors %}has-danger{% endif %}">
+      <label class="col-xs-3 col-form" for="{{form.name.name}}">Nombre del comensal</label>
+      <div class="col-xs-9">
         <input id="{{form.name.id_for_label}}"
-          name={{form.name.name}}
-          type="text"
-          placeholder="Nombre con apellidos"
-          maxlength="{{ form.name.field.max_length }}"
-          class="form-control form-control-success"
-          value="{% if form.name.value != None %}{{ form.name.value }}{% endif %}"
+        name={{form.name.name}}
+        type="text"
+        placeholder="Nombre con apellidos"
+        maxlength="{{ form.name.field.max_length }}"
+        value="{% if form.name.value != None %}{{ form.name.value }}{% endif %}"
+        class="form-control {% if form.name.errors%}form-control-danger{% endif %}"
         />
-        {% if form.name.errors %}
-        {% for error in form.name.errors %}
-          <small class="form-text text-muted">{{ error }}</small>
-        {% endfor %}
-        {% endif %}
       </div>
+      {% if form.name.errors %}
+      {% for error in form.name.errors %}
+      <small class="form-text form-control-feedback">{{ error }}</small>
+      {% endfor %}
+      {% endif %}
     </div>
-    <div class="form-group row">
-      <div class="form-group {% if form.employee_number.errors %}has-danger{% endif %}">
-        <label class="form-control-label" for="{{form.employee_number.name}}">SAP</label>
+    <div class="form-group row {% if form.employee_number.errors %}has-danger{% endif %}">
+      <label class="col-xs-3 col-form" for="{{form.employee_number.name}}">SAP</label>
+      <div class="col-xs-9">
         <input id="{{form.employee_number.id_for_label}}"
-          name={{form.employee_number.name}}
-          type="text"
-          placeholder="Número de empleado"
-          maxlength="{{ form.employee_number.field.max_length }}"
-          value="{% if form.employee_number.value != None %}{{ form.employee_number.value }}{% endif %}"
-          class="form-control form-control-success"
+        name={{form.employee_number.name}}
+        type="text"
+        placeholder="Número de empleado"
+        maxlength="{{ form.employee_number.field.max_length }}"
+        value="{% if form.employee_number.value != None %}{{ form.employee_number.value }}{% endif %}"
+        class="form-control {% if form.employee_number.errors%}form-control-danger{% endif %}"
         />
-        {% if form.employee_number.errors %}
-        {% for error in form.employee_number.errors %}
-          <small class="form-text text-muted">{{ error }}</small>
-        {% endfor %}
-        {% endif %}
       </div>
+      {% if form.employee_number.errors %}
+      {% for error in form.employee_number.errors %}
+      <small class="form-text form-control-feedback">{{ error }}</small>
+      {% endfor %}
+      {% endif %}
     </div>
-    <div class="form-group row">
-      <div class="form-group {% if form.RFID.errors %}has-danger{% endif %}">
-        <label class="form-control-label" for="{{form.RFID.name}}">RFID</label>
+    <div class="form-group row {% if form.RFID.errors %}has-danger{% endif %}">
+      <label class="col-xs-3 col-form" for="{{form.RFID.name}}">RFID</label>
+      <div class="col-xs-9">
         <input id="{{form.RFID.id_for_label}}"
-          name={{form.RFID.name}}
-          type="text"
-          placeholder="Número de Tarjeta"
-          maxlength="{{ form.FRID.field.max_length }}"
-          value="{% if form.RFID.value != None %}{{ form.RFID.value }}{% endif %}"
-          class="form-control form-control-success"
+        name={{form.RFID.name}}
+        type="text"
+        placeholder="Número de Tarjeta"
+        maxlength="{{ form.FRID.field.max_length }}"
+        value="{% if form.RFID.value != None %}{{ form.RFID.value }}{% endif %}"
+        class="form-control {% if form.RFID.errors%}form-control-danger{% endif %}"
         />
-        {% if form.RFID.errors %}
-        {% for error in form.RFID.errors %}
-          <small class="form-text text-muted">{{ error }}</small>
-        {% endfor %}
-        {% endif %}
       </div>
+      {% if form.RFID.errors %}
+      {% for error in form.RFID.errors %}
+      <small class="form-text form-control-feedback">{{ error }}</small>
+      {% endfor %}
+      {% endif %}
     </div>
-    <button type="submit" name="new_diner" class="btn btn-primary">
+    <button type="submit" name="new_diner" class="btn btn-primary btn-block mt-2">
       Enviar
     </button>
-  </form>
+  </div>
+</form>
 </div>
 {% endblock %}
 

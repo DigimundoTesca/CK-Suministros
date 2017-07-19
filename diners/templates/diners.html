@@ -2,96 +2,12 @@
 {% load static %}
 
 {% block content %}
-  <div class="container-fluid diners-logs-container">
-    <div class="row">
-      <div class="col xs 12 mt-1 mb-1">
-        <h3 class="text-xs-right">Comensales de Hoy: <span id="total_diners" class="badge badge-blue">{{ total_diners }}</span></h3>
-      </div>
-    </div>            
-
-    <div class="row">
-      <table class="table" id="diners-table">
-        <thead class="thead-inverse">
-          <tr>
-            <th>RFID</th>
-            <th>SAP</th>
-            <th>Nombre</th>
-            <th>Fecha de Acceso</th>
-          </tr>
-        </thead>
-        <tbody id="diners-table-body">
-          {%for diner in diners %}
-          <tr>
-            <th>{{ diner.RFID }}</th>
-            <td>{{ diner.diner.employee_number }}</td>
-            <td>{{ diner.diner.name }}</td>
-            <td>{{ diner.access_to_room }}</td>
-          </tr>
-        {% endfor %}
-      </tbody>
-    </table>
-  </div>
+<div class="container">
+  {% for diner in object_list %}
+    <li>{{ diner }}</li>
+  {% endfor %}
 </div>
-{% endblock %} 
+{% endblock %}
 
 {% block javascript %}
-
-
-<script type="text/javascript" charset="utf-8" async>
-  $(function() {
-    
-    function get_diners_logs() {
-
-      $.ajax({
-          url: "{% url 'diners:diners' %}",
-          type: 'POST',
-          dataType: 'json',
-          data: {
-            type: 'diners_logs_today',
-            csrfmiddlewaretoken: '{{ csrf_token }}',
-          },
-          success: function(result, status, XHR) {
-          },
-          complete: function(result){
-            var diners_objects = result.responseJSON;
-            $('#total_diners').text(diners_objects.total_diners)
-            var diners_table = document.getElementById('diners-table-body');
-            if (diners_table.hasChildNodes()) {
-              while (diners_table.childNodes.length >= 1) {
-                diners_table.removeChild(diners_table.firstChild);
-              }
-            }
-
-            for (var i = 0; i < diners_objects.total_diners; i++) {
-              var element = document.createElement('tr');
-              var element_rfid = document.createElement('th');
-              var element_sap = document.createElement('td');
-              var element_name = document.createElement('td');
-              var element_date = document.createElement('td');
-              var rfid = document.createTextNode(diners_objects.diners_list[i].rfid);
-              var sap = document.createTextNode(diners_objects.diners_list[i].sap);
-              var name = document.createTextNode(diners_objects.diners_list[i].name);
-              var date = document.createTextNode(diners_objects.diners_list[i].date);
-
-              element_rfid.appendChild(rfid);
-              element_sap.appendChild(sap);
-              element_name.appendChild(name);
-              element_date.appendChild(date);
-
-              element.appendChild(element_rfid);
-              element.appendChild(element_sap);
-              element.appendChild(element_name);
-              element.appendChild(element_date);
-              
-              diners_table.appendChild(element)
-            };
-            setTimeout(get_diners_logs, 600);
-          }
-        });
-    }
-
-    setTimeout(get_diners_logs, 600);
-    
-  });
-</script>
 {% endblock javascript %}
