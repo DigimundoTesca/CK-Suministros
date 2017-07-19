@@ -1,0 +1,70 @@
+{% extends 'base/base_nav_footer.html' %}
+{% load static %}
+
+{% block content %}
+<div class="container">
+  <form action="" method="POST">
+    {% csrf_token %}
+    <div class="form-group row">
+      <div class="form-group {% if form.name.errors %}has-danger{% endif %}">
+        <label class="form-control-label" for="{{form.name.name}}">Nombre del comensal</label>
+        <input id="{{form.name.id_for_label}}"
+          name={{form.name.name}}
+          type="text"
+          placeholder="Nombre con apellidos"
+          maxlength="{{ form.name.field.max_length }}"
+          class="form-control form-control-success"
+          value="{% if form.name.value != None %}{{ form.name.value }}{% endif %}"
+        />
+        {% if form.name.errors %}
+        {% for error in form.name.errors %}
+          <small class="form-text text-muted">{{ error }}</small>
+        {% endfor %}
+        {% endif %}
+      </div>
+    </div>
+    <div class="form-group row">
+      <div class="form-group {% if form.employee_number.errors %}has-danger{% endif %}">
+        <label class="form-control-label" for="{{form.employee_number.name}}">SAP</label>
+        <input id="{{form.employee_number.id_for_label}}"
+          name={{form.employee_number.name}}
+          type="text"
+          placeholder="Número de empleado"
+          maxlength="{{ form.employee_number.field.max_length }}"
+          value="{% if form.employee_number.value != None %}{{ form.employee_number.value }}{% endif %}"
+          class="form-control form-control-success"
+        />
+        {% if form.employee_number.errors %}
+        {% for error in form.employee_number.errors %}
+          <small class="form-text text-muted">{{ error }}</small>
+        {% endfor %}
+        {% endif %}
+      </div>
+    </div>
+    <div class="form-group row">
+      <div class="form-group {% if form.RFID.errors %}has-danger{% endif %}">
+        <label class="form-control-label" for="{{form.RFID.name}}">RFID</label>
+        <input id="{{form.RFID.id_for_label}}"
+          name={{form.RFID.name}}
+          type="text"
+          placeholder="Número de Tarjeta"
+          maxlength="{{ form.FRID.field.max_length }}"
+          value="{% if form.RFID.value != None %}{{ form.RFID.value }}{% endif %}"
+          class="form-control form-control-success"
+        />
+        {% if form.RFID.errors %}
+        {% for error in form.RFID.errors %}
+          <small class="form-text text-muted">{{ error }}</small>
+        {% endfor %}
+        {% endif %}
+      </div>
+    </div>
+    <button type="submit" name="new_diner" class="btn btn-primary">
+      Enviar
+    </button>
+  </form>
+</div>
+{% endblock %}
+
+{% block javascript %}
+{% endblock javascript %}

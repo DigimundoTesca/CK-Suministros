@@ -15,6 +15,7 @@ from django.db.models import Max, Min
 
 from helpers import Helper, DinersHelper
 from .models import AccessLog, Diner
+from .forms import DinerForm
 from cloudkitchen.settings.base import PAGE_TITLE
 
 
@@ -237,7 +238,7 @@ def diners_logs(request):
             """
             Returns a JSON with a years list.
             The years list contains years objects that contains a weeks list
-                and the Weeks list contains a weeks objects with two attributes: 
+                and the Weeks list contains a weeks objects with two attributes:
                 start date and final date. Ranges of each week.
             """
             try:
@@ -276,7 +277,7 @@ def diners_logs(request):
                         """
                         Validates if exists some week with an identical week_number of the actual year
                         If exists a same week in the list validates the start_date and the end_date,
-                        In each case valid if there is an older start date or a more current end date 
+                        In each case valid if there is an older start date or a more current end date
                             if it is the case, update the values.
                         Else creates a new week_object with the required week number
                         """
@@ -325,6 +326,26 @@ def diners_logs(request):
             'dates_range': get_dates_range(),
         }
         return render(request, template, context)
+
+
+@login_required(login_url='users_login')
+def new_diner(request):
+    form = DinerForm(request.POST or None)
+    if request.method == 'POST':
+        if form.is_valid():
+            new_diner = form.save(commit=False)
+            form = None
+            new_diner.save()
+            return redirect('diners:new_diner')
+
+    title = 'Nuevo comensal'
+    template = 'new_diner.html'
+    context = {
+        'title': PAGE_TITLE + ' | ' + title,
+        'title': title,
+        'form': form,
+    }
+    return render(request, template, context)
 
 
 # --------------------------- TEST ------------------------

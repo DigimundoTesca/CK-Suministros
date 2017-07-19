@@ -10,8 +10,8 @@ urlpatterns = [
     # Diners pin
     url(r'^diners/rfid/$', views.rfid, name='rfid'),
     url(r'^diners/$', views.diners, name='diners'),
+    url(r'^diners/new/$', views.new_diner, name='new_diner'),
     url(r'^diners/logs/$', views.diners_logs, name='diners_logs'),
-
 ]
 
 # Test
