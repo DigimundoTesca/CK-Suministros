@@ -104,6 +104,7 @@ def rfid(request):
 
 class DinersListView(ListView):
     model = Diner
+    ordering = ('name',)
     template_name = 'diners.html'
     paginate_by = 10
     context_object_name = 'diners_list'
@@ -123,7 +124,7 @@ def new_diner(request):
             new_diner = form.save(commit=False)
             form = None
             new_diner.save()
-            return redirect('diners:new_diner')
+            return redirect('diners:diners')
 
     title = 'Nuevo comensal'
     template = 'new_diner.html'
