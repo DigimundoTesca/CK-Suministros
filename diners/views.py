@@ -106,7 +106,7 @@ class DinersListView(ListView):
     model = Diner
     ordering = ('name',)
     template_name = 'diners.html'
-    paginate_by = 10
+    paginate_by = 50
     context_object_name = 'diners_list'
 
     def get_context_data(self, **kwargs):

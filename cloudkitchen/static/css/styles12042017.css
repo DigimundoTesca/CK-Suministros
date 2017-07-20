@@ -166,7 +166,7 @@ img.img-logo {
 main {
   flex: 1;
 }
-nav.pagination-cont {
+nav.pagination-container {
   display: flex;
   justify-content: center;
 }
