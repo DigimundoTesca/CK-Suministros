@@ -2,8 +2,16 @@
 {% load static %}
 
 {% block content %}
-<div class="container-fluid">
-    <table class="table table-striped table-hover">
+<div class="container-fluid container-diners">
+  <div class="form-group row search-input-cont">
+    <label class="sr-only col-xs-12" for="inlineFormInputGroup">Buscar Comensal</label>
+    <div class="input-group mb-2 mr-sm-2 mb-sm-0 col-xs-12">
+      <input type="text" class="form-control form-control-lg" id="inlineFormInputGroup" placeholder="Buscar comensal">
+      <div id="cont-icon-search" class="input-group-addon"><i class="material-icons">search</i></div>
+    </div>
+  </div>
+
+  <table class="table table-striped table-hover">
     <thead>
       <th>Nombre</th>
       <th>SAP</th>

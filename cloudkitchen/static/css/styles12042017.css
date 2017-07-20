@@ -160,6 +160,23 @@ img.img-logo {
   scroll: no !important;
   overflow-y: hidden !important;
 }
+.container-diners {
+  margin: 0 1rem;
+}
+.search-input-cont {
+  max-width: 580px;
+}
+
+#cont-icon-search {
+  width: 3rem;
+  align-items: center;
+  justify-content: center;
+  display: flex;
+}
+#cont-icon-search i {
+  align-self: center;
+  clear: both;
+}
 
 /* CloudKitchen styles
 -------------------------------------------------------- */
