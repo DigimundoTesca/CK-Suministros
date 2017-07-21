@@ -622,6 +622,30 @@ small {
 .form-register-customer {
   margin: 2rem 0;
 }
+.form-group button {
+  align-items: center;
+  background: rgba(0,0,0,0);
+  border: none;
+  color: #55595c;
+  cursor: pointer;
+  display: flex;
+  user-select: none;
+}
+.form-group button:focus {
+  outline: 0;
+}
+
+.input-group-addon {
+  cursor: pointer;
+  transition: all .3s ease;
+  user-select: none;
+}
+.input-group-addon:hover {
+  background: #cbcbcb;
+}
+.input-group-addon:active {
+  background: rgb(215, 215, 215);
+}
 .map-container {
   margin-top: 2rem;
 }

@@ -6,6 +6,7 @@ from datetime import date, datetime, timedelta
 from django.conf import settings
 from django.contrib.auth.decorators import login_required
 from django.core.paginator import Paginator
+from django.db.models import Q
 from django.utils import timezone
 from django.http import HttpResponse, JsonResponse
 from django.shortcuts import render, redirect
@@ -108,6 +109,14 @@ class DinersListView(ListView):
     template_name = 'diners.html'
     paginate_by = 25
     context_object_name = 'diners_list'
+
+    def post(self, request, *args, **kwargs):
+        self.queryset = Diner.objects.filter(
+            Q(name__icontains=request.POST['diner']) |
+            Q(employee_number__icontains=request.POST['diner']) |
+            Q(RFID__icontains=request.POST['diner'])
+        )
+        return self.get(request, *args, **kwargs)
 
     def get_context_data(self, **kwargs):
         context = super(DinersListView, self).get_context_data(**kwargs)

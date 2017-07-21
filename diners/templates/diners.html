@@ -3,28 +3,44 @@
 
 {% block content %}
 <div class="container-fluid container-diners">
-  <div class="form-group row search-input-cont">
-    <label class="sr-only col-xs-12" for="inlineFormInputGroup">Buscar Comensal</label>
-    <div class="input-group mb-2 mr-sm-2 mb-sm-0 col-xs-12">
-      <input type="text" class="form-control form-control-lg" id="inlineFormInputGroup" placeholder="Buscar comensal">
-      <div id="cont-icon-search" class="input-group-addon"><i class="material-icons">search</i></div>
+  <form action="" method="POST">
+    {% csrf_token %}
+    <div class="form-group row search-input-cont">
+      <label class="sr-only col-xs-12" for="inlineFormInputGroup">Buscar Comensal</label>
+      <div class="input-group mb-2 mr-sm-2 mb-sm-0 col-xs-12">
+        <input id="inlineFormInputGroup"
+          type="text"
+          class="form-control form-control-lg"
+          placeholder="Buscar comensal"
+          name="diner"
+        />
+        <div id="cont-icon-search" class="input-group-addon">
+          <button type="submit">
+            <i class="material-icons">search</i>
+          </button>
+        </div>
+      </div>
     </div>
-  </div>
+  </form>
 
-  <table class="table table-striped table-hover">
-    <thead>
-      <th>Nombre</th>
-      <th>SAP</th>
-      <th>RFID</th>
-    </thead>
-    {% for diner in diners_list %}
-    <tr>
-      <th>{{ diner.name }}</th>
-      <td>{{ diner.employee_number }}</td>
-      <td>{{ diner.RFID }}</td>
-    </tr>
-    {% endfor %}
-  </table>
+  {% if diners_list %}
+    <table class="table table-striped table-hover">
+      <thead>
+        <th>Nombre</th>
+        <th>SAP</th>
+        <th>RFID</th>
+      </thead>
+      {% for diner in diners_list %}
+      <tr>
+        <th>{{ diner.name }}</th>
+        <td>{{ diner.employee_number }}</td>
+        <td>{{ diner.RFID }}</td>
+      </tr>
+      {% endfor %}
+    </table>
+  {% else %}
+    <h2>No se encontraron comensales.</h2>
+  {% endif %}
 
   {% if is_paginated %}
     <nav aria-label="Page navigation Diners" class="pagination-container">
