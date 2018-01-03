@@ -147,16 +147,45 @@ footer .footer-header .row figure .tesca-logo {
 footer .footer-header .info-container {
   margin: 0.5rem 0;
 }
+figure.img-container {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+img.img-logo {
+  height: 180px;
+}
 .custom-select {
   height: 2.5em !important;
   scroll: no !important;
-  overflow-y: hidden !important; 
+  overflow-y: hidden !important;
+}
+.container-diners {
+  margin: 0 1rem;
+}
+.search-input-cont {
+  max-width: 580px;
+}
+
+#cont-icon-search {
+  width: 3rem;
+  align-items: center;
+  justify-content: center;
+  display: flex;
+}
+#cont-icon-search i {
+  align-self: center;
+  clear: both;
 }
 
 /* CloudKitchen styles
 -------------------------------------------------------- */
 main {
   flex: 1;
+}
+nav.pagination-container {
+  display: flex;
+  justify-content: center;
 }
 small {
   font-size: 75%;
@@ -206,10 +235,15 @@ small {
   background-color: #eaeaea;
   color: #1e3c50;
 }
+.bd {
+  border: solid #498ec9;
+  border-width: 0 0 4px 0;
+  padding-bottom: 2rem;
+}
 .btn-extra-ing {
   width: 100%;
   text-overflow:ellipsis;
-  white-space:nowrap; 
+  white-space:nowrap;
   overflow:hidden;
   border-radius: 18px;
   background-color: #0275d8;
@@ -244,6 +278,11 @@ small {
 }
 .container-assembly table button.btn-assembly{
   transition: all 1s ease;
+}
+.container-diners form.new-diner-form {
+  background: rgba(125, 180, 210, 0.1);
+  padding: 2rem;
+  border-radius: 5px;
 }
 .container-diners #dates-range-form {
 }
@@ -294,7 +333,7 @@ small {
   margin: 0 0.5rem;
 }
 .container-sales-reports .sales-graphics {
-  margin-bottom: 1rem; 
+  margin-bottom: 1rem;
 }
 .container-sales-reports .sales-graphics .canvas-holder{
   margin-bottom: 2rem;
@@ -320,7 +359,7 @@ small {
   min-width: 17rem;
 }
 .container-sales-reports .sales-details table.table-sales-details th.header-package,
-.container-sales-reports .sales-details table.table-sales-details td.header-package, 
+.container-sales-reports .sales-details table.table-sales-details td.header-package,
 .container-sales-reports .sales-details table.table-sales-details th.header-products,
 .container-sales-reports .sales-details table.table-sales-details td.header-products {
   min-width: 20rem;
@@ -364,7 +403,7 @@ small {
   max-height: calc(100vh - 21rem);
 }
 .container-sales .group-sales .products-block i {
-  color: #c9302c;  
+  color: #c9302c;
   cursor: pointer;
   font-size: 2rem;
 }
@@ -468,7 +507,7 @@ small {
   display: flex;
 }
 .container-sales .group-sales .card-block>.card-block{
-  border-bottom: #ffeac4 solid 1px;  
+  border-bottom: #ffeac4 solid 1px;
 }
 .container-sales .group-sales .product-container {
   display: flex;
@@ -583,6 +622,30 @@ small {
 .form-register-customer {
   margin: 2rem 0;
 }
+.form-group button {
+  align-items: center;
+  background: rgba(0,0,0,0);
+  border: none;
+  color: #55595c;
+  cursor: pointer;
+  display: flex;
+  user-select: none;
+}
+.form-group button:focus {
+  outline: 0;
+}
+
+.input-group-addon {
+  cursor: pointer;
+  transition: all .3s ease;
+  user-select: none;
+}
+.input-group-addon:hover {
+  background: #cbcbcb;
+}
+.input-group-addon:active {
+  background: rgb(215, 215, 215);
+}
 .map-container {
   margin-top: 2rem;
 }
@@ -637,7 +700,7 @@ small {
 }
 .modal#modal-ticket .modal-content {
   margin: auto;
-  min-height: 30rem; 
+  min-height: 30rem;
   max-width: 30rem;
 }
 .modal#modal-package .modal-content h5 {
@@ -667,25 +730,25 @@ small {
   white-space: nowrap;
   width: 100%;
 }
-.modal#modal-package .modal-content .modal-body, 
+.modal#modal-package .modal-content .modal-body,
 .modal#modal-order .modal-content .modal-body {
   max-height: 21.5rem;
   min-height: 21.5rem;
 }
 .modal#modal-ticket .modal-content .modal-body {
-  min-height: 22rem; 
+  min-height: 22rem;
 }
 .modal#modal-package .modal-content .modal-body .card {
-  display: flex; 
+  display: flex;
   flex-direction: column;
 }
 .modal#modal-package .modal-content .modal-body .card .product-container  {
   padding: 0.5rem;
-  border-bottom: #ffea94 solid 1px;  
+  border-bottom: #ffea94 solid 1px;
 }
 .modal#modal-package .modal-content .modal-body .card .product-container img {
   cursor: pointer;
-  width: 100%; 
+  width: 100%;
   border-radius: 3px;
   -webkit-transition: all 0.3s ease;
   -moz-transition: all 0.3s ease;
@@ -786,11 +849,11 @@ small {
   width: 3rem;
 }
 
-/*#myInput {    
+/*#myInput {
     background-position: 10px 12px; /* Position the search icon */
     background-repeat: no-repeat; /* Do not repeat the icon image */
     /*width: 100%;  Full-width */
-    font-size: 16px;  Increase font-size 
+    font-size: 16px;  Increase font-size
     padding: 12px 20px 12px 40px; /* Add some padding */
     border: 1px solid #ddd; /* Add a grey border */
     /*margin-bottom: 12px;  Add some space below the input */
@@ -811,7 +874,7 @@ small {
 
 #myTable tr {
     /* Add a bottom border to all table rows */
-    border-bottom: 1px solid #ddd; 
+    border-bottom: 1px solid #ddd;
 }
 
 #myTable tr.header, #myTable tr:hover {
@@ -823,7 +886,7 @@ small {
   height: 350px;
   width: 100%;
 }
-#printer { 
+#printer {
   color: #000000;
   font-size: 0.8rem;
   font-family: 'Dosis-Regular', serif;
@@ -831,7 +894,7 @@ small {
   max-width: 58mm;
   margin: 0 auto;
 }
-#printer .modal-body { 
+#printer .modal-body {
   overflow: hidden;
 }
 #printer figure {
@@ -859,7 +922,7 @@ small {
  min-width: 22.5%;
  max-width: 25%;
  text-align: right;
-} 
+}
 #printer ul li span.quantity-li-modal{
   min-width: 15%;
   max-width: 15%;
@@ -872,7 +935,7 @@ small {
   max-width: 50%;
 }
 #printer ul li span.cost-li-title-modal,
-#printer ul li span.total-li-title-modal {  
+#printer ul li span.total-li-title-modal {
   /*font-family: 'Dosis-SemiBold';*/
   font-family: 'Dosis-Bold';
   text-align: center;
@@ -887,7 +950,7 @@ small {
   max-width: 12%;
 }
 #printer ul li.total-ticket-container{
-  justify-content: flex-end;  
+  justify-content: flex-end;
 }
 #printer ul li span.total-ticket {
   margin-top: 0.2rem;
@@ -916,13 +979,13 @@ small {
 #printer .ticket-contact .smile {
   font-size: 1.2rem;
 }
-@media (min-width: 1024px) { 
+@media (min-width: 1024px) {
   .container-new-customers table {
     display: table;
     width: 100%;
   }
 }
-@media (min-width: 1024px) { 
+@media (min-width: 1024px) {
   .container-assembly table {
     display: table;
     width: 100%;

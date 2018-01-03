@@ -2,96 +2,114 @@
 {% load static %}
 
 {% block content %}
-  <div class="container-fluid diners-logs-container">
-    <div class="row">
-      <div class="col xs 12 mt-1 mb-1">
-        <h3 class="text-xs-right">Comensales de Hoy: <span id="total_diners" class="badge badge-blue">{{ total_diners }}</span></h3>
+<div class="container-fluid container-diners">
+  <form action="" method="POST">
+    {% csrf_token %}
+    <div class="form-group row search-input-cont">
+      <label class="sr-only col-xs-12" for="inlineFormInputGroup">Buscar Comensal</label>
+      <div class="input-group mb-2 mr-sm-2 mb-sm-0 col-xs-12">
+        <input id="inlineFormInputGroup"
+          type="text"
+          class="form-control form-control-lg"
+          placeholder="Buscar comensal"
+          name="diner"
+        />
+        <div id="cont-icon-search" class="input-group-addon">
+          <button type="submit">
+            <i class="material-icons">search</i>
+          </button>
+        </div>
       </div>
-    </div>            
+    </div>
+  </form>
 
-    <div class="row">
-      <table class="table" id="diners-table">
-        <thead class="thead-inverse">
-          <tr>
-            <th>RFID</th>
-            <th>SAP</th>
-            <th>Nombre</th>
-            <th>Fecha de Acceso</th>
-          </tr>
-        </thead>
-        <tbody id="diners-table-body">
-          {%for diner in diners %}
-          <tr>
-            <th>{{ diner.RFID }}</th>
-            <td>{{ diner.diner.employee_number }}</td>
-            <td>{{ diner.diner.name }}</td>
-            <td>{{ diner.access_to_room }}</td>
-          </tr>
-        {% endfor %}
-      </tbody>
+  {% if diners_list %}
+    <table class="table table-striped table-hover">
+      <thead>
+        <th>Nombre</th>
+        <th>SAP</th>
+        <th>RFID</th>
+      </thead>
+      {% for diner in diners_list %}
+      <tr>
+        <th>{{ diner.name }}</th>
+        <td>{{ diner.employee_number }}</td>
+        <td>{{ diner.RFID }}</td>
+      </tr>
+      {% endfor %}
     </table>
-  </div>
+  {% else %}
+    <h2>No se encontraron comensales.</h2>
+  {% endif %}
+
+  {% if is_paginated %}
+    <nav aria-label="Page navigation Diners" class="pagination-container">
+        <ul class="pagination">
+          <!-- << PREVIOUS PART -->
+          {# << Disable 'Previous' page button if you are at the 1st page #}
+          {% if not page_obj.has_previous %}
+            <li class="page-item disabled">
+              <a class="page-link" href="#" tabindex="-1" aria-label="Previous">
+          {# << If you are at the 2nd page,#}
+          {# 'Previous' page button will get '/profiles/' url instead of '/profiles/?page=1' #}
+          {% elif page_obj.previous_page_number == 1 %}
+            <li class="page-item">
+              <a class="page-link" href="{{ profiles_1st_page_url }}" aria-label="Previous">
+          {% else %}
+            <li class="page-item">
+              <a class="page-link" href="?page={{ page_obj.previous_page_number }}" aria-label="Previous">
+          {% endif %}
+                <span aria-hidden="true">&laquo;</span>
+                <span class="sr-only">Previous</span>
+              </a>
+            </li>
+          <!-- PAGES PART -->
+          {% for num in page_obj.paginator.page_range %}
+            {# Active page #}
+            {% if num == page_obj.number %}
+              <li class="page-item active">
+                <a class="page-link" href="#">{{ num }}<span class="sr-only">(current)</span></a>
+              </li>
+            {% else %}
+                {# For the 1st page we use ?page=1 #}
+                {% if num == 1 %}
+                <li class="page-item">
+                  <a class="page-link" href="?page={{ num }}">{{ num }}</a>
+                </li>
+                {% else %}
+                  {# Show current page and +-3 pages #}
+                  {% if num|add:"-3" <= page_obj.number and page_obj.number <= num|add:"3" %}
+                  <li class="page-item">
+                    <a class="page-link" href="?page={{ num }}">{{ num }}</a>
+                  </li>
+                  {# Shows every 20th page and the last page#}
+                  {% elif num|divisibleby:"10" or num == page_obj.paginator.num_pages %}
+                  <li class="page-item">
+                    <a class="page-link" href="?page={{ num }}">{{ num }}</a>
+                  </li>
+                  {% endif %}
+                {% endif %}
+            {% endif %}
+          {% endfor %}
+          <!-- >> NEXT PART -->
+          {% if not page_obj.has_next %}
+            <!-- << Disable 'Next' page button if you are at the last page -->
+            <li class="page-item disabled">
+              <a class="page-link" href="#" tabindex="-1" aria-label="Next">
+          {% else %}
+            <li class="page-item">
+              <a class="page-link" href="?page={{ page_obj.next_page_number }}" aria-label="Next">
+          {% endif %}
+                <span aria-hidden="true">&raquo;</span>
+                <span class="sr-only">Next</span>
+              </a>
+            </li>
+        </ul>
+    </nav>
+{% endif %}
+
 </div>
-{% endblock %} 
+{% endblock %}
 
 {% block javascript %}
-
-
-<script type="text/javascript" charset="utf-8" async>
-  $(function() {
-    
-    function get_diners_logs() {
-
-      $.ajax({
-          url: "{% url 'diners:diners' %}",
-          type: 'POST',
-          dataType: 'json',
-          data: {
-            type: 'diners_logs_today',
-            csrfmiddlewaretoken: '{{ csrf_token }}',
-          },
-          success: function(result, status, XHR) {
-          },
-          complete: function(result){
-            var diners_objects = result.responseJSON;
-            $('#total_diners').text(diners_objects.total_diners)
-            var diners_table = document.getElementById('diners-table-body');
-            if (diners_table.hasChildNodes()) {
-              while (diners_table.childNodes.length >= 1) {
-                diners_table.removeChild(diners_table.firstChild);
-              }
-            }
-
-            for (var i = 0; i < diners_objects.total_diners; i++) {
-              var element = document.createElement('tr');
-              var element_rfid = document.createElement('th');
-              var element_sap = document.createElement('td');
-              var element_name = document.createElement('td');
-              var element_date = document.createElement('td');
-              var rfid = document.createTextNode(diners_objects.diners_list[i].rfid);
-              var sap = document.createTextNode(diners_objects.diners_list[i].sap);
-              var name = document.createTextNode(diners_objects.diners_list[i].name);
-              var date = document.createTextNode(diners_objects.diners_list[i].date);
-
-              element_rfid.appendChild(rfid);
-              element_sap.appendChild(sap);
-              element_name.appendChild(name);
-              element_date.appendChild(date);
-
-              element.appendChild(element_rfid);
-              element.appendChild(element_sap);
-              element.appendChild(element_name);
-              element.appendChild(element_date);
-              
-              diners_table.appendChild(element)
-            };
-            setTimeout(get_diners_logs, 600);
-          }
-        });
-    }
-
-    setTimeout(get_diners_logs, 600);
-    
-  });
-</script>
 {% endblock javascript %}

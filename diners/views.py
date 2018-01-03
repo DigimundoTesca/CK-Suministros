@@ -6,15 +6,18 @@ from datetime import date, datetime, timedelta
 from django.conf import settings
 from django.contrib.auth.decorators import login_required
 from django.core.paginator import Paginator
+from django.db.models import Q
 from django.utils import timezone
 from django.http import HttpResponse, JsonResponse
 from django.shortcuts import render, redirect
 from django.utils.datastructures import MultiValueDictKeyError
 from django.views.decorators.csrf import csrf_exempt
+from django.views.generic import ListView
 from django.db.models import Max, Min
 
 from helpers import Helper, DinersHelper
 from .models import AccessLog, Diner
+from .forms import DinerForm
 from cloudkitchen.settings.base import PAGE_TITLE
 
 
@@ -100,8 +103,50 @@ def rfid(request):
         return redirect('diners:diners')
 
 
+class DinersListView(ListView):
+    model = Diner
+    ordering = ('name',)
+    template_name = 'diners.html'
+    paginate_by = 25
+    context_object_name = 'diners_list'
+
+    def post(self, request, *args, **kwargs):
+        self.queryset = Diner.objects.filter(
+            Q(name__icontains=request.POST['diner']) |
+            Q(employee_number__icontains=request.POST['diner']) |
+            Q(RFID__icontains=request.POST['diner'])
+        )
+        return self.get(request, *args, **kwargs)
+
+    def get_context_data(self, **kwargs):
+        context = super(DinersListView, self).get_context_data(**kwargs)
+        context['title'] = 'Nuevo Comensal'
+        context['page_title'] = PAGE_TITLE
+        return context
+
+
+@login_required(login_url='users_login')
+def new_diner(request):
+    form = DinerForm(request.POST or None)
+    if request.method == 'POST':
+        if form.is_valid():
+            new_diner = form.save(commit=False)
+            form = None
+            new_diner.save()
+            return redirect('diners:diners')
+
+    title = 'Nuevo comensal'
+    template = 'new_diner.html'
+    context = {
+        'title': PAGE_TITLE + ' | ' + title,
+        'page_title': title,
+        'form': form,
+    }
+    return render(request, template, context)
+
+
 @login_required(login_url='users:login')
-def diners(request):
+def today_access(request):
     diners_helper = DinersHelper()
     access_logs_today = diners_helper.get_access_logs_today()
     total_diners = access_logs_today.count()
@@ -133,7 +178,7 @@ def diners(request):
             return JsonResponse(diners_objects)
 
     else:
-        template = 'diners.html'
+        template = 'today_access.html'
         title = 'Comensales del Dia'
 
         context = {
@@ -237,7 +282,7 @@ def diners_logs(request):
             """
             Returns a JSON with a years list.
             The years list contains years objects that contains a weeks list
-                and the Weeks list contains a weeks objects with two attributes: 
+                and the Weeks list contains a weeks objects with two attributes:
                 start date and final date. Ranges of each week.
             """
             try:
@@ -276,7 +321,7 @@ def diners_logs(request):
                         """
                         Validates if exists some week with an identical week_number of the actual year
                         If exists a same week in the list validates the start_date and the end_date,
-                        In each case valid if there is an older start date or a more current end date 
+                        In each case valid if there is an older start date or a more current end date
                             if it is the case, update the values.
                         Else creates a new week_object with the required week number
                         """
