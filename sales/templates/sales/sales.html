@@ -766,7 +766,7 @@
           // Adds the list to tickets
           new_li = $("" +
             "<li class='list-group-item'>" +
-            "<span class='name-li-modal text-uppercase'>" + name + "</span> " +
+            "<span class='n ame-li-modal text-uppercase'>" + name + "</span> " +
             "<span class='cost-li-modal'>" + '$ ' + cost_base + "</span>" +
             "<span class='quantity-li-modal'>" + quantity + "</span>" +
             "<span class='total-li-modal'>" + '$ ' + total + "</span> " +
@@ -779,7 +779,7 @@
         ticket_details.packages.forEach(iterate_packages);
         $("#ticket-id").text(id_element);
         
-        let new_li = $("" +
+        new_li = $("" +
           "<li class='total-ticket-container mt-1'>" +
           " <span id='total-ticket'>$ <span class='total-ticket-cant'> " +
           " " + total +"</span></span> " +
