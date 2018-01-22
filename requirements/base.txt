@@ -2,7 +2,7 @@
 
 # Django minimum required
 # -------------------------------------------------------
-Django==1.11
+django==1.11.9
 
 # Django Rest Framework
 # -------------------------------------------------------
@@ -14,7 +14,7 @@ django-jet==1.0.6
 
 # Images
 # -------------------------------------------------------
-Pillow==3.4
+Pillow==5.0.0
 
 # Creates a tablib database from django models ['xls', 'json', 'yaml', 'csv', 'html' ]
 # -------------------------------------------------------
