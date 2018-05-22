@@ -329,6 +329,96 @@ small {
   min-height: 3rem;
   list-style: none;
 }
+
+.container-rating {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  min-height: 80vh;
+  overflow: hidden;
+}
+.container-rating #suggestion-textarea {
+  box-shadow: 0 1px 2px rgba(27,31,35,0.075) inset;
+  background: #fafbfc;
+}
+.container-rating #suggestion-textarea:focus{
+  background: #fff;
+  outline: none;
+  border-color: #2188ff;
+  box-shadow: 0 0 0 3px rgba(3,102,214,0.3);
+}
+.container-rating .rating-title {
+  width: 100%;
+  display: block;
+}
+.container-rating .emojis-container {
+  display: flex;
+  justify-content: center;
+}
+.container-rating figure.emoji-container {
+  align-items: center;
+  cursor: pointer;
+  display: flex;
+  height: 160px;
+  justify-content: center;
+  margin: 0 auto;
+  width: 160px;
+}
+.container-rating img.emoji {
+  display: flex;
+  transition: all 0.3s ease;
+  height: 80%;
+  width: 80%;
+  opacity: 0.9;
+}
+.container-rating img.emoji.ghost {
+  transition: all 0.3s ease;
+  height: 75%;
+  width: 75%;
+  opacity: 0.4;
+}
+.container-rating .emoji-container .emoji.selected,
+.container-rating .emoji-container .emoji:hover {
+  opacity: 1;
+  height: 100%;
+  width: 100%;
+}
+.container-rating .rating-footer #elements-container {
+  display: flex;
+  justify-content: center;
+  display: none;
+}
+.container-rating .rating-footer #elements-container .element-container {
+  align-self: center;
+}
+.container-rating .rating-footer .btn-option {
+  white-space: normal;
+  font-size: 0.8rem;
+  background: #dedede;
+}
+.container-rating .rating-footer .hidden {
+  display: none;
+}
+.container-rating .rating-footer #btn-send-container {
+  display: none;
+}
+.container-rating .rating-footer #btn-write-commentary,
+.container-rating .rating-footer #btn-send-score,
+.container-rating .rating-footer #btn-arrow {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  transition: all 0.3s ease;
+}
+.container-rating .rating-footer #btn-write-commentary .btn-text,
+.container-rating .rating-footer #btn-send-score .btn-text {
+  padding: 0.25em;
+}
+.container-rating .rating-footer #btn-write-commentary .icon-container,
+.container-rating .rating-footer #btn-send-score .icon-container,
+.container-rating .rating-footer #btn-arrow .icon-container {
+  padding: 0.25em;
+}
 .container-sales {
   margin: 0 0.5rem;
 }

@@ -1,6 +1,3 @@
-# -*- encoding: utf-8 -*-
-from __future__ import unicode_literals
-
 import json
 from datetime import date, datetime, timedelta
 from django.conf import settings
@@ -16,7 +13,7 @@ from django.views.generic import ListView
 from django.db.models import Max, Min
 
 from helpers import Helper, DinersHelper
-from .models import AccessLog, Diner
+from .models import AccessLog, Diner, ElementToEvaluate, SatisfactionRating
 from .forms import DinerForm
 from cloudkitchen.settings.base import PAGE_TITLE
 
@@ -368,6 +365,42 @@ def diners_logs(request):
             'dates_range': get_dates_range(),
         }
         return render(request, template, context)
+
+
+def satisfaction_rating(request):
+    if request.method == 'POST':
+        if request.POST['type'] == 'satisfaction_rating':
+            satisfaction_rating_value = request.POST['satisfaction_rating']
+            if int(satisfaction_rating_value) > 4:
+                satisfaction_rating_value = 4
+            elements_list = json.loads(request.POST['elements_id'])
+
+            if request.POST['suggestion']:
+                new_satisfaction_rating = SatisfactionRating.objects.create(
+                    satisfaction_rating=satisfaction_rating_value,
+                    suggestion=request.POST['suggestion'],
+                )
+            else:
+                new_satisfaction_rating = SatisfactionRating.objects.create(
+                    satisfaction_rating=satisfaction_rating_value
+                )
+            new_satisfaction_rating.save()
+
+            for element in elements_list:
+                new_element = ElementToEvaluate.objects.get(id=element)
+                new_satisfaction_rating.elements.add(new_element)
+                new_satisfaction_rating.save()
+            return JsonResponse({'status': 'ready'})
+
+    template = 'satisfaction_rating.html'
+    title = 'Rating'
+    elements = ElementToEvaluate.objects.order_by('priority').all()
+    context = {
+        'title': PAGE_TITLE + ' | ' + title,
+        'page_title': title,
+        'elements': elements,
+    }
+    return render(request, template, context)
 
 
 # --------------------------- TEST ------------------------
