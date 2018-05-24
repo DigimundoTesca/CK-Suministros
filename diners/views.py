@@ -1,8 +1,8 @@
-# -*- encoding: utf-8 -*-
-from __future__ import unicode_literals
-
 import json
+
 from datetime import date, datetime, timedelta
+
+import pytz
 from django.conf import settings
 from django.contrib.auth.decorators import login_required
 from django.core.paginator import Paginator
@@ -11,12 +11,13 @@ from django.utils import timezone
 from django.http import HttpResponse, JsonResponse
 from django.shortcuts import render, redirect
 from django.utils.datastructures import MultiValueDictKeyError
+from django.utils.timezone import make_aware
 from django.views.decorators.csrf import csrf_exempt
 from django.views.generic import ListView
 from django.db.models import Max, Min
 
 from helpers import Helper, DinersHelper
-from .models import AccessLog, Diner
+from .models import AccessLog, Diner, ElementToEvaluate, SatisfactionRating
 from .forms import DinerForm
 from cloudkitchen.settings.base import PAGE_TITLE
 
@@ -368,6 +369,48 @@ def diners_logs(request):
             'dates_range': get_dates_range(),
         }
         return render(request, template, context)
+
+
+def satisfaction_rating(request):
+    if request.method == 'POST':
+        if request.POST['type'] == 'satisfaction_rating':
+            satisfaction_rating_value = request.POST['satisfaction_rating']
+            if int(satisfaction_rating_value) > 4:
+                satisfaction_rating_value = 4
+            elements_list = json.loads(request.POST['elements_id'])
+
+            if request.POST['suggestion']:
+                new_satisfaction_rating = SatisfactionRating.objects.create(
+                    satisfaction_rating=satisfaction_rating_value,
+                    suggestion=request.POST['suggestion'],
+                )
+            else:
+                new_satisfaction_rating = SatisfactionRating.objects.create(
+                    satisfaction_rating=satisfaction_rating_value
+                )
+            new_satisfaction_rating.save()
+
+            for element in elements_list:
+                new_element = ElementToEvaluate.objects.get(id=element)
+                new_satisfaction_rating.elements.add(new_element)
+                new_satisfaction_rating.save()
+            return JsonResponse({'status': 'ready'})
+
+    template = 'satisfaction_rating.html'
+    title = 'Rating'
+    today = date.today()
+    tz = pytz.timezone('America/Mexico_City')
+    today = datetime.combine(today, datetime.min.time())
+    today = make_aware(today, tz)
+
+    elements = ElementToEvaluate.objects.order_by('priority').filter(
+        Q(permanent=True) | Q(created_at__gt=today))
+    context = {
+        'title': PAGE_TITLE + ' | ' + title,
+        'page_title': title,
+        'elements': elements,
+    }
+    return render(request, template, context)
 
 
 # --------------------------- TEST ------------------------
