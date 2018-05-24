@@ -1,5 +1,16 @@
 <footer class="footer text-gray-dark">
-  <div class="footer-header"> 
-    <span class="text-muted"><a class="link" href="http://www.digimundo.com.mx">Made with ♥ by Digimundo</a></span>
+  <div class="footer-header">
+    <div class="row">
+      <div class="col-xs-12 col-sm-8 col-md-10">
+        <span class="text-muted">
+          <a class="link" href="http://www.digimundo.com.mx">Made with ♥ by Digimundo</a>
+        </span>
+      </div>
+      <div class="col-xs-12 col-sm-4 col-md-2 text-xs-center">
+        <span class="text-muted">
+          <a class="link" href="{% url 'diners:satisfaction_rating' %}">Rating</a>
+        </span>
+      </div>
+    </div>
   </div>
 </footer>
