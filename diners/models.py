@@ -32,6 +32,8 @@ class AccessLog(models.Model):
 class ElementToEvaluate(models.Model):
     element = models.CharField(max_length=48, default='', unique=True)
     priority = models.IntegerField(default=1)
+    permanent = models.BooleanField(default=False)
+    created_at = models.DateTimeField(auto_now=True)
 
     class Meta:
         verbose_name = "Elemento a evaluar"

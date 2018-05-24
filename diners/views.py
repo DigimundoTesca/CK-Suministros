@@ -1,5 +1,8 @@
 import json
+
 from datetime import date, datetime, timedelta
+
+import pytz
 from django.conf import settings
 from django.contrib.auth.decorators import login_required
 from django.core.paginator import Paginator
@@ -8,6 +11,7 @@ from django.utils import timezone
 from django.http import HttpResponse, JsonResponse
 from django.shortcuts import render, redirect
 from django.utils.datastructures import MultiValueDictKeyError
+from django.utils.timezone import make_aware
 from django.views.decorators.csrf import csrf_exempt
 from django.views.generic import ListView
 from django.db.models import Max, Min
@@ -394,7 +398,13 @@ def satisfaction_rating(request):
 
     template = 'satisfaction_rating.html'
     title = 'Rating'
-    elements = ElementToEvaluate.objects.order_by('priority').all()
+    today = date.today()
+    tz = pytz.timezone('America/Mexico_City')
+    today = datetime.combine(today, datetime.min.time())
+    today = make_aware(today, tz)
+
+    elements = ElementToEvaluate.objects.order_by('priority').filter(
+        Q(permanent=True) | Q(created_at__gt=today))
     context = {
         'title': PAGE_TITLE + ' | ' + title,
         'page_title': title,

@@ -24,9 +24,9 @@ class AccessLogAdmin(admin.ModelAdmin):
 
 @admin.register(ElementToEvaluate)
 class ElementToEvaluateAdmin(admin.ModelAdmin):
-    list_display = ('id', 'priority', 'element',)
+    list_display = ('id', 'priority', 'element', 'permanent', 'created_at')
     ordering = ('priority',)
-    list_editable = ('priority', )
+    list_editable = ('priority', 'permanent')
 
 
 @admin.register(SatisfactionRating)
@@ -38,3 +38,4 @@ class SatisfactionRatingAdmin(admin.ModelAdmin):
 
     def selected_elements(self, obj):
         return ",\n".join([p.element for p in obj.elements.all()])
+
