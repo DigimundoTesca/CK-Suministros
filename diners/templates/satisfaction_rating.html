@@ -181,10 +181,10 @@
     function sendTest() {
       console.log('enviarmos!')
       $.ajax({
-        url: "{% url 'diners:satisfaction_rating' %}",
+        url: "/diners/satisfaction-rating/",
         type: 'POST',
         data: {
-          csrfmiddlewaretoken: '{{ csrf_token }}',
+          csrfmiddlewaretoken: '8cpw1I46moN9yNRvsGMXMEN8PrYz9HRHPh9jPOat1Xl8lbgwMGWINqbkXhIBhmIT',
           'satisfaction_rating': data['satisfaction_rating'],
           'elements_id': JSON.stringify(data['elements_id']),
           'suggestion': data['suggestion'],
@@ -208,7 +208,7 @@
           }).then(
             function() {},
             function(dismiss) {
-              window.location = "{% url 'diners:satisfaction_rating' %}";
+              window.location = "/diners/satisfaction-rating/";
             }
           );
           $('#btn-write-commentary').attr('disabled', true);
@@ -277,7 +277,7 @@
               console.log('sigue')
             },
             function(dismiss) {
-              window.location = "{% url 'diners:satisfaction_rating' %}";
+              window.location = "/diners/satisfaction-rating/";
             }
           );
           }
