@@ -258,6 +258,33 @@ small {
   color: #0275d8;
   border: 1px solid #0275d8;
 }
+.btn-option {
+  font-size: 1.2rem !important;
+}
+.btn-rate-1,
+.btn-rate-2,
+.btn-rate-3,
+.btn-rate-4 {
+  color: #353535;
+  background: #dedede !important;
+  transition: all 0.3s ease;
+}
+.btn-rate-1.selected {
+  background: #E57373 !important;
+  color: #fefefe;
+}
+.btn-rate-2.selected {
+  background: #FFE082 !important;
+  color: #353535;
+}
+.btn-rate-3.selected {
+  background: #90CAF9 !important;
+  color: #353535;
+}
+.btn-rate-4.selected {
+  background: #81C784 !important;
+  color: #fefefe;
+}
 .card-scroll {
   overflow-y: scroll;
 }
