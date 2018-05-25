@@ -1,0 +1,518 @@
+{% extends 'base/base_nav_footer.html' %}
+{% load static %}
+{% block content %}
+<div class="container-fluid analytics-container">
+  <div class="row">
+    <div class="col-xs-12">
+      <div class="text-xs-right mb-2">
+        <form class="form-inline" id="dates-range-form">
+          <select class="custom-select" id="dt-year" title="dt-year"></select>
+          <select class="custom-select" id="dt-week" title="dt-week"></select>
+        </form>
+      </div>
+    </div>
+  </div>
+  <div class="row">
+    <div class="col-xs-12 charts-container">
+      <div class="col-xs-12">
+        <div class="col-xs-12 col-lg-6 col-xl-5 mb-3 week-suggestions-chart">
+          <div class="canvas-holder">
+            <canvas id="canvas-week-reactions"></canvas>
+          </div>
+          <div class="canvas-holder">
+            <canvas id="canvas-week-suggestions"></canvas>
+          </div>
+        </div>
+        <div class="col-xs-12 col-lg-6 col-xl-7 mb-3 elements-analytics-container">
+          <div class="row">
+            <div class="col-xs-12">
+              <h3>Reacciones de clientes</h3>
+            </div>
+          </div>
+          <div class="row elements-header">
+            <div class="col-xs-6 col-lg-3  element-name-cont">
+              <span class="element-name element-red">Enojado</span>
+            </div>
+            <div class="col-xs-6 col-lg-3 element-name-cont">
+              <span class="element-name element-yellow">Triste</span>
+            </div>
+            <div class="col-xs-6 col-lg-3 element-name-cont">
+              <span class="element-name element-blue">Alegre</span>
+            </div>
+            <div class="col-xs-6 col-lg-3 element-name-cont">
+              <span class="element-name element-green">Encantado</span>
+            </div>
+          </div>
+          <div class="charts-container row mt-2">
+            {% for element in elements %}
+              <div class="canvas-holder doughnut-chart col-xs-12 col-sm-6 col-md-4 col-xl-3 mb-3">
+                <canvas id="canvas-element-{{element.id}}"></canvas>
+              </div>
+            {% endfor %}
+              <div class="canvas-holder doughnut-chart col-xs-12 col-sm-6 col-md-4 col-xl-3 mb-3">
+                <canvas id="canvas-element-total"></canvas>
+              </div>
+          </div>
+        </div>
+      </div>
+    </div>  
+  </div>
+</div>
+<div id="bounce-cont">
+  <span class="msg-bounce">Generando Gráficas</span>
+  <div class="sk-double-bounce">
+    <div class="sk-child sk-double-bounce1"></div>
+    <div class="sk-child sk-double-bounce2"></div>
+  </div>
+</div>
+{% endblock %}
+
+{% block javascript %}
+<script src="{% static 'js/Chart.bundle.min.js' %}" defer></script>
+
+<script type="text/javascript" charset="utf-8" defer>
+  $(function() {
+    let dates_range = JSON.parse('{{ dates_range | safe }}');
+    let reactions_week = JSON.parse('{{ reactions_week | safe }}');
+    let suggestions_week = JSON.parse('{{ suggestions_week | safe }}');
+    let elements_to_evaluate = []; // Reactions data
+    let ctx_week_reactions = document.getElementById("canvas-week-reactions");
+    let ctx_week_suggestions = document.getElementById("canvas-week-suggestions");
+    let ctx_reactions = []; // reactions elements charts (DOM)
+    let elements_charts = []; // // reaction elements charts (Chart Objects)
+    let todayDateObject = new Date();
+    let today_date;
+    let reactions_week_chart;
+    let suggestions_week_chart;
+
+    {% for element in elements %}
+      elements_to_evaluate.push({
+        'id': '{{ element.id }}',
+        'name': '{{ element.element }}',
+      });
+    {% endfor %}
+
+    for (let i = 0; i <= {{ total_elements }}; i++) {
+      if (i === {{ total_elements }}) {
+        ctx_reactions.push(document.getElementById('canvas-element-total'));
+      } else {
+        let element_id = elements_to_evaluate[i].id;
+        element_id = "canvas-element-" + element_id;
+        ctx_reactions.push(document.getElementById(element_id));
+      }
+    }
+
+    /**
+     * Returns a list with the rates quantity ot the week per day in the days to set
+     */
+    function get_rates_week_range(rates_list){
+      let week_list = [0, 0, 0, 0, 0, 0, 0];
+      for (let i = 0; i < 7; i++) {
+        for (let j = 0; j < rates_list.length; j++) {
+          if (rates_list[j]['number_day'] === i) {
+            week_list[i] = parseInt(rates_list[j]['total_rates']);
+          }
+        }
+      }
+      return week_list;
+    }
+
+    /**
+     * Returns a list with the rates quantity ot the week per day in the days to set
+     */
+    function get_suggestions_week_range(suggestions_list){
+      let week_list = [0, 0, 0, 0, 0, 0, 0];
+      for (let i = 0; i < 7; i++){
+        for (let j = 0; j < suggestions_list.length; j++){
+          if (suggestions_list[j]['number_day'] === i) {
+            week_list[i] = parseInt(suggestions_list[j]['total_suggestions']);
+          }
+        }
+      }
+      return week_list;
+    }
+    
+    function get_rates_week_list() {
+      let rates_list = [];
+      let count = 0;
+
+      while (count < reactions_week.length) {
+        rates_list.push(parseFloat(reactions_week[count]['total_rates']));
+        count++;
+      }
+      return rates_list;
+    }
+
+    function get_suggestions_week_list() {
+      let suggestions_list = [];
+      let count = 0;
+
+      while (count < suggestions_week.length) {
+        suggestions_list.push(parseFloat(suggestions_week[count]['total_suggestions']));
+        count++;
+      }
+      return suggestions_list;
+    }
+
+    /**
+     * Get's the suggestions of the selected day in week chart and
+     * show the results in reactions day chart
+     */
+    function set_reactions_day_chart(date) {
+      $.ajax({
+        url: "{% url 'diners:analytics' %}",
+        type: 'POST',
+        data: {
+          csrfmiddlewaretoken: '{{ csrf_token }}',
+          'date': date,
+          'type': 'reactions_day',
+        },
+        traditional: true,
+        datatype: 'jsonp',
+        beforeSend: function(){},
+        success: function(result) {
+          $('#bounce-cont').hide(1000);
+
+          for(let i = 0; i <= {{ total_elements }}; i++) {
+            let is_empty = true;
+
+            if ( i === {{ total_elements }}) {
+              for (let j = 0; j < 4; j++) {
+                elements_charts[i].data.datasets[0].data[j] = result['total_reactions'].reactions[j].quantity;
+              }
+
+            } else {
+              /**
+               * Sets the doughnuts with the new values
+               */
+              for (let j = 0; j < 4; j++) {
+                elements_charts[i].data.datasets[0].data[j] = result['reactions_list'][i].reactions[j].quantity;
+              }
+            }
+
+            /**
+             * Validates the charts and change them if any of these do not have doesn't have values
+             */
+            for (let j = 0; j < 4; j++) {
+              if (elements_charts[i].config.data.datasets[0].data[j] > 0) {
+                is_empty = false;
+              }
+            }
+
+            if (is_empty) {
+              elements_charts[i].config.options.tooltips.callbacks.label = function () {
+                return ' Sin reacciones';
+              };
+              elements_charts[i].config.data.datasets[0].data[4] = 1;
+            } else {
+              elements_charts[i].config.options.tooltips.callbacks.label = function (tooltipItem, data) {
+                let dataLabel = data.labels[tooltipItem.index];
+                dataLabel += ': ' + data.datasets[tooltipItem.datasetIndex].data[tooltipItem.index];
+                return dataLabel;
+              };
+              elements_charts[i].config.data.datasets[0].data.splice(4, 1);
+            }
+
+            elements_charts[i].update();
+          }
+        },
+
+        error: function(result) {
+          console.log(result);
+        },
+      });
+    }
+
+    /**
+     * Draws the reactions chart of reactions of the week
+     */
+    reactions_week_chart = new Chart(ctx_week_reactions, {
+      type: 'bar',
+      data: {
+        labels: ["Lunes", "Martes", "Miercoles", "Jueves", "Viernes", "Sábado", "Domingo"],
+        datasets: [{
+          label: 'Reacciones del día',
+          data: get_rates_week_list(),
+          backgroundColor: [
+
+            '#03a9f4',
+            '#03a9f4',
+            '#03a9f4',
+            '#03a9f4',
+            '#03a9f4',
+            '#03a9f4',
+          ],
+        }],
+      },
+      options: {
+        responsive: true,
+        onClick: function(event, legendItem) {
+          try {
+            let selected_day = legendItem[0]._index;
+            for (let i = 0; i < reactions_week.length; i++) {
+              if (reactions_week[i].number_day === selected_day) {
+                set_reactions_day_chart(reactions_week[i].date);
+              }
+            }
+          } catch (error) {
+            console.log(error.message);
+          }
+        },
+        scales: {
+          yAxes: [{
+            ticks: {
+              beginAtZero: true,
+            },
+          }]
+        },
+        title: {
+          display: true,
+          text: 'Gráfica de evaluaciones de la semana',
+        },
+        legend: {
+          display: true,
+        }
+      }
+    });
+
+    /**
+     * Draws the reactions chart of reactions of the week
+     */
+    suggestions_week_chart = new Chart(ctx_week_suggestions, {
+      type: 'bar',
+      data: {
+        labels: ["Lunes", "Martes", "Miercoles", "Jueves", "Viernes", "Sábado", "Domingo"],
+        datasets: [{
+          label: 'Comentarios del día',
+          data: get_suggestions_week_list(),
+          backgroundColor: [
+            '#4caf50',
+            '#4caf50',
+            '#4caf50',
+            '#4caf50',
+            '#4caf50',
+            '#4caf50',
+            '#4caf50',
+          ],
+        }],
+      },
+      options: {
+        responsive: true,
+        onClick: function(event, legendItem) {
+          try {
+            let selected_day = legendItem[0]._index;
+            for (let i = 0; i < reactions_week.length; i++) {
+              if (reactions_week[i].number_day === selected_day) {
+                set_reactions_day_chart(reactions_week[i].date);
+              }
+            }
+          } catch (error) {
+            console.log(error.message);
+          }
+        },
+        scales: {
+          yAxes: [{
+            ticks: {
+              beginAtZero: true,
+            },
+          }]
+        },
+        title: {
+          display: true,
+          text: 'Gŕafica de comentarios en la semana',
+        },
+        legend: {
+          display: true,
+        }
+      }
+    });
+
+    /**
+     * Draws the Doughnuts Charts
+     */
+    for (let i = 0; i <= {{ total_elements }}; i++) {
+      if ( i === {{ total_elements }}) {
+        elements_charts[i] = new Chart(ctx_reactions[i], {
+          type: 'doughnut',
+          data: {
+            labels: [
+            "Enojado",
+            "Triste",
+            "Alegre",
+            "Encantado",
+            "Sin Reacciones",
+            ],
+            datasets: [{
+              data: [0,0,0,0,0],
+              backgroundColor: [
+              "#FF5252",
+              "#FFC400",
+              "#2979FF",
+              "#00E676",
+              ],
+              hoverBackgroundColor: [
+              "#FF5252",
+              "#FFC400",
+              "#2979FF",
+              "#00E676"
+              ],
+            }],
+          },
+          options: {
+            cutoutPercentage: 50,
+            responsive: true,
+            animation: {
+              animateScale: true
+            },
+            title: {
+              display: true,
+              text: 'Total de Reacciones',
+            },
+            legend: {
+              display: false,
+            },
+          },
+        });
+      } else {
+        let data = [];
+        for(let j = 0; j < 4; j++) {
+          data[j] = parseInt(Math.random() * 100  );
+        }
+        elements_charts[i] = new Chart(ctx_reactions[i], {
+          type: 'doughnut',
+          data: {
+            labels: [
+            "Enojado",
+            "Triste",
+            "Alegre",
+            "Encantado",
+            "Sin Reacciones",
+            ],
+            datasets: [{
+              data: [0,0,0,0,0],
+              backgroundColor: [
+              "#FF5252",
+              "#FFC400",
+              "#2979FF",
+              "#00E676",
+              ],
+              hoverBackgroundColor: [
+              "#FF5252",
+              "#FFC400",
+              "#2979FF",
+              "#00E676"
+              ],
+            }],
+          },
+          options: {
+            cutoutPercentage: 50,
+            responsive: true,
+            animation: {
+              animateScale: true
+            },
+            title: {
+              display: true,
+              text: elements_to_evaluate[i].name,
+            },
+            legend: {
+              display: false,
+            },
+          },
+        });
+      }
+    }
+
+    /**
+     * Returns the text to show in the weeks select
+     */
+    function convert_date_to_str(date) {
+      let months = {
+        1: 'Ene', 2: 'Feb', 3: 'Mar', 4: 'Abr', 5: 'May', 6: 'Jun',
+        7: 'Jul', 8: 'Ago', 9: 'Sep', 10: 'Oct', 11: 'Nov', 12: 'Dic',
+      };
+      date = date.split('-');
+      return date[0] + " " + months[parseInt(date[1])] + " " + date[2];
+    }
+
+    /** 
+     * Refresh the page with de dates of the year and week selected
+     */
+    $(this).on('click', '#dt-week', function() {
+      let dt_year = $('#dt-year').val();
+      let dt_week = $('#dt-week').val();
+      
+      $.ajax({
+        url: "{% url 'diners:analytics' %}",
+        type: 'POST',
+        data: {
+          csrfmiddlewaretoken: '{{ csrf_token }}',
+          'dt_year': dt_year,
+          'dt_week': dt_week,
+          'type': 'reactions_week',
+        },
+        beforeSend: function(){
+          swal({
+            title: "Obteniendo datos",
+            text: "Espere mientras obtenemos toda la información",
+          });
+          swal.enableLoading();
+        },
+        traditional: true,
+        datatype: 'jsonp',
+        success: function(result) {
+          let week_number = result['week_number'];
+          reactions_week = result['reactions'];
+          suggestions_week = result['suggestions'];
+          reactions_week_chart.data.datasets[0].data = get_rates_week_range(reactions_week);
+          reactions_week_chart.update();
+          suggestions_week_chart.data.datasets[0].data = get_rates_week_range(reactions_week);
+          suggestions_week_chart.update();
+
+        },
+        error: function(result) {
+          console.log(result);
+        },
+        complete: function(){
+          setTimeout(function(){
+            swal.close();
+          }, 300)
+        },
+      });
+    });
+
+    
+    /** 
+     * Fills the weeks select
+     */
+    function fill_dates_range_form() {
+      let selected_year;
+      $.each(dates_range, function(index, item) {
+         $('#dates-range-form').find('#dt-year').append(
+            "<option value=" + item.year + ">" + item.year + "</option>"
+          );
+      });
+
+      selected_year = parseInt($('#dates-range-form').find('#dt-year').val());
+      $.each(dates_range, function(index, item) {
+        if (dates_range[index].year ===  selected_year) {
+          $.each(dates_range[index].weeks_list, function(index, item) {
+            $('#dates-range-form').find('#dt-week').append(
+              `<option value=${item.start_date},${item.end_date}> Semana ${item.week_number}: ${convert_date_to_str(item.start_date)} - ${convert_date_to_str(item.end_date)}\n</option>`
+            );
+          });
+          return false;
+        }
+      });
+      today_date = $('#dt-week').val().split(',')[1];
+    }
+
+    fill_dates_range_form();
+    /**
+     * Sets the doughnuts charts for today
+     */
+    today_date = todayDateObject.getDate() + '-' + (todayDateObject.getMonth() + 1) + '-' + todayDateObject.getFullYear();
+    set_reactions_day_chart(today_date)
+   });
+
+ </script>
+ {% endblock javascript %}
