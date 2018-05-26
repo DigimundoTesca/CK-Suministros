@@ -1,6 +1,6 @@
 from django.core.validators import MaxValueValidator
 from django.db import models
-
+from datetime import datetime
 
 class Diner(models.Model):
     created_at = models.DateTimeField(auto_now_add=True)
@@ -34,6 +34,7 @@ class ElementToEvaluate(models.Model):
     priority = models.IntegerField(default=1)
     permanent = models.BooleanField(default=False)
     created_at = models.DateTimeField(auto_now=True)
+    publication_date = models.DateTimeField(default=datetime.now())
 
     class Meta:
         verbose_name = "Elemento a evaluar"

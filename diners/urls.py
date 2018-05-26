@@ -14,6 +14,7 @@ urlpatterns = [
     url(r'^diners/new/$', views.new_diner, name='new_diner'),
     url(r'^diners/logs/$', views.diners_logs, name='diners_logs'),
     url(r'^diners/satisfaction-rating/$', views.satisfaction_rating, name='satisfaction_rating'),
+    url(r'^diners/analytics-rating/$', views.analytics_rating, name='analytics'),
 ]
 
 # Test

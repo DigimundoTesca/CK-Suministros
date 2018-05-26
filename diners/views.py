@@ -20,6 +20,7 @@ from helpers import Helper, DinersHelper
 from .models import AccessLog, Diner, ElementToEvaluate, SatisfactionRating
 from .forms import DinerForm
 from cloudkitchen.settings.base import PAGE_TITLE
+from helpers import RatesHelper
 
 
 def diners_paginator(request, queryset, num_pages):
@@ -409,6 +410,74 @@ def satisfaction_rating(request):
         'title': PAGE_TITLE + ' | ' + title,
         'page_title': title,
         'elements': elements,
+    }
+    return render(request, template, context)
+
+
+@login_required(login_url='users_login')
+def analytics_rating(request):
+    helper = Helper()
+    rates_helper = RatesHelper()
+
+    if request.method == 'POST':
+        if request.POST['type'] == 'reactions_day':
+            start_date = helper.naive_to_datetime(datetime.strptime(request.POST['date'], '%d-%m-%Y').date())
+            end_date = helper.naive_to_datetime(start_date + timedelta(days=1))
+            today_suggestions = rates_helper.get_satisfaction_ratings(start_date, end_date)
+            reactions_list = []
+
+            total_reactions = {
+                'name': 'Total de Reacciones',
+                'reactions': {
+                    0: {'reaction': 'Enojado', 'quantity': 0},
+                    1: {'reaction': 'Triste', 'quantity': 0},
+                    2: {'reaction': 'Feliz', 'quantity': 0},
+                    3: {'reaction': 'Encantado', 'quantity': 0},
+                }
+            }
+
+            for suggestion in today_suggestions:
+                total_reactions['reactions'][suggestion.satisfaction_rating - 1]['quantity'] += 1
+
+            for element_to_evaluate in rates_helper.elements_to_evaluate:
+                """ For every element chart """
+                element_object = {
+                    'id': element_to_evaluate.id,
+                    'name': element_to_evaluate.element,
+                    'reactions': {
+                        0: {'reaction': 'Enojado', 'quantity': 0},
+                        1: {'reaction': 'Triste', 'quantity': 0},
+                        2: {'reaction': 'Feliz', 'quantity': 0},
+                        3: {'reaction': 'Encantado', 'quantity': 0},
+                    },
+                }
+                for suggestion in today_suggestions:
+                    for element_in_suggestion in suggestion.elements.all():
+                        if element_in_suggestion == element_to_evaluate:
+                            element_object['reactions'][suggestion.satisfaction_rating - 1]['quantity'] += 1
+
+                reactions_list.append(element_object)
+
+            return JsonResponse({'reactions_list': reactions_list, 'total_reactions': total_reactions})
+        elif request.POST['type'] == 'reactions_week':
+            initial_date = helper.parse_to_datetime(request.POST['dt_week'].split(',')[0])
+            final_date = helper.parse_to_datetime(request.POST['dt_week'].split(',')[1])
+            data = {
+                'week_number': helper.get_week_number(initial_date),
+                'reactions': rates_helper.get_info_rates_list(initial_date, final_date),
+            }
+            return JsonResponse(data)
+
+    template = 'analytics.html'
+    title = 'Analytics'
+    context = {
+        'title': PAGE_TITLE + ' | ' + title,
+        'page_title': title,
+        'dates_range': rates_helper.get_dates_range(),
+        'reactions_week': rates_helper.get_info_rates_actual_week(),
+        'suggestions_week': rates_helper.get_info_suggestions_actual_week(),
+        'elements': rates_helper.elements_to_evaluate,
+        'total_elements': rates_helper.elements_to_evaluate.count(),
     }
     return render(request, template, context)
 
