@@ -294,6 +294,9 @@ small {
 .card-outline-blue {
   border-color: #004c83;
 }
+.ck-center {
+  text-align: center;
+}
 .container-hidden {
   display: none;
 }
