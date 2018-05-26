@@ -22,6 +22,9 @@
           <div class="canvas-holder">
             <canvas id="canvas-week-suggestions"></canvas>
           </div>
+            <div class="canvas-holder">
+            <canvas id="canvas-general-suggestions"></canvas>
+          </div>
         </div>
         <div class="col-xs-12 col-lg-6 col-xl-7 mb-3 elements-analytics-container">
           <div class="row">
@@ -72,18 +75,20 @@
 
 <script type="text/javascript" charset="utf-8" defer>
   $(function() {
-    let dates_range = JSON.parse('{{ dates_range | safe }}');
-    let reactions_week = JSON.parse('{{ reactions_week | safe }}');
-    let suggestions_week = JSON.parse('{{ suggestions_week | safe }}');
-    let elements_to_evaluate = []; // Reactions data
-    let ctx_week_reactions = document.getElementById("canvas-week-reactions");
-    let ctx_week_suggestions = document.getElementById("canvas-week-suggestions");
-    let ctx_reactions = []; // reactions elements charts (DOM)
-    let elements_charts = []; // // reaction elements charts (Chart Objects)
-    let todayDateObject = new Date();
-    let today_date;
-    let reactions_week_chart;
-    let suggestions_week_chart;
+    let dates_range = JSON.parse('{{ dates_range | safe }}'),
+      reactions_week = JSON.parse('{{ reactions_week | safe }}'),
+      suggestions_week = JSON.parse('{{ suggestions_week | safe }}'),
+      elements_to_evaluate = [], // Reactions dat,
+      ctx_week_reactions = document.getElementById("canvas-week-reactions"),
+      ctx_week_suggestions = document.getElementById("canvas-week-suggestions"),
+      ctx_general_suggestions = document.getElementById("canvas-general-suggestions"),
+      ctx_reactions = [], // reactions elements charts (DOM)
+      elements_charts = [], // // reaction elements charts (Chart Objects)
+      todayDateObject = new Date(),
+      today_date,
+      reactions_week_chart,
+      suggestions_week_char,
+      reactions_general_chart;
 
     {% for element in elements %}
       elements_to_evaluate.push({
@@ -320,6 +325,50 @@
         title: {
           display: true,
           text: 'Gŕafica de comentarios en la semana',
+        },
+        legend: {
+          display: true,
+        }
+      }
+    });
+
+    /**
+     * Draws the general reactions charts
+     */
+    reactions_general_chart = new Chart(ctx_general_suggestions, {
+      type: 'bar',
+      data: {
+        labels: ["Reacción 1", "Reacción 2", "Reaccióm 3", "Reacción 4"],
+        datasets: [{
+          label: 'Reacciones',
+          data: get_suggestions_week_list(),
+          backgroundColor: [
+            '#4caf50',
+            '#4caf50',
+            '#4caf50',
+            '#4caf50',
+          ],
+        }],
+      },
+      options: {
+        responsive: true,
+        onClick: function(event, legendItem) {
+          try {
+
+          } catch (error) {
+            console.log(error.message);
+          }
+        },
+        scales: {
+          yAxes: [{
+            ticks: {
+              beginAtZero: true,
+            },
+          }]
+        },
+        title: {
+          display: true,
+          text: 'Gŕafica de general de reacciones',
         },
         legend: {
           display: true,

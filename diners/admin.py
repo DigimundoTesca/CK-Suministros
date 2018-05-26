@@ -24,9 +24,9 @@ class AccessLogAdmin(admin.ModelAdmin):
 
 @admin.register(ElementToEvaluate)
 class ElementToEvaluateAdmin(admin.ModelAdmin):
-    list_display = ('id', 'priority', 'element', 'permanent', 'created_at')
-    ordering = ('priority',)
-    list_editable = ('priority', 'permanent')
+    list_display = ('id', 'priority', 'element', 'permanent', 'publication_date')
+    ordering = ('priority', 'publication_date')
+    list_editable = ('priority', 'permanent', 'publication_date')
 
 
 @admin.register(SatisfactionRating)
