@@ -9,6 +9,6 @@ urlpatterns = [
     # url(r'warehouse/$', views.supplies, name='supplies'),
 
     # Kitchen
-    url(r'kitchen/$', views.kitchen, name='kitchen'),
-    url(r'kitchen/assembly/$', views.assembly, name='assembly'),
+    # url(r'kitchen/$', views.kitchen, name='kitchen'),
+    # url(r'kitchen/assembly/$', views.assembly, name='assembly'),
 ]

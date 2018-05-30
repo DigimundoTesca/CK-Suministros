@@ -1,8 +1,3 @@
-# -*- encoding: utf-8 -*-
-from __future__ import unicode_literals
-
-import datetime
-
 from django.core.validators import MaxValueValidator, MinLengthValidator
 from django.db import models
 
@@ -165,8 +160,8 @@ class ExtraIngredient(models.Model):
     """
     Description: Extra ingredients that could have the cartridges in a new sale
     """
-    cartridge = models.ForeignKey(Cartridge)
-    ingredient = models.ForeignKey(Supply)
+    cartridge = models.ForeignKey(Cartridge, on_delete=models.CASCADE)
+    ingredient = models.ForeignKey(Supply, on_delete=models.CASCADE)
     cost = models.DecimalField(default=0, max_digits=12, decimal_places=2)
     image = models.ImageField(blank=False, upload_to='extra-ingredients')
 

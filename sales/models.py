@@ -1,5 +1,4 @@
 from django.db import models
-from django.db.models import Avg, Sum
 from django.utils import timezone
 
 from branchoffices.models import CashRegister
@@ -99,7 +98,7 @@ class TicketDetail(models.Model):
 
 
 class TicketExtraIngredient(models.Model):
-    ticket_detail = models.ForeignKey(TicketDetail, null=True)
+    ticket_detail = models.ForeignKey(TicketDetail, null=True, on_delete=models.CASCADE)
     extra_ingredient = models.ForeignKey(ExtraIngredient, on_delete=models.CASCADE, blank=True, null=True)
     price = models.DecimalField(default=0, max_digits=12, decimal_places=2)
 

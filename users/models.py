@@ -19,7 +19,7 @@ class Rol(models.Model):
 
 
 class User(AbstractUser):
-    user_rol = models.ForeignKey(Rol, blank=True, null=True)
+    user_rol = models.ForeignKey(Rol, blank=True, null=True, on_delete=models.CASCADE)
 
     class Meta(AbstractUser.Meta):
         swappable = 'AUTH_USER_MODEL'

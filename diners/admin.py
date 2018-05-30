@@ -27,6 +27,7 @@ class ElementToEvaluateAdmin(admin.ModelAdmin):
     list_display = ('id', 'priority', 'element', 'permanent', 'publication_date')
     ordering = ('priority', 'publication_date')
     list_editable = ('priority', 'permanent', 'publication_date')
+    search_fields = ['element', ]
 
 
 @admin.register(SatisfactionRating)

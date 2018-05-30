@@ -17,25 +17,25 @@
       <li class="nav-item" id="link-new-food">
         <a class="nav-link" href="{% url 'sales:new_food'  %}">Comidas</a>
       </li>
-      <li class="nav-item dropdown" id="link-kitchen">
-        <a class="nav-link dropdown-toggle" href="#" id="supportedContentDropdown" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">Cocina</a>
-        <div class="dropdown-menu" aria-labelledby="supportedContentDropdown">
-          <a class="dropdown-item" href="{% url 'kitchen:kitchen' %}">Cocina</a>
-          <a class="dropdown-item" href="{% url 'kitchen:assembly' %}">Ensamble</a>
-        </div>
-      </li>
       <li class="nav-item dropdown" id="link-diners">
-        <a class="nav-link dropdown-toggle" href="#" id="supportedContentDropdown" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">Comedor</a>
+        <a class="nav-link dropdown-toggle" href="#" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">Comedor</a>
         <div class="dropdown-menu" aria-labelledby="supportedContentDropdown">
           <a class="dropdown-item" href="{% url 'diners:today_access' %}">Accesos de hoy</a>
           <a class="dropdown-item" href="{% url 'diners:diners_logs' %}">Historial de Accesos</a>
           <a class="dropdown-item" href="{% url 'diners:new_diner' %}">Crear Comensal</a>
           <a class="dropdown-item" href="{% url 'diners:diners' %}">Comensales Registrados</a>
+
+        </div>
+      </li>
+      <li class="nav-item dropdown" id="link-service">
+        <a class="nav-link dropdown-toggle" href="#" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">Servicio</a>
+        <div class="dropdown-menu" aria-labelledby="supportedContentDropdown">
           <a class="dropdown-item" href="{% url 'diners:analytics' %}">Analytics de Calificaciones</a>
+          <a class="dropdown-item" href="{% url 'diners:suggestions' %}">Comentarios</a>
         </div>
       </li>
       <li class="nav-item dropdown">
-        <a class="nav-link dropdown-toggle" href="#" id="supportedContentDropdown" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">{{ user.username }}</a>
+        <a class="nav-link dropdown-toggle" href="#" aria-haspopup="true" aria-expanded="false">{{ user.username }}</a>
         <div class="dropdown-menu" aria-labelledby="supportedContentDropdown">
           {% if user.is_superuser %}
           <a class="dropdown-item" href="{% url 'admin:login' %}">Panel de Control</a>

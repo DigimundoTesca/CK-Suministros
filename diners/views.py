@@ -405,7 +405,7 @@ def satisfaction_rating(request):
     today = make_aware(today, tz)
 
     elements = ElementToEvaluate.objects.order_by('priority').filter(
-        Q(permanent=True) | Q(created_at__gt=today))
+        Q(permanent=True) | Q(publication_date__gte=today))
     context = {
         'title': PAGE_TITLE + ' | ' + title,
         'page_title': title,
@@ -478,6 +478,19 @@ def analytics_rating(request):
         'suggestions_week': rates_helper.get_info_suggestions_actual_week(),
         'elements': rates_helper.elements_to_evaluate,
         'total_elements': rates_helper.elements_to_evaluate.count(),
+    }
+    return render(request, template, context)
+
+
+@login_required(login_url='users:login')
+def suggestions(request):
+    template = 'suggestions.html'
+    title = 'Analytics'
+    tests = SatisfactionRating.objects.order_by('-creation_date')
+    context = {
+        'title': PAGE_TITLE + ' | ' + title,
+        'page_title': title,
+        'tests': tests,
     }
     return render(request, template, context)
 

@@ -56,7 +56,7 @@ class CustomerOrder(models.Model):
         (SOLD, 'Vendido'),
         (CANCELLED, 'Cancelado'),
     )
-    customer_user = models.ForeignKey(UserProfile, default=1)
+    customer_user = models.ForeignKey(UserProfile, default=1, on_delete=models.CASCADE)
     created_at = models.DateTimeField(auto_now_add=True, editable=False)
     delivery_date = models.DateTimeField(auto_created=True, editable=True)
     status = models.CharField(max_length=10, choices=STATUS, default=IN_PROCESS)
