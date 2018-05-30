@@ -1,10 +1,8 @@
 import json
 
 from django.contrib.auth.decorators import login_required
-from django.http import JsonResponse, HttpResponse
+from django.http import JsonResponse
 from django.shortcuts import render, redirect
-from django.core.signals import request_finished
-from django.dispatch import receiver
 
 from django.contrib.auth import authenticate
 from django.contrib.auth import login as login_django
@@ -47,7 +45,7 @@ def index(request):
 
 # -------------------------------------  Auth -------------------------------------
 def login(request):
-    if request.user.is_authenticated():
+    if request.user.is_authenticated:
         # login(request.user)
         return redirect('sales:sales')
     tab = 'login'

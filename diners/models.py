@@ -1,6 +1,7 @@
 from django.core.validators import MaxValueValidator
 from django.db import models
-from datetime import datetime
+from django.utils import timezone
+
 
 class Diner(models.Model):
     created_at = models.DateTimeField(auto_now_add=True)
@@ -17,7 +18,7 @@ class Diner(models.Model):
 
 
 class AccessLog(models.Model):
-    diner = models.ForeignKey(Diner, null=True, blank=True)
+    diner = models.ForeignKey(Diner, null=True, blank=True, on_delete=models.CASCADE)
     RFID = models.CharField(default='', max_length=24)
     access_to_room = models.DateTimeField(auto_now_add=True)
 
@@ -34,7 +35,7 @@ class ElementToEvaluate(models.Model):
     priority = models.IntegerField(default=1)
     permanent = models.BooleanField(default=False)
     created_at = models.DateTimeField(auto_now=True)
-    publication_date = models.DateTimeField(default=datetime.now())
+    publication_date = models.DateField(default=timezone.now)
 
     class Meta:
         verbose_name = "Elemento a evaluar"

@@ -159,3 +159,4 @@ staticfiles/
 media/
 # Databases
 *.sqlite3
+*.sql

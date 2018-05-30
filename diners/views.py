@@ -405,7 +405,7 @@ def satisfaction_rating(request):
     today = make_aware(today, tz)
 
     elements = ElementToEvaluate.objects.order_by('priority').filter(
-        Q(permanent=True) | Q(created_at__gt=today))
+        Q(permanent=True) | Q(publication_date__gte=today))
     context = {
         'title': PAGE_TITLE + ' | ' + title,
         'page_title': title,
