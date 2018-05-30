@@ -235,6 +235,22 @@ small {
   background-color: #eaeaea;
   color: #1e3c50;
 }
+.badge-emotion {
+  color: #3780B5;
+  padding: .3rem;
+}
+.badge-emotion-1 {
+  border: 3px #E57373 solid;
+}
+.badge-emotion-2 {
+  border: 3px #FFE082 solid;
+}
+.badge-emotion-3 {
+  border: 3px #90CAF9 solid;
+}
+.badge-emotion-4 {
+  border: 3px #81C784 solid;
+}
 .bd {
   border: solid #498ec9;
   border-width: 0 0 4px 0;

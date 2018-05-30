@@ -482,6 +482,19 @@ def analytics_rating(request):
     return render(request, template, context)
 
 
+@login_required(login_url='users:login')
+def suggestions(request):
+    template = 'suggestions.html'
+    title = 'Analytics'
+    tests = SatisfactionRating.objects.order_by('-creation_date')
+    context = {
+        'title': PAGE_TITLE + ' | ' + title,
+        'page_title': title,
+        'tests': tests,
+    }
+    return render(request, template, context)
+
+
 # --------------------------- TEST ------------------------
 def test(request):
     all_diners = Diner.objects.all()
