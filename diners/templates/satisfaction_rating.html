@@ -1,398 +1,412 @@
 {% extends 'base/base_no_nav.html' %}
-{% load static %} 
+{% load static %}
 
 {% block content %}
-<div class="container container-rating">
-  <h2 id="header-question" class="text-xs-center rating-title mt-2">¿Cómo te sentiste hoy?</h2>
-  <div class="row emojis-container mt-2">
-    <div class="col-xs-6 col-md-3">
-      <figure class="emoji-container emoji-lv-1">
-        <img class="emoji" src="{% static 'images/Very_Angry_Emoji.png' %}" alt="Very_Angry_Emoji">
-      </figure>
-    </div>
-    <div class="col-xs-6 col-md-3">
-      <figure class="emoji-container emoji-lv-2">
-        <img class="emoji" src="{% static 'images/Very_sad_emoji_icon_png.png' %}" alt="Very_sad_emoji_icon_png">
-      </figure>
-    </div>
-    <div class="col-xs-6 col-md-3">
-      <figure class="emoji-container emoji-lv-3">
-        <img class="emoji" src="{% static 'images/Hungry_Emoji.png' %}" alt="Smiling_Emoji_with_Smiling_Eyes">
-      </figure>
-    </div>
-    <div class="col-xs-6 col-md-3 ">
-      <figure class="emoji-container emoji-lv-4">
-        <img class="emoji" src="{% static 'images/Heart_Eyes_Emoji.png' %}" alt="Heart_Eyes_Emoji">
-      </figure>
-    </div>
-  </div>
-  <div class="rating-footer mt-2 mb-3">
-    <h3 id="question" class="text-xs-center rating-footer-title mt-2"></h3>
-    <div class="container">
-      <div class="row" id="elements-container">
-        {% for element in elements %}
-        <div class="col-xs-12 col-md-4 mt-1 element-container">
-          <label class="btn btn-lg btn-block btn-option" id="element-rate-{{ element.id }}">
-            <input id="checkbox-rate" type="checkbox" class="custom-control-input">
-            <span class="custom-control-description">{{ element }}</span>
-          </label>
-        </div>
-        {% endfor %}
+  <div class="container container-rating">
+    <h2 id="header-question" class="text-xs-center rating-title mt-2">¿Cómo te sentiste hoy?</h2>
+    <div class="row emojis-container mt-2">
+      <div class="col-xs-6 col-md-3">
+        <figure class="emoji-container emoji-lv-1">
+          <img class="emoji" src="{% static 'images/Very_Angry_Emoji.png' %}" alt="Very_Angry_Emoji">
+        </figure>
       </div>
-      <div class="row mt-1 hidden">
-        <div class="col-xs-12 btn-suggestion-container">
-          <button id="btn-write-commentary" class="btn btn-block btn-primary btn-text-close">
-            <span class="btn-text">Escribir comentario y enviar</span>
-            <span class="icon-container">
+      <div class="col-xs-6 col-md-3">
+        <figure class="emoji-container emoji-lv-2">
+          <img class="emoji" src="{% static 'images/Very_sad_emoji_icon_png.png' %}" alt="Very_sad_emoji_icon_png">
+        </figure>
+      </div>
+      <div class="col-xs-6 col-md-3">
+        <figure class="emoji-container emoji-lv-3">
+          <img class="emoji" src="{% static 'images/Hungry_Emoji.png' %}" alt="Smiling_Emoji_with_Smiling_Eyes">
+        </figure>
+      </div>
+      <div class="col-xs-6 col-md-3 ">
+        <figure class="emoji-container emoji-lv-4">
+          <img class="emoji" src="{% static 'images/Heart_Eyes_Emoji.png' %}" alt="Heart_Eyes_Emoji">
+        </figure>
+      </div>
+    </div>
+    <div class="rating-footer mt-2 mb-3">
+      <h3 id="question" class="text-xs-center rating-footer-title mt-2"></h3>
+      <div class="container">
+        <div class="row" id="elements-container">
+          {% for category in categories %}
+            <div class="container-fluid">
+              <h3 class="mt-1 text-xs-center">
+                <small class="text-muted">
+                {{ category.name }}
+                </small>
+              </h3>
+              <div class="row">
+                {% for element in elements %}
+                  {% if element.category == category %}
+                    <div class="col-xs-12 col-md-3 mt-1 element-container">
+                      <label class="btn btn-lg btn-block btn-option" id="element-rate-{{ element.id }}">
+                        <input id="checkbox-rate" type="checkbox" class="custom-control-input">
+                        <span class="custom-control-description">{{ element }}</span>
+                      </label>
+                    </div>
+                  {% endif %}
+
+                {% endfor %}
+              </div>
+            </div>
+          {% endfor %}
+        </div>
+        <div class="row mt-1 hidden">
+          <div class="col-xs-12 btn-suggestion-container">
+            <button id="btn-write-commentary" class="btn btn-block btn-primary btn-text-close">
+              <span class="btn-text">Escribir comentario y enviar</span>
+              <span class="icon-container">
               <i class="material-icons">create</i>
             </span>
-          </button>
-        </div>
-        <div class="col-xs-2 hidden btn-arrow-container">
-          <button id="btn-arrow" class="btn btn-outline-info btn-block">
-            <span class="btn-text"></span>
-            <span class="icon-container">
+            </button>
+          </div>
+          <div class="col-xs-2 hidden btn-arrow-container">
+            <button id="btn-arrow" class="btn btn-outline-info btn-block">
+              <span class="btn-text"></span>
+              <span class="icon-container">
               <i class="material-icons">arrow_back</i>
             </span>
-          </button>
+            </button>
+          </div>
         </div>
-      </div>
-      <div class="form-group hidden" id="suggestion-container">
-        <small id="anon-msg" class="form-text text-muted mt-1 hidden">Tu comentario es totalmente anónimo</small>
-        <textarea class="form-control" id="suggestion-textarea" rows="4" placeholder="Escríbe aquí cómo podemos mejorar."></textarea>
-      </div>
-      <div class="row mt-1" id="btn-send-container">
-        <div class="col-xs-12">
-          <button id="btn-send-score" class="btn btn-block btn-success" disabled=true>
-            <span class="btn-text">Enviar</span>
-            <span class="icon-container">
+        <div class="form-group hidden" id="suggestion-container">
+          <small id="anon-msg" class="form-text text-muted mt-1 hidden">Tu comentario es totalmente anónimo</small>
+          <textarea class="form-control" id="suggestion-textarea" rows="4" placeholder="Escríbe aquí cómo podemos mejorar."></textarea>
+        </div>
+        <div class="row mt-1" id="btn-send-container">
+          <div class="col-xs-12">
+            <button id="btn-send-score" class="btn btn-block btn-success" disabled=true>
+              <span class="btn-text">Enviar</span>
+              <span class="icon-container">
               <i class="material-icons">send</i>
               <i class="material-icons hidden">done</i>
             </span>
-          </button>
+            </button>
+          </div>
         </div>
       </div>
     </div>
   </div>
-</div>
-{% endblock %} 
+{% endblock %}
 
 {% block javascript %}
-<script src="{% static 'js/Chart.bundle.min.js' %}" defer></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-touch-events/1.0.9/jquery.mobile-events.min.js"></script>
-<script src="{% static 'js/jquery-migrate-3.0.0.js' %}"></script>
-<script type="text/javascript" charset="utf-8" async>
-  $(function() {
-    let data = {
-      'satisfaction_rating': 0,
-      'elements_id': [],
-      'suggestion': '',
-    };
+  <script src="{% static 'js/Chart.bundle.min.js' %}" defer></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-touch-events/1.0.9/jquery.mobile-events.min.js"></script>
+  <script src="{% static 'js/jquery-migrate-3.0.0.js' %}"></script>
+  <script type="text/javascript" charset="utf-8" async>
+      $(function() {
+          let data = {
+              'satisfaction_rating': 0,
+              'elements_id': [],
+              'suggestion': '',
+          };
 
-    let edit_mode = false;
-    let userActive = false;
-    let secondsElapsed;
-    let chronometer;
+          let edit_mode = false;
+          let userActive = false;
+          let secondsElapsed;
+          let chronometer;
 
-    /**
-     * Shows the emojis and the elements to evaluate
-     */
-    function showElements(emoji_level) {
-      let rating_footel_title = $('.rating-footer-title');
-      let buttons = $('.btn-option');
+          /**
+           * Shows the emojis and the elements to evaluate
+           */
+          function showElements(emoji_level) {
+              let rating_footel_title = $('.rating-footer-title');
+              let buttons = $('.btn-option');
 
-      if (emoji_level === 1) {
-        rating_footel_title.text('¿Qué salió mal?');
-        buttons.each(function(index, el) {
-          let button = $(this);
-          button.removeClass('btn-rate-2 btn-rate-3 btn-rate-4');
-          button.addClass('btn-rate-1');
-        });
-      } else if (emoji_level === 2){
-        let buttons = $('.btn-option');
-        rating_footel_title.text('¿Qué salió mal?');
-        buttons.each(function(index, el) {
-          let button = $(this);
-          button.removeClass('btn-rate-1 btn-rate-3 btn-rate-4');
-          button.addClass('btn-rate-2');
-        });
-      } else if (emoji_level === 3) {
-        let buttons = $('.btn-option');
-        rating_footel_title.text('¿Qué salió bien?');
-        buttons.each(function(index, el) {
-          let button = $(this);
-          button.removeClass('btn-rate-1 btn-rate-2 btn-rate-4');
-          button.addClass('btn-rate-3');
-        });
-      } else if (emoji_level === 4) {
-        let buttons = $('.btn-option');
-        rating_footel_title.text('¿Qué salió bien?');
-        buttons.each(function(index, el) {
-          let button = $(this);
-          button.removeClass('btn-rate-1 btn-rate-2 btn-rate-3');
-          button.addClass('btn-rate-4')
-        });
-      }
+              if (emoji_level === 1) {
+                  rating_footel_title.text('¿Qué salió mal?');
+                  buttons.each(function(index, el) {
+                      let button = $(this);
+                      button.removeClass('btn-rate-2 btn-rate-3 btn-rate-4');
+                      button.addClass('btn-rate-1');
+                  });
+              } else if (emoji_level === 2){
+                  let buttons = $('.btn-option');
+                  rating_footel_title.text('¿Qué salió mal?');
+                  buttons.each(function(index, el) {
+                      let button = $(this);
+                      button.removeClass('btn-rate-1 btn-rate-3 btn-rate-4');
+                      button.addClass('btn-rate-2');
+                  });
+              } else if (emoji_level === 3) {
+                  let buttons = $('.btn-option');
+                  rating_footel_title.text('¿Qué salió bien?');
+                  buttons.each(function(index, el) {
+                      let button = $(this);
+                      button.removeClass('btn-rate-1 btn-rate-2 btn-rate-4');
+                      button.addClass('btn-rate-3');
+                  });
+              } else if (emoji_level === 4) {
+                  let buttons = $('.btn-option');
+                  rating_footel_title.text('¿Qué salió bien?');
+                  buttons.each(function(index, el) {
+                      let button = $(this);
+                      button.removeClass('btn-rate-1 btn-rate-2 btn-rate-3');
+                      button.addClass('btn-rate-4')
+                  });
+              }
 
-      if (emoji_level >= 1 && emoji_level <= 2) {
-        $('#btn-send-container').hide(300);
-      } else {
-        $('#btn-send-container').show(300);
-      }
+              if (emoji_level >= 1 && emoji_level <= 2) {
+                  $('#btn-send-container').hide(300);
+              } else {
+                  $('#btn-send-container').show(300);
+              }
 
-      $('#elements-container').show(300);
-      $('.rating-footer').show(300);
-      $('.emojis-container').show(300);
-      $('#header-question').show(300);
-    }
-    
-    /**
-     * Hide the emojis and the elements to evaluate
-     */
-    function hideElements() {
-      $('#elements-container').hide(300);
-      $('#btn-send-container').hide(300);
-      $('.emojis-container').hide(300);
-      $('#header-question').hide(300);
+              $('#elements-container').show(300);
+              $('.rating-footer').show(300);
+              $('.emojis-container').show(300);
+              $('#header-question').show(300);
+          }
 
-      $('#btn-write-commentary').find('span.btn-text').text('Guardar y Enviar');
-      $('#btn-write-commentary').find('span.icon-container .material-icons').text('send');
-    }
+          /**
+           * Hide the emojis and the elements to evaluate
+           */
+          function hideElements() {
+              $('#elements-container').hide(300);
+              $('#btn-send-container').hide(300);
+              $('.emojis-container').hide(300);
+              $('#header-question').hide(300);
 
-    /**
-     * Shows the suggestions container and the write and send suggestion
-     */
-    function showSuggestionsContainer() {
-      $('#suggestion-container').show(300)
-      $('#anon-msg').removeClass('hidden')
-    }
-    
-    /**
-     * Hides the suggestions container and the write and send suggestion
-     */
-    function hideSuggestionsContainer() {
-      $('#suggestion-container').hide(300)
-      $('#anon-msg').addClass('hidden')
-    }
+              $('#btn-write-commentary').find('span.btn-text').text('Guardar y Enviar');
+              $('#btn-write-commentary').find('span.icon-container .material-icons').text('send');
+          }
 
-    /**
-     * Collects all the data and sends this
-     */
-    function sendTest() {
-      console.log('enviarmos!')
-      $.ajax({
-        url: "{% url 'diners:satisfaction_rating' %}",
-        type: 'POST',
-        data: {
-          csrfmiddlewaretoken: '{{ csrf_token }}',
-          'satisfaction_rating': data['satisfaction_rating'],
-          'elements_id': JSON.stringify(data['elements_id']),
-          'suggestion': data['suggestion'],
-          'type': 'satisfaction_rating',
-        },
-        traditional: true,
-        datatype: 'jsonp',
-        beforeSend: function() {
-          swal({
-            title: "Enviando comentario",
+          /**
+           * Shows the suggestions container and the write and send suggestion
+           */
+          function showSuggestionsContainer() {
+              $('#suggestion-container').show(300)
+              $('#anon-msg').removeClass('hidden')
+          }
+
+          /**
+           * Hides the suggestions container and the write and send suggestion
+           */
+          function hideSuggestionsContainer() {
+              $('#suggestion-container').hide(300)
+              $('#anon-msg').addClass('hidden')
+          }
+
+          /**
+           * Collects all the data and sends this
+           */
+          function sendTest() {
+              console.log('enviarmos!')
+              $.ajax({
+                  url: "{% url 'diners:satisfaction_rating' %}",
+                  type: 'POST',
+                  data: {
+                      csrfmiddlewaretoken: '{{ csrf_token }}',
+                      'satisfaction_rating': data['satisfaction_rating'],
+                      'elements_id': JSON.stringify(data['elements_id']),
+                      'suggestion': data['suggestion'],
+                      'type': 'satisfaction_rating',
+                  },
+                  traditional: true,
+                  datatype: 'jsonp',
+                  beforeSend: function() {
+                      swal({
+                          title: "Enviando comentario",
+                      });
+                      swal.enableLoading();
+                  },
+                  success: function(result) {
+                      swal({
+                          title: 'Mensaje enviado',
+                          text: '¡Gracias!',
+                          type: "success",
+                          timer: 2000,
+                          showConfirmButton: false
+                      }).then(
+                          function() {},
+                          function(dismiss) {
+                              window.location = "{% url 'diners:satisfaction_rating' %}";
+                          }
+                      );
+                      $('#btn-write-commentary').attr('disabled', true);
+                      $('#btn-send-score').attr('disabled', true);
+                  },
+                  error: function(result, jqXHR, textStatus, errorThrown) {
+                      swal({
+                          title: 'Ha surgido un problema en el servidor',
+                          text: 'Intente más tarde.',
+                          type: "error",
+                          showConfirmButton: false
+                      }).then(
+                          function() {},
+                          function(dismiss) {}
+                      );
+                  },
+              });
+          }
+
+          /**
+           * Contains the Timer Object
+           */
+          function Timer(fn, t){
+              let timerObject = setInterval(fn, t);
+              this.elapsedTime = 1;
+
+              this.stop = function () {
+                  if (timerObject) {
+                      clearInterval(timerObject);
+                      timerObject = null;
+                  }
+                  return this;
+              }
+
+              this.start = function () {
+                  if (!timerObject) {
+                      this.stop();
+                      timerObject = setInterval(fn, t);
+                  }
+                  return this;
+              }
+
+              this.reset = function(newT) {
+                  t = newT;
+                  return this.stop().start();
+              }
+          }
+
+          /**
+           * If this is called for first time, creates the chronometer else
+           * reloads this
+           */
+          function setChronometer() {
+              if (userActive) {
+                  chronometer.elapsedTime = 1;
+              } else {
+                  chronometer = new Timer(function(){
+                      if (chronometer.elapsedTime === 60) {
+                          swal({
+                              title: '¿Sigues ahí?',
+                              text: 'Presiona ok para evitar el reinicio.',
+                              type: "question",
+                              timer: 3000,
+                          }).then(
+                              function() {
+                                  console.log('sigue')
+                              },
+                              function(dismiss) {
+                                  window.location = "{% url 'diners:satisfaction_rating' %}";
+                              }
+                          );
+                      }
+                      chronometer.elapsedTime += 1;
+                  }, 1000);
+                  userActive = true;
+              }
+          }
+
+          /**
+           * Sets the buttons classes
+           */
+          $(this).on('click', '.emoji-container', function(event) {
+              let selected_emoji = $(this);
+              let emojis = $('.emoji');
+              let emoji_level = $(this).attr('class').split(' ');
+
+              /**
+               * Gets the emoji level
+               */
+              for (let i = 0; i < emoji_level.length; i++) {
+                  if (emoji_level[i].search('emoji-lv') >= 0) {
+                      emoji_level = parseInt(emoji_level[i].split('-')[2]);
+                      data['satisfaction_rating'] = emoji_level;
+                  }
+              }
+
+              /**
+               * Set ghost emojis
+               */
+              emojis.removeClass('selected');
+              emojis.addClass('ghost');
+              selected_emoji.find('.emoji').addClass('selected');
+
+              showElements(emoji_level);
           });
-          swal.enableLoading();
-        },
-        success: function(result) {
-          swal({
-            title: 'Mensaje enviado',
-            text: '¡Gracias!',
-            type: "success",
-            timer: 2000,
-            showConfirmButton: false
-          }).then(
-            function() {},
-            function(dismiss) {
-              window.location = "{% url 'diners:satisfaction_rating' %}";
-            }
-          );
-          $('#btn-write-commentary').attr('disabled', true);
-          $('#btn-send-score').attr('disabled', true);
-        },
-        error: function(result, jqXHR, textStatus, errorThrown) {
-          swal({
-            title: 'Ha surgido un problema en el servidor',
-            text: 'Intente más tarde.',
-            type: "error",
-            showConfirmButton: false
-          }).then(
-            function() {},
-            function(dismiss) {}
-          );
-        },
+
+          /**
+           * Sets the buttons colors
+           */
+          $(this).on('change', '#checkbox-rate', function(event) {
+              let element = $(this);
+              let element_parent = $(this).parent();
+              let element_parent_id = element_parent[0].id.split('-')[2];
+              if (element[0].checked == false) {
+                  element_parent.removeClass('selected');
+                  for (var i = 0; i < data['elements_id'].length; i++) {
+                      if (data['elements_id'][i] == element_parent_id) {
+                          data['elements_id'].splice(i, 1);
+                      }
+                  }
+              } else {
+                  element_parent.addClass('selected');
+                  data['elements_id'].push(element_parent_id)
+              }
+              if (data['elements_id'].length > 0) {
+                  $('#btn-write-commentary').parent().parent().show('fast');
+                  $('#btn-send-score').attr('disabled', false);
+              } else {
+                  $('#btn-write-commentary').parent().parent().hide('fast');
+                  $('#btn-send-score').attr('disabled', true);
+              }
+          });
+
+          $(this).on('click', '#btn-write-commentary', function(event) {
+              if (edit_mode) {
+                  edit_mode = false;
+                  sendTest();
+              } else {
+                  $('.btn-suggestion-container').removeClass('col-xs-12');
+                  $('.btn-suggestion-container').addClass('col-xs-10')
+                  $('.btn-arrow-container').removeClass('hidden');
+                  edit_mode = true;
+                  hideElements();
+                  showSuggestionsContainer();
+
+                  if(data['suggestion'] === '') {
+                      $('#btn-write-commentary').attr('disabled',true);
+                  }
+              }
+          });
+
+          $(this).on('change keyup paste mouseup', '#suggestion-textarea', function(event) {
+              setChronometer();
+              if ($(this).val() != data['suggestion']) {
+                  data['suggestion'] = $(this).val();
+              }
+
+              if (data['suggestion'].length != 0) {
+                  $('#btn-write-commentary').attr('disabled', false);
+              } else {
+                  $('#btn-write-commentary').attr('disabled', true);
+              }
+          });
+
+          $(this).on('click', '#btn-send-score', function(event) {
+              sendTest();
+          });
+
+          $(this).on('click', '#btn-arrow', function(event) {
+              $('#btn-write-commentary').attr('disabled', false);
+              $('.btn-arrow-container').addClass('hidden');
+              $('.btn-suggestion-container').removeClass('col-xs-10');
+              $('.btn-suggestion-container').addClass('col-xs-12');
+              showElements(data['satisfaction_rating']);
+              hideSuggestionsContainer();
+              $('#btn-write-commentary').find('span.btn-text').text('Escribir comentario y enviar');
+              $('#btn-write-commentary').find('span.icon-container .material-icons').text('create');
+              edit_mode = false;
+          });
+
+          $(this).on('click', function(event) {
+              setChronometer();
+          });
+
       });
-    }
-
-    /**
-     * Contains the Timer Object
-     */
-    function Timer(fn, t){
-      let timerObject = setInterval(fn, t);
-      this.elapsedTime = 1;
-
-      this.stop = function () {
-        if (timerObject) {
-          clearInterval(timerObject);
-          timerObject = null;
-        }
-        return this;
-      }
-
-      this.start = function () {
-        if (!timerObject) {
-          this.stop();
-          timerObject = setInterval(fn, t);
-        }
-        return this;
-      }
-
-      this.reset = function(newT) {
-        t = newT;
-        return this.stop().start();
-      }
-    }
-
-    /**
-     * If this is called for first time, creates the chronometer else
-     * reloads this
-     */
-    function setChronometer() {
-      if (userActive) {
-        chronometer.elapsedTime = 1;
-      } else {
-        chronometer = new Timer(function(){
-          if (chronometer.elapsedTime === 60) {
-            swal({
-            title: '¿Sigues ahí?',
-            text: 'Presiona ok para evitar el reinicio.',
-            type: "question",
-            timer: 3000,
-          }).then(
-            function() {
-              console.log('sigue')
-            },
-            function(dismiss) {
-              window.location = "{% url 'diners:satisfaction_rating' %}";
-            }
-          );
-          }
-          chronometer.elapsedTime += 1;
-        }, 1000);
-        userActive = true;
-      }
-    }
-
-    /**
-     * Sets the buttons classes
-     */
-    $(this).on('click', '.emoji-container', function(event) {
-      let selected_emoji = $(this);
-      let emojis = $('.emoji');
-      let emoji_level = $(this).attr('class').split(' ');
-      
-      /**
-       * Gets the emoji level
-       */
-      for (let i = 0; i < emoji_level.length; i++) {
-        if (emoji_level[i].search('emoji-lv') >= 0) {
-          emoji_level = parseInt(emoji_level[i].split('-')[2]);
-          data['satisfaction_rating'] = emoji_level;
-        }
-      }
-
-      /**
-       * Set ghost emojis
-       */
-      emojis.removeClass('selected');
-      emojis.addClass('ghost');
-      selected_emoji.find('.emoji').addClass('selected');
-
-      showElements(emoji_level);
-    });
-
-    /**
-     * Sets the buttons colors
-     */
-    $(this).on('change', '#checkbox-rate', function(event) {
-      let element = $(this);
-      let element_parent = $(this).parent();
-      let element_parent_id = element_parent[0].id.split('-')[2];
-      if (element[0].checked == false) {
-        element_parent.removeClass('selected');
-        for (var i = 0; i < data['elements_id'].length; i++) {
-          if (data['elements_id'][i] == element_parent_id) {
-            data['elements_id'].splice(i, 1);
-          }
-        }
-      } else {
-        element_parent.addClass('selected');
-        data['elements_id'].push(element_parent_id)
-      }
-      if (data['elements_id'].length > 0) {
-        $('#btn-write-commentary').parent().parent().show('fast');
-        $('#btn-send-score').attr('disabled', false);
-      } else {
-        $('#btn-write-commentary').parent().parent().hide('fast');
-        $('#btn-send-score').attr('disabled', true);
-      }
-    });
-
-    $(this).on('click', '#btn-write-commentary', function(event) {
-      if (edit_mode) {
-        edit_mode = false;
-        sendTest();
-      } else {
-        $('.btn-suggestion-container').removeClass('col-xs-12');
-        $('.btn-suggestion-container').addClass('col-xs-10')
-        $('.btn-arrow-container').removeClass('hidden');
-        edit_mode = true;
-        hideElements();
-        showSuggestionsContainer();
-
-        if(data['suggestion'] === '') {
-          $('#btn-write-commentary').attr('disabled',true);
-        }
-      }
-    });
-
-    $(this).on('change keyup paste mouseup', '#suggestion-textarea', function(event) {
-      setChronometer();
-      if ($(this).val() != data['suggestion']) {
-        data['suggestion'] = $(this).val();
-      }
-
-      if (data['suggestion'].length != 0) {
-        $('#btn-write-commentary').attr('disabled', false);
-      } else {
-        $('#btn-write-commentary').attr('disabled', true);
-      }
-    });
-    
-    $(this).on('click', '#btn-send-score', function(event) {
-      sendTest();
-    });
-
-    $(this).on('click', '#btn-arrow', function(event) {
-        $('#btn-write-commentary').attr('disabled', false);
-        $('.btn-arrow-container').addClass('hidden');
-        $('.btn-suggestion-container').removeClass('col-xs-10');
-        $('.btn-suggestion-container').addClass('col-xs-12');
-        showElements(data['satisfaction_rating']);
-        hideSuggestionsContainer();
-        $('#btn-write-commentary').find('span.btn-text').text('Escribir comentario y enviar');
-        $('#btn-write-commentary').find('span.icon-container .material-icons').text('create');
-        edit_mode = false;
-    });
-
-    $(this).on('click', function(event) {
-      setChronometer();
-    });
-
-  });
-</script>
+  </script>
 {% endblock javascript %}
