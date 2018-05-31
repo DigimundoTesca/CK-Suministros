@@ -30,12 +30,24 @@ class AccessLog(models.Model):
         return self.RFID
 
 
+class ElementsCategory(models.Model):
+    name = models.CharField(max_length=48, default='', unique=True)
+    priority = models.IntegerField(default=1)
+
+    class Meta:
+        verbose_name = "Categoría"
+        verbose_name_plural = "Categorías"
+
+    def __str__(self):
+        return self.name
+
+
 class ElementToEvaluate(models.Model):
     element = models.CharField(max_length=48, default='', unique=True)
-    priority = models.IntegerField(default=1)
     permanent = models.BooleanField(default=False)
     created_at = models.DateTimeField(auto_now=True)
     publication_date = models.DateField(default=timezone.now)
+    category = models.ForeignKey(ElementsCategory, default=1, on_delete=models.CASCADE)
 
     class Meta:
         verbose_name = "Elemento a evaluar"
