@@ -47,7 +47,7 @@ class ElementToEvaluate(models.Model):
     permanent = models.BooleanField(default=False)
     created_at = models.DateTimeField(auto_now=True)
     publication_date = models.DateField(default=timezone.now)
-    category = models.ForeignKey(ElementsCategory, default=1, on_delete=models.CASCADE)
+    category = models.ForeignKey(ElementsCategory, null=True, on_delete=models.CASCADE)
 
     class Meta:
         verbose_name = "Elemento a evaluar"
