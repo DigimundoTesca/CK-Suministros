@@ -752,6 +752,38 @@ small {
   -moz-appearance: none;
   -webkit-appearance: none;
 }
+.elements-header .element-name {
+    color: #fbfbfb;
+    font-weight: 600;
+    text-align: center;
+}
+.element-name-cont {
+    padding: 0;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+.element-name-cont .element-name {
+    padding: 0.2rem;
+    font-size: 0.9rem;
+    margin: 0.2rem;
+    width: 100%;
+    display: flex;
+    border-radius: 5px;
+    justify-content: center;
+}
+.element-name.element-red {
+  background: #FF5252;
+}
+.element-name.element-yellow {
+  background: #FFC400;
+}
+.element-name.element-blue {
+  background: #2979FF;
+}
+.element-name.element-green {
+  background: #00E676;
+}
 .dropdown-menu {
   margin-left: -5rem !important;
 }

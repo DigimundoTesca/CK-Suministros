@@ -46,6 +46,10 @@ class ElementToEvaluate(models.Model):
 
 
 class SatisfactionRating(models.Model):
+    """
+    Modelo que almacena las evaluaciones de los clientes, tanto reaccicones
+    como el nivel de satisfaccion del servicio
+    """
     elements = models.ManyToManyField(ElementToEvaluate)
     satisfaction_rating = models.PositiveIntegerField(default=1, validators=[MaxValueValidator(4)])
     creation_date = models.DateTimeField(auto_now_add=True)
