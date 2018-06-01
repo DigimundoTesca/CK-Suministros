@@ -5,8 +5,9 @@ from datetime import date, datetime, timedelta
 import pytz
 from django.conf import settings
 from django.contrib.auth.decorators import login_required
+from django.core import serializers
 from django.core.paginator import Paginator
-from django.db.models import Q
+from django.db.models import Q, Count
 from django.utils import timezone
 from django.http import HttpResponse, JsonResponse
 from django.shortcuts import render, redirect
@@ -17,7 +18,7 @@ from django.views.generic import ListView
 from django.db.models import Max, Min
 
 from helpers import Helper, DinersHelper
-from .models import AccessLog, Diner, ElementToEvaluate, SatisfactionRating, ElementsCategory
+from .models import AccessLog, Diner, ElementToEvaluate, SatisfactionRating
 from .forms import DinerForm
 from cloudkitchen.settings.base import PAGE_TITLE
 from helpers import RatesHelper
@@ -407,19 +408,10 @@ def satisfaction_rating(request):
     elements = ElementToEvaluate.objects.order_by('element').filter(
         Q(permanent=True) | Q(publication_date__gte=today))
 
-    pk_list = []
-
-    for el in elements:
-        if el.category.pk not in pk_list:
-            pk_list.append(el.category.pk)
-
-    categories = ElementsCategory.objects.filter(pk__in=pk_list).order_by('priority')
-
     context = {
         'title': PAGE_TITLE + ' | ' + title,
         'page_title': title,
         'elements': elements,
-        'categories': categories
     }
     return render(request, template, context)
 
@@ -428,7 +420,7 @@ def satisfaction_rating(request):
 def analytics_rating(request):
     helper = Helper()
     rates_helper = RatesHelper()
-
+    diners_helper = DinersHelper()
     if request.method == 'POST':
         if request.POST['type'] == 'reactions_day':
             start_date = helper.naive_to_datetime(datetime.strptime(request.POST['date'], '%d-%m-%Y').date())
@@ -478,6 +470,17 @@ def analytics_rating(request):
             }
             return JsonResponse(data)
 
+        elif request.POST['type'] == 'general_ratings':
+            """
+            Permite obtener el total de reacciones registradas en la base de datos
+            """
+            total_reactions = SatisfactionRating.objects.values('satisfaction_rating').annotate(total=Count('satisfaction_rating'))
+            reactions_dic = []
+            for el in total_reactions:
+                new_el = {'satisfaction-rating': el['satisfaction_rating'], 'total': el['total']}
+                reactions_dic.append(new_el)
+            return JsonResponse({'data': reactions_dic})
+
     template = 'analytics.html'
     title = 'Analytics'
     context = {
@@ -486,6 +489,7 @@ def analytics_rating(request):
         'dates_range': rates_helper.get_dates_range(),
         'reactions_week': rates_helper.get_info_rates_actual_week(),
         'suggestions_week': rates_helper.get_info_suggestions_actual_week(),
+        'diners_week': diners_helper.get_diners_actual_week(),
         'elements': rates_helper.elements_to_evaluate,
         'total_elements': rates_helper.elements_to_evaluate.count(),
     }
