@@ -36,7 +36,7 @@
         </div>
       </li>
       <li class="nav-item dropdown">
-        <a class="nav-link dropdown-toggle" href="#" aria-haspopup="true" aria-expanded="false">{{ user.username }}</a>
+        <a class="nav-link dropdown-toggle" href="#" id="supportedContentDropdown" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">{{ user.username }}</a>
         <div class="dropdown-menu" aria-labelledby="supportedContentDropdown">
           {% if user.is_superuser %}
           <a class="dropdown-item" href="{% url 'admin:login' %}">Panel de Control</a>
