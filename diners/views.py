@@ -17,7 +17,7 @@ from django.views.generic import ListView
 from django.db.models import Max, Min
 
 from helpers import Helper, DinersHelper
-from .models import AccessLog, Diner, ElementToEvaluate, SatisfactionRating, ElementsCategory
+from .models import AccessLog, Diner, ElementToEvaluate, SatisfactionRating
 from .forms import DinerForm
 from cloudkitchen.settings.base import PAGE_TITLE
 from helpers import RatesHelper
@@ -407,19 +407,10 @@ def satisfaction_rating(request):
     elements = ElementToEvaluate.objects.order_by('element').filter(
         Q(permanent=True) | Q(publication_date__gte=today))
 
-    pk_list = []
-
-    for el in elements:
-        if el.category.pk not in pk_list:
-            pk_list.append(el.category.pk)
-
-    categories = ElementsCategory.objects.filter(pk__in=pk_list).order_by('priority')
-
     context = {
         'title': PAGE_TITLE + ' | ' + title,
         'page_title': title,
         'elements': elements,
-        'categories': categories
     }
     return render(request, template, context)
 
