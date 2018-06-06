@@ -12,4 +12,4 @@ def branch_offices_processor(request):
             return {'g_branch_office': branch_office}
 
     except Exception as ex:
-        return {'g_branch_office': ''}
+        return {'g_branch_office': '1'}
