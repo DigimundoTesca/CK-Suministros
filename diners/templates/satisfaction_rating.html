@@ -3,6 +3,7 @@
 
 {% block content %}
 <div class="container container-rating">
+  <h1 id="header-question" class="text-xs-center rating-title mt-2 text-primary">{{ branch_office.name }}</h1>
   <h2 id="header-question" class="text-xs-center rating-title mt-2">¿Cómo te sentiste hoy?</h2>
   <div class="row emojis-container mt-2">
     <div class="col-xs-6 col-md-3">
@@ -179,9 +180,8 @@
      * Collects all the data and sends this
      */
     function sendTest() {
-      console.log('enviarmos!')
       $.ajax({
-        url: "{% url 'diners:satisfaction_rating' %}",
+        url: "{% url 'diners:satisfaction_rating' branch_office.id %}",
         type: 'POST',
         data: {
           csrfmiddlewaretoken: '{{ csrf_token }}',
@@ -208,7 +208,7 @@
           }).then(
             function() {},
             function(dismiss) {
-              window.location = "{% url 'diners:satisfaction_rating' %}";
+              window.location = "{% url 'diners:satisfaction_rating' branch_office.id %}";
             }
           );
           $('#btn-write-commentary').attr('disabled', true);
@@ -277,7 +277,7 @@
               console.log('sigue')
             },
             function(dismiss) {
-              window.location = "{% url 'diners:satisfaction_rating' %}";
+              window.location = "{% url 'diners:satisfaction_rating' branch_office.id %}";
             }
           );
           }

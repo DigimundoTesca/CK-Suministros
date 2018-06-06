@@ -2,6 +2,8 @@ from django.core.validators import MaxValueValidator
 from django.db import models
 from django.utils import timezone
 
+from branchoffices.models import BranchOffice
+
 
 class Diner(models.Model):
     created_at = models.DateTimeField(auto_now_add=True)
@@ -21,6 +23,7 @@ class AccessLog(models.Model):
     diner = models.ForeignKey(Diner, null=True, blank=True, on_delete=models.CASCADE)
     RFID = models.CharField(default='', max_length=24)
     access_to_room = models.DateTimeField(auto_now_add=True)
+    branch_office = models.ForeignKey(BranchOffice, default=1, on_delete=models.CASCADE)
 
     class Meta:
         verbose_name = 'Control de Acceso'
@@ -54,6 +57,7 @@ class SatisfactionRating(models.Model):
     satisfaction_rating = models.PositiveIntegerField(default=1, validators=[MaxValueValidator(4)])
     creation_date = models.DateTimeField(auto_now_add=True)
     suggestion = models.TextField(blank=True, null=True)
+    branch_office = models.ForeignKey(BranchOffice, default=1, on_delete=models.CASCADE)
 
     class Meta:
         verbose_name = "Índice de Satisfacción"

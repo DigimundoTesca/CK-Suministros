@@ -601,7 +601,7 @@ class DinersHelper(object):
 
         return json.dumps(hours_list)
 
-    def get_diners_actual_week(self):
+    def get_diners_actual_week(self, branch_office_id):
         if self.__all_access_logs is None:
             self.set_all_access_logs()
         helper = Helper()
@@ -620,7 +620,8 @@ class DinersHelper(object):
             }
 
             logs = self.__all_access_logs. \
-                filter(access_to_room__range=[helper.start_datetime(days_to_count), helper.end_datetime(days_to_count)])
+                filter(access_to_room__range=[helper.start_datetime(days_to_count), helper.end_datetime(days_to_count)],
+                       branch_office=branch_office_id)
 
             for _ in logs:
                 total_entries += 1
@@ -834,16 +835,16 @@ class RatesHelper(object):
         # End while
         return json.dumps(years_list)
 
-    def get_satisfaction_ratings(self, initial_date: datetime, final_date: datetime):
+    def get_satisfaction_ratings(self, initial_date: datetime, final_date: datetime, branch_office_id):
         helper = Helper()
         initial_date = helper.naive_to_datetime(initial_date)
         final_date = helper.naive_to_datetime(final_date)
         if self.__all_satisfaction_ratings is None:
             self.set_all_satisfaction_ratings()
         return self.__all_satisfaction_ratings.filter(
-            creation_date__range=[initial_date, final_date]).order_by('-creation_date')
+            creation_date__range=[initial_date, final_date], branch_office=branch_office_id).order_by('-creation_date')
 
-    def get_info_rates_list(self, initial_date: datetime, final_date: datetime):
+    def get_info_rates_list(self, initial_date: datetime, final_date: datetime, branch_office_id):
         """
         Returns a list with all the rates data for te selected range
         :rtype: list
@@ -862,7 +863,8 @@ class RatesHelper(object):
             filtered_suggestions = self.satisfaction_ratings.filter(
                 creation_date__range=[
                     helper.naive_to_datetime(initial_date),
-                    helper.naive_to_datetime(initial_date + timedelta(days=1))])
+                    helper.naive_to_datetime(initial_date + timedelta(days=1))],
+                branch_office=branch_office_id)
 
             day_object['total_rates'] = str(filtered_suggestions.count())
             day_object['day_name'] = helper.get_name_day(initial_date)
@@ -873,7 +875,7 @@ class RatesHelper(object):
 
         return week_suggestions_list
 
-    def get_info_rates_actual_week(self):
+    def get_info_rates_actual_week(self, branch_office_id):
         """
         Gets the following properties for each week's day: Day name, Date, number day and total rates
         :rtype: list
@@ -893,7 +895,8 @@ class RatesHelper(object):
             }
 
             filtered_suggestions = self.satisfaction_ratings.filter(
-                creation_date__range=[helper.start_datetime(days_to_count), helper.end_datetime(days_to_count)])
+                creation_date__range=[helper.start_datetime(days_to_count), helper.end_datetime(days_to_count)],
+                branch_office=branch_office_id)
 
             day_object['total_rates'] = str(filtered_suggestions.count())
             day_object['day_name'] = helper.get_name_day(helper.start_datetime(days_to_count).date())
@@ -906,7 +909,7 @@ class RatesHelper(object):
 
         return json.dumps(week_suggestions_list)
 
-    def get_info_suggestions_actual_week(self):
+    def get_info_suggestions_actual_week(self, branch_office_id):
         """
         Gets the following properties for each week's day: Day name, Date, number day and total suggestions
         :rtype: list
@@ -926,8 +929,8 @@ class RatesHelper(object):
             }
 
             filtered_suggestions = self.satisfaction_ratings.filter(
-                creation_date__range=[helper.start_datetime(days_to_count), helper.end_datetime(days_to_count)]). \
-                exclude(suggestion__isnull=True)
+                creation_date__range=[helper.start_datetime(days_to_count), helper.end_datetime(days_to_count)],
+                branch_office=branch_office_id).exclude(suggestion__isnull=True)
 
             day_object['total_suggestions'] = str(filtered_suggestions.count())
             day_object['day_name'] = helper.get_name_day(helper.start_datetime(days_to_count).date())

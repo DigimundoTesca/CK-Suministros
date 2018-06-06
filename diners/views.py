@@ -5,7 +5,6 @@ from datetime import date, datetime, timedelta
 import pytz
 from django.conf import settings
 from django.contrib.auth.decorators import login_required
-from django.core import serializers
 from django.core.paginator import Paginator
 from django.db.models import Q, Count
 from django.utils import timezone
@@ -17,6 +16,7 @@ from django.views.decorators.csrf import csrf_exempt
 from django.views.generic import ListView
 from django.db.models import Max, Min
 
+from branchoffices.models import BranchOffice
 from helpers import Helper, DinersHelper
 from .models import AccessLog, Diner, ElementToEvaluate, SatisfactionRating
 from .forms import DinerForm
@@ -373,7 +373,9 @@ def diners_logs(request):
         return render(request, template, context)
 
 
-def satisfaction_rating(request):
+def satisfaction_rating(request, pk):
+    branch_office = BranchOffice.objects.get(id=pk)
+
     if request.method == 'POST':
         if request.POST['type'] == 'satisfaction_rating':
             satisfaction_rating_value = request.POST['satisfaction_rating']
@@ -385,10 +387,12 @@ def satisfaction_rating(request):
                 new_satisfaction_rating = SatisfactionRating.objects.create(
                     satisfaction_rating=satisfaction_rating_value,
                     suggestion=request.POST['suggestion'],
+                    branch_office=branch_office
                 )
             else:
                 new_satisfaction_rating = SatisfactionRating.objects.create(
-                    satisfaction_rating=satisfaction_rating_value
+                    satisfaction_rating=satisfaction_rating_value,
+                    branch_office=branch_office
                 )
             new_satisfaction_rating.save()
 
@@ -412,12 +416,13 @@ def satisfaction_rating(request):
         'title': PAGE_TITLE + ' | ' + title,
         'page_title': title,
         'elements': elements,
+        'branch_office': branch_office
     }
     return render(request, template, context)
 
 
 @login_required(login_url='users_login')
-def analytics_rating(request):
+def analytics_rating(request, pk):
     helper = Helper()
     rates_helper = RatesHelper()
     diners_helper = DinersHelper()
@@ -425,7 +430,7 @@ def analytics_rating(request):
         if request.POST['type'] == 'reactions_day':
             start_date = helper.naive_to_datetime(datetime.strptime(request.POST['date'], '%d-%m-%Y').date())
             end_date = helper.naive_to_datetime(start_date + timedelta(days=1))
-            today_suggestions = rates_helper.get_satisfaction_ratings(start_date, end_date)
+            today_suggestions = rates_helper.get_satisfaction_ratings(start_date, end_date, pk)
             reactions_list = []
 
             total_reactions = {
@@ -461,12 +466,13 @@ def analytics_rating(request):
                 reactions_list.append(element_object)
 
             return JsonResponse({'reactions_list': reactions_list, 'total_reactions': total_reactions})
+
         elif request.POST['type'] == 'reactions_week':
             initial_date = helper.parse_to_datetime(request.POST['dt_week'].split(',')[0])
             final_date = helper.parse_to_datetime(request.POST['dt_week'].split(',')[1])
             data = {
                 'week_number': helper.get_week_number(initial_date),
-                'reactions': rates_helper.get_info_rates_list(initial_date, final_date),
+                'reactions': rates_helper.get_info_rates_list(initial_date, final_date, pk),
             }
             return JsonResponse(data)
 
@@ -474,39 +480,82 @@ def analytics_rating(request):
             """
             Permite obtener el total de reacciones registradas en la base de datos
             """
-            total_reactions = SatisfactionRating.objects.values('satisfaction_rating').annotate(total=Count('satisfaction_rating'))
+            total_reactions = SatisfactionRating.objects.values('satisfaction_rating').filter(branch_office=pk).\
+                annotate(total=Count('satisfaction_rating'))
             reactions_dic = []
             for el in total_reactions:
                 new_el = {'satisfaction-rating': el['satisfaction_rating'], 'total': el['total']}
                 reactions_dic.append(new_el)
             return JsonResponse({'data': reactions_dic})
-
+    branch_office = BranchOffice.objects.get(pk=pk)
     template = 'analytics.html'
-    title = 'Analytics'
+    title = 'Analytics - ' + branch_office.name
     context = {
         'title': PAGE_TITLE + ' | ' + title,
         'page_title': title,
         'dates_range': rates_helper.get_dates_range(),
-        'reactions_week': rates_helper.get_info_rates_actual_week(),
-        'suggestions_week': rates_helper.get_info_suggestions_actual_week(),
-        'diners_week': diners_helper.get_diners_actual_week(),
+        'reactions_week': rates_helper.get_info_rates_actual_week(pk),
+        'suggestions_week': rates_helper.get_info_suggestions_actual_week(pk),
+        'diners_week': diners_helper.get_diners_actual_week(pk),
         'elements': rates_helper.elements_to_evaluate,
         'total_elements': rates_helper.elements_to_evaluate.count(),
+        'branch_id': pk
     }
     return render(request, template, context)
 
 
-@login_required(login_url='users:login')
-def suggestions(request):
-    template = 'suggestions.html'
-    title = 'Analytics'
-    tests = SatisfactionRating.objects.order_by('-creation_date')
-    context = {
-        'title': PAGE_TITLE + ' | ' + title,
-        'page_title': title,
-        'tests': tests,
-    }
-    return render(request, template, context)
+def suggestions_paginator(request, queryset, num_pages):
+    result_list = Paginator(queryset, num_pages)
+
+    try:
+        num_page = int(request.GET['num_page'])
+    except ValueError:
+        num_page = 1
+    except MultiValueDictKeyError:
+        num_page = 1
+
+    if num_page <= 0:
+        num_page = 1
+
+    if num_page > result_list.num_pages:
+        num_page = result_list.num_pages
+
+    if result_list.num_pages >= num_page:
+        page = result_list.page(num_page)
+
+        context = {
+            'queryset': page.object_list,
+            'num_page': num_page,
+            'pages': result_list.num_pages,
+            'has_next': page.has_next(),
+            'has_prev': page.has_previous(),
+            'next_page': num_page + 1,
+            'prev_page': num_page - 1,
+            'first_page': 1,
+        }
+        return context
+    return False
+
+
+class SuggestionsListView(ListView):
+    model = SatisfactionRating
+    ordering = ('-creation_date',)
+    template_name = 'suggestions.html'
+    paginate_by = 25
+    context_object_name = 'suggestions_list'
+
+    def get_context_data(self, **kwargs):
+        context = super(SuggestionsListView, self).get_context_data(**kwargs)
+        branch_office = BranchOffice.objects.get(pk=self.kwargs['pk'])
+        title = 'Comentarios - ' + branch_office.name
+        context['page_title'] = title
+        context['title'] = PAGE_TITLE + ' | ' + title
+        return context
+
+    def get_queryset(self, **kwargs):
+        queryset = super(SuggestionsListView, self).get_queryset()
+        queryset = queryset.filter(branch_office=self.kwargs['pk'])
+        return queryset
 
 
 # --------------------------- TEST ------------------------

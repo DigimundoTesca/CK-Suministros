@@ -8,6 +8,7 @@ from users.models import User as UserProfile
 
 class BranchOffice(models.Model):
     name = models.CharField(max_length=90, default='')
+    abbreviated_name = models.CharField(max_length=6, default='')
     address = models.TextField(default='')
     manager = models.ForeignKey(UserProfile, on_delete=models.CASCADE)
     is_activate = models.BooleanField(default=False)
@@ -62,3 +63,16 @@ class Supplier(models.Model):
         ordering = ('id',)
         verbose_name = 'Proveedor'
         verbose_name_plural = 'Proveedores'
+
+
+class Worker(models.Model):
+    worker = models.ForeignKey(UserProfile, on_delete=models.CASCADE)
+    branch_office = models.ForeignKey(BranchOffice, on_delete=models.CASCADE, default=1)
+
+    def __str__(self):
+        return '%s' % self.worker.id
+
+    class Meta:
+        ordering = ('id',)
+        verbose_name = 'Trabajador'
+        verbose_name_plural = 'Trabajadores'

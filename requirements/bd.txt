@@ -1,0 +1,9 @@
+-r base.txt
+
+# Python-PostgreSQL Database Adapter
+# ------------------------------------------------
+psycopg2==2.7.3.2
+
+# Non-validating SQL parser
+# ------------------------------------------------
+sqlparse==0.2.0
