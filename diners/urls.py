@@ -2,7 +2,7 @@ from django.conf import settings
 from django.conf.urls import url
 
 from diners import views
-from diners.views import DinersListView
+from diners.views import DinersListView, SuggestionsListView
 
 app_name = 'diners'
 
@@ -13,9 +13,9 @@ urlpatterns = [
     url(r'^diners/today/$', views.today_access, name='today_access'),
     url(r'^diners/new/$', views.new_diner, name='new_diner'),
     url(r'^diners/logs/$', views.diners_logs, name='diners_logs'),
-    url(r'^diners/satisfaction-rating/$', views.satisfaction_rating, name='satisfaction_rating'),
-    url(r'^diners/analytics-rating/$', views.analytics_rating, name='analytics'),
-    url(r'^diners/suggestions/$', views.suggestions, name='suggestions'),
+    url(r'^diners/satisfaction-rating/(?P<pk>[0-9]+)/$', views.satisfaction_rating, name='satisfaction_rating'),
+    url(r'^diners/analytics-rating/(?P<pk>[0-9]+)/$', views.analytics_rating, name='analytics'),
+    url(r'^diners/suggestions/(?P<pk>[0-9]+)/$', SuggestionsListView.as_view(), name='suggestions'),
 ]
 
 # Test

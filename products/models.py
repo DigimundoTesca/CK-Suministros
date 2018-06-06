@@ -3,6 +3,7 @@ from django.db import models
 
 from branchoffices.models import BranchOffice, Supplier
 
+
 class SuppliesCategory(models.Model):
     name = models.CharField(validators=[MinLengthValidator(4)], max_length=125, unique=True)
     image = models.ImageField(blank=False, upload_to='supplies-categories')
@@ -107,7 +108,7 @@ class Cartridge(models.Model):
         (COMPLEMENTS, 'Complementos'),
     )
 
-    # Kinf of food
+    # Kind of food
     BREAKFAST = 'BF'
     FOOD = 'FO'
     

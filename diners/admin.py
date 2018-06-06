@@ -32,7 +32,7 @@ class ElementToEvaluateAdmin(admin.ModelAdmin):
 
 @admin.register(SatisfactionRating)
 class SatisfactionRatingAdmin(admin.ModelAdmin):
-    list_display = ('id', 'creation_date', 'satisfaction_rating', 'shortened_suggestion', 'selected_elements')
+    list_display = ('id', 'creation_date', 'satisfaction_rating', 'shortened_suggestion', 'selected_elements', 'branch_office')
     ordering = ('-creation_date',)
     list_display_links = ('id', 'creation_date',)
     date_hierarchy = 'creation_date'

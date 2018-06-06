@@ -7,7 +7,7 @@ urlpatterns = [
     url(r'^jet/', include('jet.urls', 'jet')),  # Django JET URLS
     url(r'^admin-cloud/', admin.site.urls, name='admin'),
     url(r'^', include('users.urls')),
-    # url(r'^', include('branchoffices.urls')),
+     url(r'^', include('branchoffices.urls')),
     url(r'^', include('products.urls')),
     url(r'^', include('sales.urls')),
     # url(r'^', include('orders.urls')),
@@ -20,7 +20,7 @@ admin.site.site_header = 'CloudKitchen'
 if settings.DEBUG:
     import debug_toolbar
     urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
-    urlpatterns += [ url(r'^__debug__/', include(debug_toolbar.urls)),]
+    urlpatterns += [url(r'^__debug__/', include(debug_toolbar.urls)),]
 
 urlpatterns += [
     # API Endpoints

@@ -1,5 +1,6 @@
 {% load static %}
 <!DOCTYPE html>
+<html lang="es">
 <head>
     <title>{{ title }}</title>
     <!-- Required meta tags always come first -->
@@ -55,5 +56,54 @@
     + (location.host || 'localhost').split(':')[0]
     + ':35729/livereload.js?snipver=1"></'
     + 'script>')</script> -->
+
+    <script>
+      $(document).ready(function() {
+        $.ajax({
+          type: 'post',
+
+          url: '/branchoffices/',
+          data: {
+            'csrfmiddlewaretoken': '{{ csrf_token }}',
+          },
+          success: function(result) {
+            let data = result.data;
+
+
+            for (let i = 0; i < data['branch_offices'].length; i++) {
+              let branch_id = data['branch_offices'][i]['id'];
+              let abbrev = data['branch_offices'][i]['abbrev'];
+              $('#menu-service').append(
+                  '<a class="dropdown-item" href="/diners/analytics-rating/' + branch_id + '/">Analytics ' + abbrev + ' </a>'
+              );
+            }
+
+            for (let i = 0; i < data['branch_offices'].length; i++) {
+              let branch_id = data['branch_offices'][i]['id'];
+              let abbrev = data['branch_offices'][i]['abbrev'];
+              $('#menu-service').append(
+                  '<a class="dropdown-item" href="/diners/satisfaction-rating/' + branch_id + '/">Rating ' + abbrev + '</a>'
+              );
+            }
+
+            for (let i = 0; i < data['branch_offices'].length; i++) {
+              let branch_id = data['branch_offices'][i]['id'];
+              let abbrev = data['branch_offices'][i]['abbrev'];
+              $('#menu-service').append(
+                  '<a class="dropdown-item" href="/diners/suggestions/' + branch_id + '/">Comentarios ' + abbrev + '</a>'
+              );
+            }
+
+             $('#branch-office-rating-cont').append(
+                 '<a class="link" href="/diners/satisfaction-rating/{{ g_branch_office.id }}">Rating</a>'
+              );
+
+          },
+          error: function(error) {
+
+          }
+        });
+      });
+    </script>
 </body>
 </html>

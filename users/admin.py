@@ -1,5 +1,6 @@
 from django.contrib import admin
 
+from branchoffices.models import Worker
 from users.models import User as UserProfile, Rol, CustomerProfile, UserMovements
 
 
@@ -24,6 +25,12 @@ class CustomerProfileAdmin(admin.ModelAdmin):
 class UserMovements(admin.ModelAdmin):
     list_display = ('user', 'category', 'creation_date',)
     ordering = ('creation_date',)
+
+
+@admin.register(Worker)
+class WorkerAdmin(admin.ModelAdmin):
+    list_display = ('worker', 'branch_office',)
+    ordering = ('worker',)
 
 
 admin.site.register(UserProfile, UserProfileAdmin)

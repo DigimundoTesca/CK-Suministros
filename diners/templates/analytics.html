@@ -172,7 +172,7 @@
       function get_suggestions_week_list() {
         let resultArray = [0,0,0,0];
         $.ajax({
-          url: '/diners/analytics-rating/',
+          url: '/diners/analytics-rating/{{ branch_id }}/',
           type: 'post',
           async: false,
           datatype: 'jsonp',
@@ -207,7 +207,7 @@
        */
       function set_reactions_day_chart(date) {
         $.ajax({
-          url: "{% url 'diners:analytics' %}",
+          url: "{% url 'diners:analytics' branch_id %}",
           type: 'POST',
           data: {
             csrfmiddlewaretoken: '{{ csrf_token }}',
