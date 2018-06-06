@@ -10,7 +10,6 @@ def branch_offices_processor(request):
             branch_office_id = branch_office['branch_office']
             branch_office = BranchOffice.objects.get(id=branch_office_id)
             return {'g_branch_office': branch_office}
-    except Worker.DoesNotExist:
-        user = None
 
-
+    except Exception as ex:
+        return {'g_branch_office': ''}
