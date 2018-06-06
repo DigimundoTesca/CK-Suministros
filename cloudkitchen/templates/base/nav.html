@@ -27,6 +27,7 @@
 
         </div>
       </li>
+      {% if request.user.user_rol.rol != "Cashier" %}
       <li class="nav-item dropdown" id="link-service">
         <a class="nav-link dropdown-toggle" href="#" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">Servicio</a>
         <div class="dropdown-menu" aria-labelledby="supportedContentDropdown">
@@ -35,6 +36,7 @@
           <a class="dropdown-item" href="{% url 'diners:satisfaction_rating' %}">Rating</a>
         </div>
       </li>
+      {% endif %}
       <li class="nav-item dropdown">
         <a class="nav-link dropdown-toggle" href="#" id="supportedContentDropdown" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">{{ user.username }}</a>
         <div class="dropdown-menu" aria-labelledby="supportedContentDropdown">
