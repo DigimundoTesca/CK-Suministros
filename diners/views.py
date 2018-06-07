@@ -18,7 +18,7 @@ from django.db.models import Max, Min
 
 from branchoffices.models import BranchOffice
 from helpers import Helper, DinersHelper
-from .models import AccessLog, Diner, ElementToEvaluate, SatisfactionRating
+from .models import AccessLog, Diner, ElementToEvaluate, SatisfactionRating, CategoryElements
 from .forms import DinerForm
 from cloudkitchen.settings.base import PAGE_TITLE
 from helpers import RatesHelper
@@ -367,7 +367,7 @@ def diners_logs(request):
             'total_diners': total_diners,
             'total_diners_today': total_diners_today,
             'diners_hour': diners_helper.get_diners_per_hour_json(),
-            'diners_week': diners_helper.get_diners_actual_week(),
+            'diners_week': diners_helper.get_diners_actual_week(1),
             'dates_range': get_dates_range(),
         }
         return render(request, template, context)
@@ -408,15 +408,16 @@ def satisfaction_rating(request, pk):
     tz = pytz.timezone('America/Mexico_City')
     today = datetime.combine(today, datetime.min.time())
     today = make_aware(today, tz)
-
-    elements = ElementToEvaluate.objects.order_by('element').filter(
+    categories = CategoryElements.objects.all()
+    elements = ElementToEvaluate.objects.order_by('element').select_related('category').filter(
         Q(permanent=True) | Q(publication_date__gte=today))
 
     context = {
         'title': PAGE_TITLE + ' | ' + title,
         'page_title': title,
         'elements': elements,
-        'branch_office': branch_office
+        'branch_office': branch_office,
+        'categories': categories
     }
     return render(request, template, context)
 

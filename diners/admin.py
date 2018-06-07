@@ -1,5 +1,5 @@
 from django.contrib import admin
-from diners.models import Diner, AccessLog, ElementToEvaluate, SatisfactionRating
+from diners.models import Diner, AccessLog, ElementToEvaluate, SatisfactionRating, CategoryElements
 
 from actions import export_as_excel
 
@@ -22,11 +22,18 @@ class AccessLogAdmin(admin.ModelAdmin):
     date_hierarchy = 'access_to_room'
 
 
+@admin.register(CategoryElements)
+class CategoryElementsAdmin(admin.ModelAdmin):
+    list_display = ('id', 'name',)
+    list_display_links = ('id', 'name')
+    search_fields = ['name', ]
+
+
 @admin.register(ElementToEvaluate)
 class ElementToEvaluateAdmin(admin.ModelAdmin):
-    list_display = ('id', 'priority', 'element', 'permanent', 'publication_date')
+    list_display = ('id', 'priority', 'element', 'permanent', 'category', 'publication_date')
     ordering = ('priority', 'publication_date')
-    list_editable = ('priority', 'permanent', 'publication_date')
+    list_editable = ('priority', 'permanent', 'category', 'publication_date')
     search_fields = ['element', ]
 
 
