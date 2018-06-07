@@ -130,7 +130,7 @@ class DinersListView(ListView):
         return context
 
 
-@login_required(login_url='users_login')
+@login_required(login_url='users:login')
 def new_diner(request):
     form = DinerForm(request.POST or None)
     if request.method == 'POST':
@@ -424,7 +424,7 @@ def satisfaction_rating(request, pk):
     return render(request, template, context)
 
 
-@login_required(login_url='users_login')
+@login_required(login_url='users:login')
 def analytics_rating(request, pk):
     helper = Helper()
     rates_helper = RatesHelper()
