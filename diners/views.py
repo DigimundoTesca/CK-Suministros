@@ -8,6 +8,7 @@ from django.contrib.auth.decorators import login_required
 from django.core.paginator import Paginator
 from django.db.models import Q, Count
 from django.utils import timezone
+from django.utils.decorators import method_decorator
 from django.http import HttpResponse, JsonResponse
 from django.shortcuts import render, redirect
 from django.utils.datastructures import MultiValueDictKeyError
@@ -106,6 +107,7 @@ def rfid(request):
         return redirect('diners:diners')
 
 
+@method_decorator(login_required, name='dispatch')
 class DinersListView(ListView):
     model = Diner
     ordering = ('name',)
@@ -505,39 +507,7 @@ def analytics_rating(request, pk):
     return render(request, template, context)
 
 
-def suggestions_paginator(request, queryset, num_pages):
-    result_list = Paginator(queryset, num_pages)
-
-    try:
-        num_page = int(request.GET['num_page'])
-    except ValueError:
-        num_page = 1
-    except MultiValueDictKeyError:
-        num_page = 1
-
-    if num_page <= 0:
-        num_page = 1
-
-    if num_page > result_list.num_pages:
-        num_page = result_list.num_pages
-
-    if result_list.num_pages >= num_page:
-        page = result_list.page(num_page)
-
-        context = {
-            'queryset': page.object_list,
-            'num_page': num_page,
-            'pages': result_list.num_pages,
-            'has_next': page.has_next(),
-            'has_prev': page.has_previous(),
-            'next_page': num_page + 1,
-            'prev_page': num_page - 1,
-            'first_page': 1,
-        }
-        return context
-    return False
-
-
+@method_decorator(login_required, name='dispatch')
 class SuggestionsListView(ListView):
     model = SatisfactionRating
     ordering = ('-creation_date',)
