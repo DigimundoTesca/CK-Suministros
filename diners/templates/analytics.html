@@ -23,60 +23,88 @@
           <!-- Form code ends -->
         </div>
       </div>
-  </div>
-  <div class="row">
-    <div class="col-xs-12 charts-container">
-      <div class="col-xs-12">
-        <div class="col-xs-12 col-lg-6 col-xl-5 mb-3 week-suggestions-chart">
-          <div class="canvas-holder">
-            <canvas id="canvas-week-reactions"></canvas>
-          </div>
+    </div>
+    <div class="row">
+      <div class="col-xs-12 charts-container">
+        <div class="col-xs-12">
+          <div class="col-xs-12 col-lg-6 col-xl-5 mb-3 week-suggestions-chart">
+            <div class="canvas-holder">
+              <canvas id="canvas-week-reactions"></canvas>
+            </div>
             <div class="canvas-holder mt-3">
-            <canvas id="canvas-general-suggestions"></canvas>
-          </div>
-        </div>
-        <div class="col-xs-12 col-lg-6 col-xl-7 mb-3 elements-analytics-container">
-          <div class="row">
-            <div class="col-xs-12">
-              <h3 class="ck-center">Rating diario</h3>
+              <canvas id="canvas-general-suggestions"></canvas>
             </div>
           </div>
-          <div class="row elements-header">
-            <div class="col-xs-6 col-lg-3  element-name-cont">
-              <span class="element-name element-red">Enojado</span>
+          <div class="col-xs-12 col-lg-6 col-xl-7 mb-3 elements-analytics-container">
+            <div class="row">
+              <div class="col-xs-12">
+                <h3 class="ck-center">Rating diario</h3>
+              </div>
             </div>
-            <div class="col-xs-6 col-lg-3 element-name-cont">
-              <span class="element-name element-yellow">Triste</span>
+            <div class="row elements-header">
+              <div class="col-xs-6 col-lg-3  element-name-cont">
+                <span class="element-name element-red">Enojado</span>
+              </div>
+              <div class="col-xs-6 col-lg-3 element-name-cont">
+                <span class="element-name element-yellow">Triste</span>
+              </div>
+              <div class="col-xs-6 col-lg-3 element-name-cont">
+                <span class="element-name element-blue">Alegre</span>
+              </div>
+              <div class="col-xs-6 col-lg-3 element-name-cont">
+                <span class="element-name element-green">Encantado</span>
+              </div>
             </div>
-            <div class="col-xs-6 col-lg-3 element-name-cont">
-              <span class="element-name element-blue">Alegre</span>
-            </div>
-            <div class="col-xs-6 col-lg-3 element-name-cont">
-              <span class="element-name element-green">Encantado</span>
-            </div>
-          </div>
-          <div class="charts-container row mt-2">
-            <div class="canvas-holder doughnut-chart col-xs-12 col-md-6 col-xl-3 mb-3">
+            <div class="charts-container row mt-2">
+              <div class="canvas-holder doughnut-chart col-xs-12 col-md-6 col-xl-3 mb-3">
                 <canvas id="canvas-element-total" width="500" height="500"></canvas>
               </div>
-            {% for element in elements %}
-              <div class="canvas-holder doughnut-chart col-xs-12 col-md-6 col-xl-3 mb-3" >
-                <canvas id="canvas-element-{{element.id}}" width="400" height="400"></canvas>
-              </div>
-            {% endfor %}
+              {% for element in elements %}
+                <div class="canvas-holder doughnut-chart col-xs-12 col-md-6 col-xl-3 mb-3" >
+                  <canvas id="canvas-element-{{element.id}}" width="400" height="400"></canvas>
+                </div>
+              {% endfor %}
+            </div>
           </div>
         </div>
       </div>
-    </div>  
+    </div>
+    <div class="container-fluid">
+      <div class="row">
+        <div class="col-xs-12">
+          <h3 class="ck-center">Histórico general de rating</h3>
+        </div>
+      </div>
+      <div class="row elements-header">
+        <div class="col-xs-6 col-lg-3  element-name-cont">
+          <span class="element-name element-red">Enojado</span>
+        </div>
+        <div class="col-xs-6 col-lg-3 element-name-cont">
+          <span class="element-name element-yellow">Triste</span>
+        </div>
+        <div class="col-xs-6 col-lg-3 element-name-cont">
+          <span class="element-name element-blue">Alegre</span>
+        </div>
+        <div class="col-xs-6 col-lg-3 element-name-cont">
+          <span class="element-name element-green">Encantado</span>
+        </div>
+      </div>
+      <div class="row charts-container mt-2">
+        {% for element in elements %}
+          <div class="canvas-holder doughnut-chart col-xs-12 col-md-4 col-lg-3 col-xl-2 mb-3" >
+            <canvas id="canvas-element-general-{{element.id}}" width="400" height="400"></canvas>
+          </div>
+        {% endfor %}
+      </div>
+    </div>
   </div>
-</div>
-<div id="bounce-cont">
-  <span class="msg-bounce">Generando Gráficas</span>
-  <div class="sk-double-bounce">
-    <div class="sk-child sk-double-bounce1"></div>
-    <div class="sk-child sk-double-bounce2"></div>
+  <div id="bounce-cont">
+    <span class="msg-bounce">Generando Gráficas</span>
+    <div class="sk-double-bounce">
+      <div class="sk-child sk-double-bounce1"></div>
+      <div class="sk-child sk-double-bounce2"></div>
+    </div>
   </div>
-</div>
 {% endblock %}
 
 {% block javascript %}
@@ -94,7 +122,9 @@
           ctx_week_reactions = document.getElementById("canvas-week-reactions"),
           ctx_general_suggestions = document.getElementById("canvas-general-suggestions"),
           ctx_reactions = [], // reactions elements charts (DOM)
-          elements_charts = [], // // reaction elements charts (Chart Objects)
+          ctx_general_reactions = [], // reactions elements charts (DOM)
+          elements_charts = [], // reaction elements charts (Chart Objects)
+          elements_general_charts = [], // reaction elements charts (Chart Objects)
           todayDateObject = new Date(),
           today_date,
           reactions_week_chart,
@@ -118,6 +148,9 @@
         });
       {% endfor %}
 
+      /**
+       * Almacena los elementos desde el DOM para graficas de donas en el array correspondiente
+       */
       for (let i = 0; i <= {{ total_elements }}; i++) {
         if (i === {{ total_elements }}) {
           ctx_reactions.push(document.getElementById('canvas-element-total'));
@@ -126,6 +159,15 @@
           element_id = "canvas-element-" + element_id;
           ctx_reactions.push(document.getElementById(element_id));
         }
+      }
+
+      /**
+       * Almacena los elementos desde el DOM para graficas de donas HISTORICO  en el array correspondiente
+       */
+      for (let i = 0; i < {{ total_elements }}; i++) {
+        let element_id = elements_to_evaluate[i].id;
+        element_id = "canvas-element-general-" + element_id;
+        ctx_general_reactions.push(document.getElementById(element_id));
       }
 
       /**
@@ -268,6 +310,70 @@
             console.log(result);
           },
         });
+
+        // Gráfica de elementos a evaluar HISTORICA
+        $.ajax({
+          url: "{% url 'diners:analytics' branch_id %}",
+          type: 'POST',
+          data: {
+            csrfmiddlewaretoken: '{{ csrf_token }}',
+            'date': date,
+            'type': 'reactions_day',
+          },
+          traditional: true,
+          datatype: 'jsonp',
+          beforeSend: function(){},
+          success: function(result) {
+            $('#bounce-cont').hide(1000);
+
+            for(let i = 0; i <= {{ total_elements }}; i++) {
+              let is_empty = true;
+
+              if ( i === {{ total_elements }}) {
+                for (let j = 0; j < 4; j++) {
+                  elements_charts[i].data.datasets[0].data[j] = result['total_reactions'].reactions[j].quantity;
+                }
+
+              } else {
+                /**
+                 * Sets the doughnuts with the new values
+                 */
+                for (let j = 0; j < 4; j++) {
+                  elements_charts[i].data.datasets[0].data[j] = result['reactions_list'][i].reactions[j].quantity;
+                }
+              }
+
+              /**
+               * Validates the charts and change them if any of these do not have doesn't have values
+               */
+              for (let j = 0; j < 4; j++) {
+                if (elements_general_charts[i].config.data.datasets[0].data[j] > 0) {
+                  is_empty = false;
+                }
+              }
+
+              if (is_empty) {
+                elements_general_charts[i].config.options.tooltips.callbacks.label = function () {
+                  return ' Sin reacciones';
+                };
+                elements_general_charts[i].config.data.datasets[0].data[4] = 1;
+              } else {
+                elements_general_charts[i].config.options.tooltips.callbacks.label = function (tooltipItem, data) {
+                  let dataLabel = data.labels[tooltipItem.index];
+                  dataLabel += ': ' + data.datasets[tooltipItem.datasetIndex].data[tooltipItem.index];
+                  return dataLabel;
+                };
+                elements_general_charts[i].config.data.datasets[0].data.splice(4, 1);
+              }
+
+              elements_general_charts[i].update();
+            }
+          },
+
+          error: function(result) {
+            console.log(result);
+          },
+        });
       }
 
       /**
@@ -283,16 +389,16 @@
             data: getDinersDay(),
             backgroundColor: '#f66',
           },
-          {
-            label: 'Reacciones',
-            data: get_suggestions_week_list(),
-            backgroundColor: '#ffc000',
-          },
-          {
-            label: 'Comentarios',
-            data: get_rates_week_list(),
-            backgroundColor: '#3399ff',
-          }],
+            {
+              label: 'Reacciones',
+              data: get_suggestions_week_list(),
+              backgroundColor: '#ffc000',
+            },
+            {
+              label: 'Comentarios',
+              data: get_rates_week_list(),
+              backgroundColor: '#3399ff',
+            }],
         },
         options: {
           responsive: true,
@@ -461,6 +567,60 @@
           });
         }
       }
+
+      /**
+       * Dibuja las gráficas por platillo de todos los tiempos
+       */
+      for (let i = 0; i < {{ total_elements }}; i++) {
+          let data = [];
+          for(let j = 0; j < 4; j++) {
+            data[j] = parseInt(Math.random() * 100  );
+          }
+          elements_general_charts[i] = new Chart(ctx_general_reactions[i], {
+            type: 'doughnut',
+            data: {
+              labels: [
+                "Enojado",
+                "Triste",
+                "Alegre",
+                "Encantado",
+                "Sin Reacciones",
+              ],
+              datasets: [{
+                data: [0,0,0,0,0],
+                backgroundColor: [
+                  "#FF5252",
+                  "#FFC400",
+                  "#2979FF",
+                  "#00E676",
+                ],
+              }],
+            },
+            options: {
+              cutoutPercentage: 60,
+              responsive: true,
+              animation: {
+                animateScale: true
+              },
+              title: {
+                display: true,
+                text: elements_to_evaluate[i].name,
+              },
+              legend: {
+                display: false,
+              },
+              layout: {
+                padding: {
+                  left: 0,
+                  right: 0,
+                  top: 0,
+                  bottom: 0
+                }
+              }
+            },
+          });
+      }
+
 
       /**
        * Returns the text to show in the weeks select

@@ -1158,3 +1158,62 @@ small {
     width: 100%;
   }
 }
+
+
+/** Spin Load Animation */
+
+#bounce-cont {
+  align-items: center;
+  background: #2c3e50;
+  display: flex;
+  flex-direction: column;
+  height: 100vh;
+  width: 100%;
+  justify-content: center;
+  position: fixed;
+  z-index: 3200;
+  top: 0;
+  left: 0;
+}
+.sk-double-bounce {
+  display: flex;
+  width: 45px;
+  height: 45px;
+  position: relative;
+}
+.sk-double-bounce .sk-child {
+  width: 100%;
+  height: 100%;
+  border-radius: 50%;
+  background-color: #dedede;
+  opacity: 0.6;
+  position: absolute;
+  top: 0;
+  left: 0;
+  -webkit-animation: sk-doubleBounce 2s infinite ease-in-out;
+  animation: sk-doubleBounce 2s infinite ease-in-out;
+}
+.sk-double-bounce .sk-double-bounce2 {
+  -webkit-animation-delay: -1.0s;
+  animation-delay: -1.0s;
+}
+.msg-bounce {
+  display: flex;
+  color: #dedede;
+}
+@-webkit-keyframes sk-doubleBounce {
+  0%, 100% {
+    -webkit-transform: scale(0);
+    transform: scale(0); }
+  50% {
+    -webkit-transform: scale(1);
+    transform: scale(1); }
+}
+@keyframes sk-doubleBounce {
+  0%, 100% {
+    -webkit-transform: scale(0);
+    transform: scale(0); }
+  50% {
+    -webkit-transform: scale(1);
+    transform: scale(1); }
+}
