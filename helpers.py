@@ -107,7 +107,10 @@ class SalesHelper(object):
         self.__all_extra_ingredients = None
         super(SalesHelper, self).__init__()
 
-    def set_all_tickets(self):
+    def set_all_tickets(self, start_date=None, end_date=None):
+        if start_date is not None and end_date is not None:
+            self.__all_tickets = Ticket.objects.select_related('seller').\
+                filter(created_at__range=[start_date, end_date])
         self.__all_tickets = Ticket.objects.select_related('seller').all()
 
     def set_all_tickets_details(self):
@@ -125,12 +128,12 @@ class SalesHelper(object):
             select_related('extra_ingredient__ingredient'). \
             all()
 
-    def get_all_tickets(self):
+    def get_all_tickets(self, start_date=None, end_date=None):
         """        
         :rtype: django.db.models.query.QuerySet
         """
         if self.__all_tickets is None:
-            self.set_all_tickets()
+            self.set_all_tickets(start_date, end_date)
         return self.__all_tickets
 
     def get_all_tickets_details(self):
