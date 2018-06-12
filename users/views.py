@@ -1,7 +1,7 @@
 import json
 
 from django.contrib.auth.decorators import login_required
-from django.http import JsonResponse
+from django.http import JsonResponse, HttpResponseRedirect
 from django.shortcuts import render, redirect
 
 from django.contrib.auth import authenticate
@@ -75,6 +75,12 @@ def login(request):
             if user is not None:
                 login_django(request, user)                   
                 login_check(user.username)
+
+                next_url = request.POST.get('next')
+
+                if next_url:
+                    return HttpResponseRedirect(next_url)
+
                 return redirect('sales:sales')
 
             else:
