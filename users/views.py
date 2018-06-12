@@ -46,7 +46,6 @@ def index(request):
 # -------------------------------------  Auth -------------------------------------
 def login(request):
     if request.user.is_authenticated:
-        # login(request.user)
         return redirect('sales:sales')
     tab = 'login'
     error_message = None
