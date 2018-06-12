@@ -1,12 +1,13 @@
 import json
 
 from django.contrib.auth.decorators import login_required
-from django.http import JsonResponse, HttpResponseRedirect
+from django.http import JsonResponse
 from django.shortcuts import render, redirect
 
 from django.contrib.auth import authenticate
 from django.contrib.auth import login as login_django
 from django.contrib.auth import logout as logout_django
+from django.utils.http import is_safe_url
 
 from users.forms import CustomerProfileForm, UserForm
 from users.models import CustomerProfile
@@ -75,10 +76,10 @@ def login(request):
                 login_django(request, user)                   
                 login_check(user.username)
 
-                next_url = request.POST.get('next')
+                next_url = request.GET.get('next', '')
 
-                if next_url:
-                    return HttpResponseRedirect(next_url)
+                if next_url and is_safe_url(next_url, request.get_host()):
+                    return redirect(next_url)
 
                 return redirect('sales:sales')
 
