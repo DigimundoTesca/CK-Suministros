@@ -142,11 +142,11 @@ def sales(request):
         'title': PAGE_TITLE + ' | ' + title,
         'page_title': title,
         'actual_year': datetime.now().year,
-        # 'sales_week': sales_helper.get_sales_actual_week(),
+        'sales_week': sales_helper.get_sales_actual_week(),
         'today_name': helper.get_name_day(datetime.now()),
         'today_number': helper.get_number_day(datetime.now()),
         'week_number': helper.get_week_number(date.today()),
-        # 'tickets': sales_helper.get_tickets_today_list(),
+        'tickets': sales_helper.get_tickets_today_list(),
         'dates_range': sales_helper.get_dates_range_json(),
 
     }
