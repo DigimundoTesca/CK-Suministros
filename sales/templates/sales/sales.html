@@ -189,10 +189,25 @@
     let ctx_week = document.getElementById("canvas-week-sales"),
         ctx_day = document.getElementById("canvas-day-sales");
     let earnings_week_chart,
-        earnings_day_chart;
-    let sales_week = JSON.parse('{{ sales_week | safe }}');
-    let dates_range = JSON.parse('{{ dates_range | safe }}');
-    let today_date;
+        earnings_day_chart,
+        sales_week,
+        dates_range,
+        today_date;
+
+    function getCSRFToken() {
+      let cookieValue = null;
+      if (document.cookie && document.cookie !== '') {
+        let cookies = document.cookie.split(';');
+        for (let i = 0; i < cookies.length; i++) {
+          let cookie = jQuery.trim(cookies[i]);
+          if (cookie.substring(0, 10) === ('csrftoken' + '=')) {
+            cookieValue = decodeURIComponent(cookie.substring(10));
+            break;
+          }
+        }
+      }
+      return cookieValue;
+    }
 
     /**
      * returns a list with the earnings of the week per day
@@ -409,30 +424,23 @@
     }
 
     function fill_dates_range_form() {
-      let selected_year;
-      $.each(dates_range, function(index, item) {
-         $('#dates-range-form').find('#dt-year').append(
-            "<option value=" + item.year + ">" + item.year + "</option>"
-          );
-      });
 
-      selected_year = $('#dates-range-form').find('#dt-year').val();
-
-      $.each(dates_range, function(index, item) {
-        if (dates_range[index].year ==  selected_year) {
-          $.each(dates_range[index].weeks_list, function(index, item) {
-            $('#dates-range-form').find('#dt-week').append(
-              "<option value=" + item.start_date + "," + item.end_date + ">" +
-              "Semana " + item.week_number + ": " +
-              convert_date_to_str(item.start_date) +
-              " - " + convert_date_to_str(item.end_date) +
-              "</option>"
-            );
-          });
-          return false;
+      $.ajax({
+        url: '/',
+        type: 'post',
+        data: {
+          type: '{% url "sales:sales" %}',
+          csrfmiddlewaretoken: getCSRFToken()
+        },
+        success: function(result){
+          console.log(result);
+        },
+        error: function(result, jqXHR, textStatus, errorThrown) {
+          console.error(result);
+          console.error(jqXHR, textStatus);
+          console.error(errorThrown);
         }
       });
-      today_date = $('#dt-week').val().split(',')[1];
     }
 
     /**
@@ -444,7 +452,7 @@
         labels: ["Lunes", "Martes", "Miercoles", "Jueves", "Viernes", "Sábado", "Domingo"],
         datasets: [{
           label: 'Ventas del día',
-          data: get_earnings_week_list(),
+          data: [],//get_earnings_week_list(),
           backgroundColor: [
           'rgba(241,196,15,0.7)',
           'rgba(230,126,34,0.7)',
@@ -954,9 +962,14 @@
     /**
      * Functions to initialize the graphs
      */
-    fill_dates_range_form();
-    set_total_earnings();
-    set_sales_day_chart(today_date);
+
+
+    /**
+     * Desencadena todos los eventos iniciales
+     */
+    (function() {
+      fill_dates_range_form();
+    })();
   });
 </script>
 {% endblock javascript %}

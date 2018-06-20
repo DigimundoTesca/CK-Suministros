@@ -31,7 +31,7 @@ def sales(request):
             sales_day_list = []
             start_date = helper.naive_to_datetime(datetime.strptime(request.POST['date'], '%d-%m-%Y').date())
             end_date = helper.naive_to_datetime(start_date + timedelta(days=1))
-            tickets_objects = sales_helper.get_all_tickets(start_date, end_date)
+            tickets_objects = SalesHelper.get_all_tickets(start_date, end_date)
 
             for ticket in tickets_objects:
                 """
@@ -136,19 +136,20 @@ def sales(request):
             }
             return JsonResponse(data)
 
+        if request.POST['type'] == 'dates_range':
+            SalesHelper.get_dates_range_json()
+            return JsonResponse(SalesHelper)
+
     template = 'sales/sales.html'
     title = 'Registro de Ventas'
     context = {
         'title': PAGE_TITLE + ' | ' + title,
         'page_title': title,
         'actual_year': datetime.now().year,
-        'sales_week': sales_helper.get_sales_actual_week(),
         'today_name': helper.get_name_day(datetime.now()),
         'today_number': helper.get_number_day(datetime.now()),
         'week_number': helper.get_week_number(date.today()),
-        'tickets': sales_helper.get_tickets_today_list(),
         'dates_range': sales_helper.get_dates_range_json(),
-
     }
     return render(request, template, context)
 

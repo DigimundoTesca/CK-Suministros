@@ -1,4 +1,7 @@
+import calendar
 import json
+from typing import Dict
+
 import pytz
 
 from datetime import datetime, date, timedelta, time
@@ -100,6 +103,40 @@ class Helper(object):
         return cast_list
 
 
+def week_finder_from_year(year, max_dt=None):
+    """ will return all the week from selected year
+    :type year: int
+    :type max_dt: date
+    """
+
+    year = int(year)
+    month = calendar.January
+    day = calendar.MONDAY
+
+    dt = date(year, month, 1)
+    if max_dt is None:
+        max_dt = date(year, 12, 31)
+    dow_lst = []
+
+    while dt.weekday() != day:
+        dt = dt + timedelta(days=1)
+
+    make_calc = True
+
+    for mont in range(1, 13):
+        if not make_calc:
+            continue
+
+        while dt.month == mont:
+            if dt > max_dt:
+                make_calc = False
+                continue
+            dow_lst.append(dt)
+            dt = dt + timedelta(days=7)
+    
+    return dow_lst
+
+
 class SalesHelper(object):
     def __init__(self):
         self.__all_tickets = None
@@ -109,20 +146,20 @@ class SalesHelper(object):
 
     def set_all_tickets(self, start_date=None, end_date=None):
         if start_date is not None and end_date is not None:
-            self.__all_tickets = Ticket.objects.select_related('seller').\
+            self.__all_tickets = Ticket.objects.select_related('seller'). \
                 filter(created_at__range=[start_date, end_date])
         self.__all_tickets = Ticket.objects.select_related('seller').all()
 
     def set_all_tickets_details(self):
-        self.__all_tickets_details = TicketDetail.objects.\
-            select_related('ticket').\
+        self.__all_tickets_details = TicketDetail.objects. \
+            select_related('ticket'). \
             select_related('cartridge'). \
             select_related('ticket__seller'). \
             select_related('package_cartridge'). \
             all()
 
     def set_all_extra_ingredients(self):
-        self.__all_extra_ingredients = TicketExtraIngredient.objects.\
+        self.__all_extra_ingredients = TicketExtraIngredient.objects. \
             select_related('ticket_detail'). \
             select_related('extra_ingredient'). \
             select_related('extra_ingredient__ingredient'). \
@@ -200,81 +237,46 @@ class SalesHelper(object):
 
         return tickets_list
 
-    def get_dates_range_json(self):
+    @staticmethod
+    def get_dates_range_json():
         """
-        Returns a JSON with a years list.
-        The years list contains years objects that contains a weeks list
-            and the Weeks list contains a weeks objects with two attributes: 
-            start date and final date. Ranges of each week.
+        Regresa un JSON con una lista de años
+        La lista de años contiene listas de semanas, las cuales
+            contienen la fecha de inicio y la fecha final
         """
-        helper = Helper()
-        try:
-            min_year = self.get_all_tickets().aggregate(Min('created_at'))['created_at__min'].year
-            max_year = self.get_all_tickets().aggregate(Max('created_at'))['created_at__max'].year
-            years_list = []  # [2015:object, 2016:object, 2017:object, ...]
-        except:
-            min_year = datetime.now().year
-            max_year = datetime.now().year
-            years_list = []  # [2015:object, 2016:object, 2017:object, ...]
+        years_dict = {}
 
-        while max_year >= min_year:
-            year_object = {  # 2015:object or 2016:object or 2017:object ...
-                'year': max_year,
-                'weeks_list': [],
-            }
+        # Obtiene el ticket más antiguo y más reciente
+        first_date = Ticket.objects.values('created_at').order_by('created_at').first()['created_at']
+        last_date = Ticket.objects.values('created_at').order_by('created_at').last()['created_at']
+        gen_calendar = calendar.Calendar(calendar.MONDAY)
 
-            tickets_per_year = self.get_all_tickets().filter(
-                created_at__range=[helper.naive_to_datetime(date(max_year, 1, 1)),
-                                   helper.naive_to_datetime(date(max_year, 12, 31))])
-            for ticket_item in tickets_per_year:
-                if len(year_object['weeks_list']) == 0:
-                    """
-                    Creates a new week_object in the weeks_list of the actual year_object
-                    """
-                    week_object = {
-                        'week_number': ticket_item.created_at.isocalendar()[1],
-                        'start_date': ticket_item.created_at.date().strftime("%d-%m-%Y"),
-                        'end_date': ticket_item.created_at.date().strftime("%d-%m-%Y"),
-                    }
-                    year_object['weeks_list'].append(week_object)
-                    # End if
-                else:
-                    """
-                    Validates if exists some week with an similar week_number of the actual year
-                    If exists a same week in the list validates the start_date and the end_date,
-                    In each case valid if there is an older start date or a more current end date 
-                        if it is the case, update the values.
-                    Else creates a new week_object with the required week number
-                    """
-                    existing_week = False
-                    for week_object in year_object['weeks_list']:
+        years = list(range(first_date.year, datetime.today().year + 1))
 
-                        if week_object['week_number'] == ticket_item.created_at.isocalendar()[1]:
-                            # There's a same week number
-                            if datetime.strptime(week_object['start_date'],
-                                                 "%d-%m-%Y").date() > ticket_item.created_at.date():
-                                week_object['start_date'] = ticket_item.created_at.date().strftime("%d-%m-%Y")
-                            elif datetime.strptime(week_object['end_date'],
-                                                   "%d-%m-%Y").date() < ticket_item.created_at.date():
-                                week_object['end_date'] = ticket_item.created_at.date().strftime("%d-%m-%Y")
+        for year in years:
+            for months in gen_calendar.yeardatescalendar(year):
+                for weeks in months:
+                    for week in weeks:
+                        if year in years_dict:
+                            years_dict[year].append(week[0])
+                        else:
+                            years_dict[year] = [week[0]]
 
-                            existing_week = True
-                            break
+        # print(len(years_dict[2017]))
 
-                    if not existing_week:
-                        # There's a different week number
-                        week_object = {
-                            'week_number': ticket_item.created_at.isocalendar()[1],
-                            'start_date': ticket_item.created_at.date().strftime("%d-%m-%Y"),
-                            'end_date': ticket_item.created_at.date().strftime("%d-%m-%Y"),
-                        }
-                        year_object['weeks_list'].append(week_object)
+        year = 2018
+        week_list = week_finder_from_year(year, date.today())
+        for each in week_list:
+            print(each)
 
-                        # End else
-            years_list.append(year_object)
-            max_year -= 1
-        # End while
-        return json.dumps(years_list)
+        """
+        for year in years_obj:
+
+            for el in gen_calendar.monthdatescalendar(year, 1):
+                print(el)
+        """
+
+        return json.dumps({})
 
     def get_sales_list(self, start_dt, final_dt):
         """
@@ -433,8 +435,8 @@ class ProductsHelper(object):
             all()
 
     def set_all_extra_ingredients(self):
-        self.__all_extra_ingredients = ExtraIngredient.objects.\
-            select_related('ingredient').\
+        self.__all_extra_ingredients = ExtraIngredient.objects. \
+            select_related('ingredient'). \
             select_related('cartridge'). \
             all()
 
