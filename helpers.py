@@ -1,6 +1,5 @@
 import calendar
 import json
-from typing import Dict
 
 import pytz
 
@@ -103,38 +102,41 @@ class Helper(object):
         return cast_list
 
 
-def week_finder_from_year(year, max_dt=None):
-    """ will return all the week from selected year
-    :type year: int
-    :type max_dt: date
+def create_calendar_list(dt, max_dt):
     """
-
-    year = int(year)
-    month = calendar.January
-    day = calendar.MONDAY
-
-    dt = date(year, month, 1)
-    if max_dt is None:
-        max_dt = date(year, 12, 31)
+    Permite obtener una lista de fechas de cada semana a partir de una fecha especificada
+    :type max_dt: date
+    :type dt: date
+    :return list
+    """
     dow_lst = []
 
-    while dt.weekday() != day:
-        dt = dt + timedelta(days=1)
-
-    make_calc = True
-
     for mont in range(1, 13):
-        if not make_calc:
-            continue
-
         while dt.month == mont:
             if dt > max_dt:
-                make_calc = False
-                continue
+                return dow_lst
             dow_lst.append(dt)
             dt = dt + timedelta(days=7)
-    
+
     return dow_lst
+
+
+def week_finder_from_year(year: int, max_dt: date=None):
+    """ Regresa todas las semanas de un año en específico
+    :type year: int
+    :type max_dt: date
+    :return list
+    """
+    month = calendar.January
+    dt = date(year, month, 1)
+
+    if max_dt is None:
+        max_dt = date(year, 12, 31)
+
+    while dt.weekday() != calendar.MONDAY:
+        dt = dt + timedelta(days=1)
+
+    return create_calendar_list(dt, max_dt)
 
 
 class SalesHelper(object):
@@ -249,34 +251,14 @@ class SalesHelper(object):
         # Obtiene el ticket más antiguo y más reciente
         first_date = Ticket.objects.values('created_at').order_by('created_at').first()['created_at']
         last_date = Ticket.objects.values('created_at').order_by('created_at').last()['created_at']
-        gen_calendar = calendar.Calendar(calendar.MONDAY)
 
         years = list(range(first_date.year, datetime.today().year + 1))
 
         for year in years:
-            for months in gen_calendar.yeardatescalendar(year):
-                for weeks in months:
-                    for week in weeks:
-                        if year in years_dict:
-                            years_dict[year].append(week[0])
-                        else:
-                            years_dict[year] = [week[0]]
+            # years_dict[year] = week_finder_from_year(year, date.today())
+            print(week_finder_from_year(year, date.today()))
 
-        # print(len(years_dict[2017]))
-
-        year = 2018
-        week_list = week_finder_from_year(year, date.today())
-        for each in week_list:
-            print(each)
-
-        """
-        for year in years_obj:
-
-            for el in gen_calendar.monthdatescalendar(year, 1):
-                print(el)
-        """
-
-        return json.dumps({})
+        return json.dumps(years_dict)
 
     def get_sales_list(self, start_dt, final_dt):
         """
