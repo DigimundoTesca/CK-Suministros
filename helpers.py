@@ -356,21 +356,25 @@ class SalesHelper(object):
     @staticmethod
     def get_tickets(initial_date=None, final_date=None):
 
-        all_tickets_details = TicketDetail.objects.all(). \
+        if initial_date is not None and final_date is not None:
+            all_tickets = Ticket.objects.all().\
+                select_related('seller'). \
+                filter(created_at__range=[initial_date, final_date]).\
+                order_by('-created_at')
+        else:
+            all_tickets = Ticket.objects.all().\
+                select_related('seller'). \
+                order_by('-created_at')
+
+        all_tickets_details = TicketDetail.objects. \
             select_related('ticket'). \
             select_related('cartridge'). \
             select_related('ticket__seller'). \
-            select_related('package_cartridge'). \
-            filter(ticket__created_at__range=[initial_date, final_date]). \
-            order_by('-ticket__created_at') . \
-            values('ticket__id', 'ticket__order_number', 'ticket__seller__username', 'cartridge')
+            select_related('package_cartridge')
 
-        all_tickets = Ticket.objects.all() .\
-            prefetch_related('ticket_detail')
-        print(all_tickets_details)
         tickets_list = []
 
-        for ticket in range(0, 0):
+        for ticket in all_tickets:
             ticket_object = {
                 'id': ticket.id,
                 'order_number': ticket.order_number,
@@ -382,7 +386,7 @@ class SalesHelper(object):
                 },
                 'total': 0,
             }
-            """
+
             for ticket_detail in all_tickets_details:
                 if ticket_detail.ticket == ticket:
                     ticket_detail_object = {}
@@ -407,7 +411,6 @@ class SalesHelper(object):
                         ticket_object['ticket_details'].append(ticket_detail_object)
                     except Exception as e:
                         pass
-            """
             ticket_object['total'] = str(ticket_object['total'])
             tickets_list.append(ticket_object)
         return tickets_list
