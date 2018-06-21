@@ -124,34 +124,37 @@ def sales(request):
         if request.POST['type'] == 'sales_week':
             initial_date = request.POST['dt_week'].split(',')[0]
             final_date = request.POST['dt_week'].split(',')[1]
-            initial_date = helper.parse_to_datetime(initial_date)
-            final_date = helper.parse_to_datetime(final_date) + timedelta(days=1)
+            initial_date = Helper.parse_to_datetime(initial_date)
+            final_date = Helper.parse_to_datetime(final_date) + timedelta(days=1)
 
-            filtered_sales = sales_helper.get_sales_list(initial_date, final_date)
-            tickets = sales_helper.get_tickets(initial_date, final_date)
+            filtered_sales = SalesHelper.get_sales_list(initial_date, final_date)
+            tickets = SalesHelper.get_tickets(initial_date, final_date)
+
             data = {
                 'sales': filtered_sales,
                 'tickets': tickets,
-                'week_number': helper.get_week_number(initial_date)
+                'week_number': Helper.get_week_number(initial_date)
             }
             return JsonResponse(data)
 
         if request.POST['type'] == 'dates_range':
-            SalesHelper.get_dates_range_json()
-            return JsonResponse(SalesHelper)
+            return JsonResponse({
+                'data': SalesHelper.get_dates_range_json()
+            })
 
-    template = 'sales/sales.html'
-    title = 'Registro de Ventas'
-    context = {
-        'title': PAGE_TITLE + ' | ' + title,
-        'page_title': title,
-        'actual_year': datetime.now().year,
-        'today_name': helper.get_name_day(datetime.now()),
-        'today_number': helper.get_number_day(datetime.now()),
-        'week_number': helper.get_week_number(date.today()),
-        'dates_range': sales_helper.get_dates_range_json(),
-    }
-    return render(request, template, context)
+    elif request.method == 'GET':
+        template = 'sales/sales.html'
+        title = 'Registro de Ventas'
+        context = {
+            'title': PAGE_TITLE + ' | ' + title,
+            'page_title': title,
+            'actual_year': datetime.now().year,
+            'today_name': helper.get_name_day(datetime.now()),
+            'today_number': helper.get_number_day(datetime.now()),
+            'week_number': helper.get_week_number(date.today()),
+            'dates_range': sales_helper.get_dates_range_json(),
+        }
+        return render(request, template, context)
 
 
 @login_required(login_url='users:login')

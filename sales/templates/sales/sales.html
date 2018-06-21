@@ -3,9 +3,6 @@
 {% load static %}
 
 {% block link %}
-  <!--
-  <link rel="stylesheet" href="{% static 'css/sweetalert.css' %}">
-  -->
 {% endblock link %}
 
 {% block page_title %}
@@ -190,9 +187,9 @@
         ctx_day = document.getElementById("canvas-day-sales");
     let earnings_week_chart,
         earnings_day_chart,
-        sales_week,
-        dates_range,
-        today_date;
+        salesWeek,
+        datesRange,
+        todayDate;
 
     function getCSRFToken() {
       let cookieValue = null;
@@ -210,14 +207,127 @@
     }
 
     /**
+     * Actualiza los valores de la gráfica de ventas por semana
+     * @author Ramses Martinez
+     */
+    function setSalesWeekChart() {
+      let yearSelect = document.getElementById('dt-year');
+      let weekSelect = document.getElementById('dt-week');
+
+      $.ajax({
+        url: "/sales/",
+        type: 'POST',
+        data: {
+          'csrfmiddlewaretoken': getCSRFToken,
+          'dt_year': yearSelect.value,
+          'dt_week': weekSelect.value,
+          'type': 'sales_week',
+        },
+        beforeSend: function(){
+          swal({
+            title: "Obteniendo registros",
+            text: "Espere mientras obtenemos toda la información",
+          });
+          swal.enableLoading();
+        },
+        traditional: true,
+        datatype: 'jsonp',
+        success: function(result, status, XHR) {
+          let tickets_objects = result['tickets'];
+          salesWeek = result['sales'];
+          let week_number = result['week_number'];
+          let sales_details_table = $('#sales-details-table').find('tbody');
+          let week_earnings = 0;
+          sales_details_table.empty();
+
+          swal({
+            title: "Éxito",
+            text: "Datos obtenidos",
+            type: "info",
+            timer: 750,
+            showConfirmButton: false
+          }).then(
+          function(){},
+          function(dismiss){});
+
+          /**
+           * Filling the sales table
+           */
+          for (let i = 0; i < tickets_objects.length; i++) {
+            week_earnings += parseFloat(tickets_objects[i].total);
+            let cartridges_list = "";
+            let packages_list = "";
+
+            for (let j = 0; j < tickets_objects[i].ticket_details['cartridges'].length; j++) {
+              cartridges_list += "" +
+              "<span class='badge badge-success'>" +
+                "<span class='badge badge-info'>" +
+                tickets_objects[i].ticket_details['cartridges'][j].quantity +
+                "</span>" +
+                "<span class='badge badge-success'>" +
+                tickets_objects[i].ticket_details['cartridges'][j].name +
+                "</span>" +
+              "</span>" +
+              "";
+            }
+
+            for (let j = 0; j < tickets_objects[i].ticket_details['packages'].length; j++) {
+              packages_list += "" +
+              "<span class='badge badge-primary'>" +
+                "<span class='badge badge-info'>" +
+                tickets_objects[i].ticket_details['packages'][j].quantity +
+                "</span>" +
+                "<span class='badge badge-primary'>" +
+                tickets_objects[i].ticket_details['packages'][j].name +
+                "</span>" +
+              "</span>" +
+              "";
+            }
+
+            sales_details_table.append("" +
+              "<tr>" +
+              "<th class='header-id'>" + tickets_objects[i].id + "</th>" +
+              "<th>" + tickets_objects[i].order_number + "</th>" +
+              "<td class='header-date'>" + tickets_objects[i].created_at + "</td>" +
+              "<td class='header-products'>" + cartridges_list + "</td>" +
+              "<td class='header-packages'>" + packages_list + "</td>" +
+              "<td>" + tickets_objects[i].seller + "</td>" +
+              "<td class='td-total'>" + tickets_objects[i].total + "</td>" +
+              "<td class='header-actions'>" +
+              "<span class='sales-actions delete-ticket'><i class='material-icons text-muted'>delete</i></span>" +
+              "<span class='sales-actions print-ticket'><i class='material-icons text-primary'>local_printshop</i></span>" +
+              "</td>" +
+              "</tr>" +
+            "");
+          }
+
+          /**
+           * Filling the sales chart
+           */
+          let sales_week_earnings_list = get_earnings_week_range(salesWeek);
+          earnings_week_chart.data.datasets[0].data = sales_week_earnings_list;
+          earnings_week_chart.update();
+
+          $('#total-earnings-text').text(week_earnings.toFixed(2));
+          $('#week-number').text(week_number);
+
+        },
+        error: function(result, jqXHR, textStatus, errorThrown) {
+          console.log(result);
+        },
+        complete: function(result){}
+      });
+    }
+
+    /**
      * returns a list with the earnings of the week per day
      */
     function get_earnings_week_list() {
       let earnings_list = [];
       let count = 0;
 
-      while (count < sales_week.length) {
-        earnings_list.push(parseFloat(sales_week[count].earnings));
+      while (count < salesWeek.length) {
+        earnings_list.push(parseFloat(salesWeek[count].earnings));
         count++;
       }
       return earnings_list;
@@ -414,31 +524,30 @@
       });
     }
 
-    function convert_date_to_str(date) {
-      let months = {
-        1: 'Ene', 2: 'Feb', 3: 'Mar', 4: 'Abr', 5: 'May', 6: 'Jun',
-        7: 'Jul', 8: 'Ago', 9: 'Sep', 10: 'Oct', 11: 'Nov', 12: 'Dic',
-      };
-      date = date.split('-');
-      return date[0] + " " + months[parseInt(date[1])] + " " + date[2];
-    }
-
+    /**
+     * Carga las fechas a consultar para los selects
+     */
     function fill_dates_range_form() {
-
       $.ajax({
-        url: '/',
+        url: '/sales/',
         type: 'post',
         data: {
-          type: '{% url "sales:sales" %}',
-          csrfmiddlewaretoken: getCSRFToken()
+          'type': 'dates_range',
+          'csrfmiddlewaretoken': getCSRFToken()
         },
         success: function(result){
-          console.log(result);
+          datesRange = result['data'];
+          // Rellene los selects de años y semanas
+          setYearsDropDown();
+          setWeeksDropDown();
+
+          // Una vez completada la carga, realiza la llamada de ventas de la semana
+          setSalesWeekChart();
+
         },
-        error: function(result, jqXHR, textStatus, errorThrown) {
+        error: function(result, jqXHR, textStatus) {
           console.error(result);
           console.error(jqXHR, textStatus);
-          console.error(errorThrown);
         }
       });
     }
@@ -478,9 +587,9 @@
         onClick: function(event, legendItem) {
           try {
             let selected_day = legendItem[0]._index;
-            for (let i = 0; i < sales_week.length; i++) {
-              if (sales_week[i].number_day == selected_day) {
-                set_sales_day_chart(sales_week[i].date);
+            for (let i = 0; i < salesWeek.length; i++) {
+              if (salesWeek[i].number_day == selected_day) {
+                set_sales_day_chart(salesWeek[i].date);
               }
             }
           } catch (error) {
@@ -581,115 +690,57 @@
     }
 
     /**
+     * Actualiza las semanas en el select por semana de acuerdo al año elegido en el select de años
+     */
+    function setYearsDropDown() {
+      let yearSelect = document.getElementById('dt-year');
+
+      for (let key in datesRange) {
+        if (!datesRange.hasOwnProperty(key)) continue;
+        // Añade el año al select
+        let optYear = document.createElement('option');
+        optYear.innerHTML = key;
+        optYear.value = key;
+        yearSelect.insertBefore(optYear, yearSelect.firstChild);
+      }
+      yearSelect.selectedIndex = 0;
+    }
+
+    /**
+     * Rellena los años disponibles en el select input de años
+     */
+    function setWeeksDropDown() {
+      let yearSelect = document.getElementById('dt-year');
+      let weekSelect = document.getElementById('dt-week');
+
+      // Limpia los elementos ya existentes en el select
+      weekSelect.options.length = 0;
+
+      let  fragment = document.createDocumentFragment();
+
+      // Agrega los elementos al select de semanas
+      datesRange[yearSelect.options[yearSelect.selectedIndex].value].forEach(function (week) {
+        let optWeek = document.createElement('option');
+        optWeek.innerHTML = week.split('|')[0];
+        optWeek.value = week.split('|')[1];
+        fragment.insertBefore(optWeek, fragment.firstChild);
+      });
+      weekSelect.appendChild(fragment);
+      weekSelect.selectedIndex = 0;
+    }
+
+    /**
+     * Listener de cambios para el select de añoss
+     */
+    $(this).on('change', '#dt-year', function() {
+      setWeeksDropDown();
+    });
+
+    /**
      * Refresh the page with de dates of the year and week selected
      */
     $(this).on('change', '#dt-week', function(event) {
-      let dt_year = $('#dt-year').val();
-      let dt_week = $('#dt-week').val();
-
-      $.ajax({
-        url: "{% url 'sales:sales' %}",
-        type: 'POST',
-        data: {
-          csrfmiddlewaretoken: '{{ csrf_token }}',
-          'dt_year': dt_year,
-          'dt_week': dt_week,
-          'type': 'sales_week',
-        },
-        beforeSend: function(){
-          swal({
-            title: "Obteniendo registros",
-            text: "Espere mientras obtenemos toda la información",
-          });
-          swal.enableLoading();
-        },
-        traditional: true,
-        datatype: 'jsonp',
-        success: function(result, status, XHR) {
-          let tickets_objects = result['tickets'];
-          sales_week = result['sales'];
-          let week_number = result['week_number'];
-          let sales_details_table = $('#sales-details-table').find('tbody');
-          let week_earnings = 0;
-          sales_details_table.empty();
-
-          swal({
-            title: "Éxito",
-            text: "Datos obtenidos",
-            type: "info",
-            timer: 750,
-            showConfirmButton: false
-          }).then(
-          function(){},
-          function(dismiss){});
-
-          /**
-           * Filling the sales table
-           */
-          for (let i = 0; i < tickets_objects.length; i++) {
-            week_earnings += parseFloat(tickets_objects[i].total);
-            let cartridges_list = "";
-            let packages_list = "";
-
-            for (let j = 0; j < tickets_objects[i].ticket_details['cartridges'].length; j++) {
-              cartridges_list += "" +
-              "<span class='badge badge-success'>" +
-                "<span class='badge badge-info'>" +
-                tickets_objects[i].ticket_details['cartridges'][j].quantity +
-                "</span>" +
-                "<span class='badge badge-success'>" +
-                tickets_objects[i].ticket_details['cartridges'][j].name +
-                "</span>" +
-              "</span>" +
-              "";
-            }
-
-            for (let j = 0; j < tickets_objects[i].ticket_details['packages'].length; j++) {
-              packages_list += "" +
-              "<span class='badge badge-primary'>" +
-                "<span class='badge badge-info'>" +
-                tickets_objects[i].ticket_details['packages'][j].quantity +
-                "</span>" +
-                "<span class='badge badge-primary'>" +
-                tickets_objects[i].ticket_details['packages'][j].name +
-                "</span>" +
-              "</span>" +
-              "";
-            }
-
-            sales_details_table.append("" +
-              "<tr>" +
-              "<th class='header-id'>" + tickets_objects[i].id + "</th>" +
-              "<th>" + tickets_objects[i].order_number + "</th>" +
-              "<td class='header-date'>" + tickets_objects[i].created_at + "</td>" +
-              "<td class='header-products'>" + cartridges_list + "</td>" +
-              "<td class='header-packages'>" + packages_list + "</td>" +
-              "<td>" + tickets_objects[i].seller + "</td>" +
-              "<td class='td-total'>" + tickets_objects[i].total + "</td>" +
-              "<td class='header-actions'>" +
-              "<span class='sales-actions delete-ticket'><i class='material-icons text-muted'>delete</i></span>" +
-              "<span class='sales-actions print-ticket'><i class='material-icons text-primary'>local_printshop</i></span>" +
-              "</td>" +
-              "</tr>" +
-            "");
-          }
-
-          /**
-           * Filling the sales chart
-           */
-          let sales_week_earnings_list = get_earnings_week_range(sales_week);
-          earnings_week_chart.data.datasets[0].data = sales_week_earnings_list;
-          earnings_week_chart.update();
-
-          $('#total-earnings-text').text(week_earnings.toFixed(2));
-          $('#week-number').text(week_number);
-
-        },
-        error: function(result, jqXHR, textStatus, errorThrown) {
-          console.log(result);
-        },
-        complete: function(result){}
-      });
+      setSalesWeekChart();
     });
 
     /**
@@ -958,11 +1009,6 @@
         }
       });
     });
-
-    /**
-     * Functions to initialize the graphs
-     */
-
 
     /**
      * Desencadena todos los eventos iniciales

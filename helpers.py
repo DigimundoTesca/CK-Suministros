@@ -1,11 +1,12 @@
 import calendar
 import json
-
+import locale
+import os
 import pytz
 
 from datetime import datetime, date, timedelta, time
 from decimal import Decimal
-from django.db.models import Min, Max
+from django.db.models import Min, Max, Sum
 from django.utils import timezone
 
 from diners.models import Diner, AccessLog, SatisfactionRating, ElementToEvaluate
@@ -14,27 +15,34 @@ from products.models import Cartridge, PackageCartridge, Supply, ExtraIngredient
     CartridgeRecipe
 from sales.models import Ticket, TicketDetail, TicketExtraIngredient
 
+DAYS_LIST = {
+    'LUNES': 'Lunes',
+    'MARTES': 'Martes',
+    'MIÉRCOLES': 'Miércoles',
+    'JUEVES': 'Jueves',
+    'VIERNES': 'Viernes',
+    'SÁBADO': 'Sábado',
+    'DOMINGO': 'Domingo'
+}
+
 
 class Helper(object):
     def __init__(self):
-        self.tz = pytz.timezone('America/Mexico_City')
-        self.days_list = {
-            'MONDAY': 'Lunes',
-            'TUESDAY': 'Martes',
-            'WEDNESDAY': 'Miércoles',
-            'THURSDAY': 'Jueves',
-            'FRIDAY': 'Viernes',
-            'SATURDAY': 'Sábado',
-            'SUNDAY': 'Domingo'
-        }
+        if os.name == 'posix':
+            locale.setlocale(locale.LC_TIME, 'es_MX.UTF-8')
+        else:
+            locale.setlocale(locale.LC_TIME, 'es-MX')
+
         super(Helper, self).__init__()
 
-    def naive_to_datetime(self, nd):
+    @staticmethod
+    def naive_to_datetime(nd):
         if type(nd) == datetime:
             if nd.tzinfo is not None and nd.tzinfo.utcoffset(nd) is not None:  # Is Aware
                 return nd
             else:  # Is Naive
-                return self.tz.localize(nd)
+                tz = pytz.timezone('America/Mexico_City')
+                return tz.localize(nd)
 
         elif type(nd) == date:
             d = nd
@@ -50,12 +58,13 @@ class Helper(object):
         end_date = self.start_datetime(back_days) + timedelta(days=1)
         return self.naive_to_datetime(end_date)
 
-    def parse_to_datetime(self, dt):
+    @staticmethod
+    def parse_to_datetime(dt):
         day = int(dt.split('-')[0])
         month = int(dt.split('-')[1])
         year = int(dt.split('-')[2])
         parse_date = date(year, month, day)
-        return self.naive_to_datetime(parse_date)
+        return Helper.naive_to_datetime(parse_date)
 
     def are_equal_lists(self, list_1, list_2):
         """
@@ -76,15 +85,17 @@ class Helper(object):
 
         return True
 
-    def get_name_day(self, datetime_now):
+    @staticmethod
+    def get_name_day(datetime_now):
         name_day = date(datetime_now.year, datetime_now.month, datetime_now.day)
-        return self.days_list[name_day.strftime('%A').upper()]
+        return DAYS_LIST[name_day.strftime('%A').upper()]
 
-    def get_number_day(self, dt):
+    @staticmethod
+    def get_number_day(dt):
         days = {
             'Lunes': 0, 'Martes': 1, 'Miércoles': 2, 'Jueves': 3, 'Viernes': 4, 'Sábado': 5, 'Domingo': 6,
         }
-        return days[self.get_name_day(dt)]
+        return days[Helper.get_name_day(dt)]
 
     @staticmethod
     def get_week_number(dt):
@@ -115,7 +126,12 @@ def create_calendar_list(dt, max_dt):
         while dt.month == mont:
             if dt > max_dt:
                 return dow_lst
-            dow_lst.append(dt)
+            dt_week = dt.strftime('%W')
+            dt_initial = dt.strftime('%d %b %Y')
+            dt_initial_f = dt.strftime('%d-%m-%Y')
+            dt_final = (dt + timedelta(days=6)).strftime('%d %b %Y')
+            dt_final_f = (dt + timedelta(days=6)).strftime('%d-%m-%Y')
+            dow_lst.append('Sem %s: %s - %s | %s,%s' % (dt_week, dt_initial, dt_final, dt_initial_f, dt_final_f))
             dt = dt + timedelta(days=7)
 
     return dow_lst
@@ -207,7 +223,7 @@ class SalesHelper(object):
         helper = Helper()
 
         tickets_list = []
-        filtered_tickets = self.get_all_tickets().filter(created_at__gte=helper.naive_to_datetime(date.today()))
+        filtered_tickets = self.get_all_tickets().filter(created_at__gte=Helper.naive_to_datetime(date.today()))
 
         for ticket in filtered_tickets:
             ticket_object = {
@@ -248,44 +264,45 @@ class SalesHelper(object):
         """
         years_dict = {}
 
-        # Obtiene el ticket más antiguo y más reciente
+        # Obtiene el ticket más antiguo
         first_date = Ticket.objects.values('created_at').order_by('created_at').first()['created_at']
-        last_date = Ticket.objects.values('created_at').order_by('created_at').last()['created_at']
 
         years = list(range(first_date.year, datetime.today().year + 1))
 
         for year in years:
-            # years_dict[year] = week_finder_from_year(year, date.today())
-            print(week_finder_from_year(year, date.today()))
+            years_dict[year] = week_finder_from_year(year, date.today())
 
-        return json.dumps(years_dict)
+        return years_dict
 
-    def get_sales_list(self, start_dt, final_dt):
+    @staticmethod
+    def get_sales_list(start_dt=None, final_dt=None):
         """
-        Gets the following properties for each week's day: Name, Date and Earnings
+        Obtiene una lista de objetos de ventas por día con los siguientes valores
+            - Name
+            - Date
+            - Earnings
         """
-        helper = Helper()
+
         limit_day = start_dt + timedelta(days=1)
         total_days = (final_dt - start_dt).days
         week_sales_list = []
         count = 1
-        total_earnings = 0
 
         while count <= total_days:
-            day_tickets = self.get_all_tickets().filter(created_at__range=[start_dt, limit_day])
             day_object = {
                 'date': str(start_dt.date().strftime('%d-%m-%Y')),
                 'day_name': None,
                 'earnings': None,
-                'number_day': helper.get_number_day(start_dt),
+                'number_day': Helper.get_number_day(start_dt),
             }
 
-            for ticket_item in day_tickets:
-                for ticket_detail_item in self.get_all_tickets_details():
-                    if ticket_detail_item.ticket == ticket_item:
-                        total_earnings += ticket_detail_item.price
+            total_earnings = TicketDetail.objects.all(). \
+                select_related('ticket'). \
+                values('price'). \
+                filter(ticket__created_at__range=[start_dt, limit_day]). \
+                aggregate(total=Sum('price'))['total']
 
-            day_object['day_name'] = helper.get_name_day(start_dt.date())
+            day_object['day_name'] = Helper.get_name_day(start_dt.date())
             day_object['earnings'] = str(total_earnings)
 
             week_sales_list.append(day_object)
@@ -293,7 +310,6 @@ class SalesHelper(object):
             # Reset data
             limit_day += timedelta(days=1)
             start_dt += timedelta(days=1)
-            total_earnings = 0
             count += 1
 
         return week_sales_list
@@ -337,13 +353,24 @@ class SalesHelper(object):
 
         return json.dumps(week_sales_list)
 
-    def get_tickets(self, initial_date, final_date):
-        all_tickets = self.get_all_tickets().filter(
-            created_at__range=(initial_date, final_date)).order_by('-created_at')
-        all_tickets_details = self.get_all_tickets_details()
+    @staticmethod
+    def get_tickets(initial_date=None, final_date=None):
+
+        all_tickets_details = TicketDetail.objects.all(). \
+            select_related('ticket'). \
+            select_related('cartridge'). \
+            select_related('ticket__seller'). \
+            select_related('package_cartridge'). \
+            filter(ticket__created_at__range=[initial_date, final_date]). \
+            order_by('-ticket__created_at') . \
+            values('ticket__id', 'ticket__order_number', 'ticket__seller__username', 'cartridge')
+
+        all_tickets = Ticket.objects.all() .\
+            prefetch_related('ticket_detail')
+        print(all_tickets_details)
         tickets_list = []
 
-        for ticket in all_tickets:
+        for ticket in range(0, 0):
             ticket_object = {
                 'id': ticket.id,
                 'order_number': ticket.order_number,
@@ -355,7 +382,7 @@ class SalesHelper(object):
                 },
                 'total': 0,
             }
-
+            """
             for ticket_detail in all_tickets_details:
                 if ticket_detail.ticket == ticket:
                     ticket_detail_object = {}
@@ -380,6 +407,7 @@ class SalesHelper(object):
                         ticket_object['ticket_details'].append(ticket_detail_object)
                     except Exception as e:
                         pass
+            """
             ticket_object['total'] = str(ticket_object['total'])
             tickets_list.append(ticket_object)
         return tickets_list
