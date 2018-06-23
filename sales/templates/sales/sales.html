@@ -520,6 +520,8 @@
             _earnings_day_chart.data.datasets[0].data = get_sales_day_list(initial_hour, final_hour, separation_time, sales_day_object_list);
             _earnings_day_chart.update();
 
+            console.log(result);
+
             swal({
               title: "Éxito",
               text: "Gráfica generada",
@@ -612,9 +614,7 @@
                   set_sales_day_chart(_salesWeek[i].date);
                 }
               }
-            } catch (error) {
-              console.log(error.message);
-            }
+            } catch (error) {}
           },
           scales: {
             yAxes: [{
@@ -944,7 +944,6 @@
        */
       $(this).on('click', '#btn-save-ticket-csv', function(event) {
         let dt_week = $('#dt-week').val();
-
         $.ajax({
           url: "{% url 'sales:sales' %}",
           type: 'POST',
@@ -987,10 +986,6 @@
                 function(){},
                 function(dismiss){}
             );
-          },
-          complete: function(result){
-            setTimeout(function() {
-            }, 750);
           }
         });
       });
