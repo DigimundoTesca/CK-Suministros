@@ -1,6 +1,7 @@
 import json
 from datetime import datetime, date, timedelta
-
+import locale
+import os
 from decimal import Decimal
 
 from django.contrib.auth.decorators import login_required
@@ -29,23 +30,29 @@ def sales(request):
             Each object has the following characteristics
             """
             sales_day_list = []
-            start_date = helper.naive_to_datetime(datetime.strptime(request.POST['date'], '%d-%m-%Y').date())
-            end_date = helper.naive_to_datetime(start_date + timedelta(days=1))
-            tickets_objects = sales_helper.get_all_tickets(start_date, end_date)
+            start_date = Helper.naive_to_datetime(datetime.strptime(request.POST['date'], '%d-%m-%Y').date())
+            end_date = Helper.naive_to_datetime(start_date + timedelta(days=1))
+            tickets_objects = SalesHelper.get_tickets(start_date, end_date)
+            tickets_id_list = tickets_objects.values_list('id', flat=True)
+            ticket_details = TicketDetail.objects.all(). \
+                select_related('ticket').\
+                filter(ticket__id__in=tickets_id_list).\
+                values('ticket', 'ticket__pk', 'price')
 
             for ticket in tickets_objects:
                 """
                 Filling in the sales list of the day
                 """
                 earnings_sale_object = {
-                    'id_ticket': ticket.id,
+                    'id_ticket': ticket.pk,
                     'datetime': timezone.localtime(ticket.created_at),
                     'earnings': 0
                 }
-                for ticket_detail in sales_helper.get_all_tickets_details():
-                    if ticket_detail.ticket == ticket:
-                        earnings_sale_object['earnings'] += ticket_detail.price
+                for ticket_detail in ticket_details:
+                    if ticket_detail['ticket__pk'] == ticket.pk:
+                        earnings_sale_object['earnings'] += ticket_detail['price']
                 sales_day_list.append(earnings_sale_object)
+
             return JsonResponse({'sales_day_list': sales_day_list})
 
         if request.POST['type'] == 'ticket_details':
@@ -88,35 +95,46 @@ def sales(request):
 
         if request.POST['type'] == 'tickets':
             tickets_objects_list = []
-            initial_dt = request.POST['dt_week'].split(',')[0]
-            final_dt = request.POST['dt_week'].split(',')[1]
-            initial_dt = helper.naive_to_datetime(datetime.strptime(initial_dt, '%d-%m-%Y').date())
-            final_dt = helper.naive_to_datetime(datetime.strptime(final_dt, '%d-%m-%Y').date())
+            initial_dt = request.POST['dt_week'].split(',')[0].strip()
+            final_dt = request.POST['dt_week'].split(',')[1].strip()
+            start_date = helper.naive_to_datetime(datetime.strptime(initial_dt, '%d-%m-%Y').date())
+            end_date = helper.naive_to_datetime(datetime.strptime(final_dt, '%d-%m-%Y').date())
+            tickets = Ticket.objects.all().\
+                select_related('seller').\
+                filter(created_at__range=[start_date, end_date]).\
+                values('pk', 'created_at', 'seller__username', 'payment_type')
+            tickets_id_list = tickets.values_list('pk')
+            ticket_details = TicketDetail.objects.all().\
+                select_related('ticket', 'cartridge', 'package_cartridge'). \
+                filter(ticket_id__in=tickets_id_list).\
+                values('ticket__pk', 'quantity', 'price', 'cartridge', 'cartridge__name', 'package_cartridge',
+                       'package_cartridge__name')
 
-            for ticket in sales_helper.get_all_tickets().filter(created_at__range=[initial_dt, final_dt]):
-                for ticket_detail in sales_helper.get_all_tickets_details():
-                    if ticket_detail.ticket == ticket:
+            for ticket in tickets:
+                for ticket_detail in ticket_details:
+
+                    if ticket_detail['ticket__pk'] == ticket['pk']:
                         ticket_object = {
-                            'ID': ticket.id,
-                            'Fecha': timezone.localtime(ticket.created_at).date(),
-                            'Hora': timezone.localtime(ticket.created_at).time(),
-                            'Vendedor': ticket.seller.username,
+                            'ID': ticket['pk'],
+                            'Fecha': timezone.localtime(ticket['created_at']).date(),
+                            'Hora': timezone.localtime(ticket['created_at']).time(),
+                            'Vendedor': ticket['seller__username'],
                         }
-                        if ticket.payment_type == 'CA':
+                        if ticket['payment_type'] == 'CA':
                             ticket_object['Tipo de Pago'] = 'Efectivo'
                         else:
                             ticket_object['Tipo de Pago'] = 'Crédito'
-                        if ticket_detail.cartridge:
-                            ticket_object['Producto'] = ticket_detail.cartridge.name
+                        if ticket_detail['cartridge']:
+                            ticket_object['Producto'] = ticket_detail['cartridge__name']
                         else:
                             ticket_object['Producto'] = None
-                        if ticket_detail.package_cartridge:
-                            ticket_object['Paquete'] = ticket_detail.package_cartridge.name
+                        if ticket_detail['package_cartridge']:
+                            ticket_object['Paquete'] = ticket_detail['package_cartridge__name']
                         else:
                             ticket_object['Paquete'] = None
-                        ticket_object['Cantidad'] = ticket_detail.quantity
-                        ticket_object['Total'] = ticket_detail.price
-                        ticket_object['Precio Unitario'] = ticket_detail.price / ticket_detail.quantity
+                        ticket_object['Cantidad'] = ticket_detail['quantity']
+                        ticket_object['Total'] = ticket_detail['price']
+                        ticket_object['Precio Unitario'] = ticket_detail['price'] / ticket_detail['quantity']
                         tickets_objects_list.append(ticket_object)
 
             return JsonResponse({'ticket': tickets_objects_list})
@@ -124,33 +142,38 @@ def sales(request):
         if request.POST['type'] == 'sales_week':
             initial_date = request.POST['dt_week'].split(',')[0]
             final_date = request.POST['dt_week'].split(',')[1]
-            initial_date = helper.parse_to_datetime(initial_date)
-            final_date = helper.parse_to_datetime(final_date) + timedelta(days=1)
+            initial_date = Helper.parse_to_datetime(initial_date)
+            final_date = Helper.parse_to_datetime(final_date) + timedelta(days=1)
 
-            filtered_sales = sales_helper.get_sales_list(initial_date, final_date)
-            tickets = sales_helper.get_tickets(initial_date, final_date)
+            filtered_sales = SalesHelper.get_sales_list(initial_date, final_date)
+            tickets = SalesHelper.get_tickets_dict(initial_date, final_date)
+
             data = {
                 'sales': filtered_sales,
                 'tickets': tickets,
-                'week_number': helper.get_week_number(initial_date)
+                'week_number': Helper.get_week_number(initial_date),
+                'week_earnings': float(SalesHelper.get_earnings(initial_date, final_date))
             }
             return JsonResponse(data)
 
-    template = 'sales/sales.html'
-    title = 'Registro de Ventas'
-    context = {
-        'title': PAGE_TITLE + ' | ' + title,
-        'page_title': title,
-        'actual_year': datetime.now().year,
-        'sales_week': sales_helper.get_sales_actual_week(),
-        'today_name': helper.get_name_day(datetime.now()),
-        'today_number': helper.get_number_day(datetime.now()),
-        'week_number': helper.get_week_number(date.today()),
-        'tickets': sales_helper.get_tickets_today_list(),
-        'dates_range': sales_helper.get_dates_range_json(),
+        if request.POST['type'] == 'dates_range':
+            return JsonResponse({
+                'data': SalesHelper.get_dates_range_json()
+            })
 
-    }
-    return render(request, template, context)
+    elif request.method == 'GET':
+        template = 'sales/sales.html'
+        title = 'Registro de Ventas'
+        context = {
+            'title': PAGE_TITLE + ' | ' + title,
+            'page_title': title,
+            'actual_year': datetime.now().year,
+            'today_name': helper.get_name_day(datetime.now()),
+            'today_number': helper.get_number_day(datetime.now()),
+            'week_number': helper.get_week_number(date.today()),
+            'dates_range': sales_helper.get_dates_range_json(),
+        }
+        return render(request, template, context)
 
 
 @login_required(login_url='users:login')
@@ -186,7 +209,7 @@ def new_sale(request):
             4. Save the new object
             """
 
-            filtered_tickets = sales_helper.get_all_tickets().filter(
+            filtered_tickets = sales_helper.get_tickets().filter(
                 created_at__gte=datetime.now() - timedelta(days=helper.get_number_day(datetime.now())))
 
             for ticket in filtered_tickets:
