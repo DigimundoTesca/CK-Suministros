@@ -1,6 +1,7 @@
 import json
 from datetime import datetime, date, timedelta
-
+import locale
+import os
 from decimal import Decimal
 
 from django.contrib.auth.decorators import login_required
@@ -29,9 +30,12 @@ def sales(request):
             Each object has the following characteristics
             """
             sales_day_list = []
-            start_date = helper.naive_to_datetime(datetime.strptime(request.POST['date'], '%d-%m-%Y').date())
-            end_date = helper.naive_to_datetime(start_date + timedelta(days=1))
-            tickets_objects = SalesHelper.get_all_tickets(start_date, end_date)
+            start_date = Helper.naive_to_datetime(datetime.strptime(request.POST['date'], '%d-%m-%Y').date())
+            end_date = Helper.naive_to_datetime(start_date + timedelta(days=1))
+            tickets_objects = SalesHelper.get_tickets(start_date, end_date)
+            ticket_details = TicketDetail.objects.all(). \
+                select_related('ticket').\
+                values('ticket', 'ticket__id', 'price')
 
             for ticket in tickets_objects:
                 """
@@ -42,10 +46,11 @@ def sales(request):
                     'datetime': timezone.localtime(ticket.created_at),
                     'earnings': 0
                 }
-                for ticket_detail in sales_helper.get_all_tickets_details():
-                    if ticket_detail.ticket == ticket:
-                        earnings_sale_object['earnings'] += ticket_detail.price
+                for ticket_detail in ticket_details:
+                    if ticket_detail['ticket__id'] == ticket.id:
+                        earnings_sale_object['earnings'] += ticket_detail['price']
                 sales_day_list.append(earnings_sale_object)
+
             return JsonResponse({'sales_day_list': sales_day_list})
 
         if request.POST['type'] == 'ticket_details':
@@ -93,7 +98,7 @@ def sales(request):
             initial_dt = helper.naive_to_datetime(datetime.strptime(initial_dt, '%d-%m-%Y').date())
             final_dt = helper.naive_to_datetime(datetime.strptime(final_dt, '%d-%m-%Y').date())
 
-            for ticket in sales_helper.get_all_tickets().filter(created_at__range=[initial_dt, final_dt]):
+            for ticket in sales_helper.get_tickets().filter(created_at__range=[initial_dt, final_dt]):
                 for ticket_detail in sales_helper.get_all_tickets_details():
                     if ticket_detail.ticket == ticket:
                         ticket_object = {
@@ -128,12 +133,13 @@ def sales(request):
             final_date = Helper.parse_to_datetime(final_date) + timedelta(days=1)
 
             filtered_sales = SalesHelper.get_sales_list(initial_date, final_date)
-            tickets = SalesHelper.get_tickets(initial_date, final_date)
+            tickets = SalesHelper.get_tickets_dict(initial_date, final_date)
 
             data = {
                 'sales': filtered_sales,
                 'tickets': tickets,
-                'week_number': Helper.get_week_number(initial_date)
+                'week_number': Helper.get_week_number(initial_date),
+                'week_earnings': float(SalesHelper.get_earnings(initial_date, final_date))
             }
             return JsonResponse(data)
 
@@ -190,7 +196,7 @@ def new_sale(request):
             4. Save the new object
             """
 
-            filtered_tickets = sales_helper.get_all_tickets().filter(
+            filtered_tickets = sales_helper.get_tickets().filter(
                 created_at__gte=datetime.now() - timedelta(days=helper.get_number_day(datetime.now())))
 
             for ticket in filtered_tickets:

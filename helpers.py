@@ -31,7 +31,7 @@ class Helper(object):
         if os.name == 'posix':
             locale.setlocale(locale.LC_TIME, 'es_MX.UTF-8')
         else:
-            locale.setlocale(locale.LC_TIME, 'es-MX')
+            locale.setlocale(locale.LC_TIME, 'Spanish_Mexico')
 
         super(Helper, self).__init__()
 
@@ -137,7 +137,7 @@ def create_calendar_list(dt, max_dt):
     return dow_lst
 
 
-def week_finder_from_year(year: int, max_dt: date=None):
+def week_finder_from_year(year: int, max_dt: date = None):
     """ Regresa todas las semanas de un año en específico
     :type year: int
     :type max_dt: date
@@ -183,13 +183,17 @@ class SalesHelper(object):
             select_related('extra_ingredient__ingredient'). \
             all()
 
-    def get_all_tickets(self, start_date=None, end_date=None):
+    @staticmethod
+    def get_tickets(start_date=None, end_date=None):
         """        
         :rtype: django.db.models.query.QuerySet
         """
-        if self.__all_tickets is None:
-            self.set_all_tickets(start_date, end_date)
-        return self.__all_tickets
+        if start_date is not None and end_date is not None:
+            all_tickets = Ticket.objects.select_related('seller'). \
+                filter(created_at__range=[start_date, end_date])
+        else:
+            all_tickets = Ticket.objects.select_related('seller').all()
+        return all_tickets
 
     def get_all_tickets_details(self):
         """        
@@ -198,6 +202,19 @@ class SalesHelper(object):
         if self.__all_tickets_details is None:
             self.set_all_tickets_details()
         return self.__all_tickets_details
+
+    @staticmethod
+    def get_earnings(initial_date=None, final_date=None):
+
+        earnings = TicketDetail.objects.all(). \
+            select_related('ticket'). \
+            filter(ticket__created_at__range=[initial_date, final_date]). \
+            aggregate(total=Sum('price'))['total']
+
+        if earnings is None:
+            return '0.00'
+
+        return earnings
 
     def get_all_extra_ingredients(self):
         """        
@@ -213,47 +230,11 @@ class SalesHelper(object):
         """
         years_list = []
 
-        for ticket in self.get_all_tickets():
+        for ticket in self.get_tickets():
             if ticket.created_at.year not in years_list:
                 years_list.append(ticket.created_at.year)
 
         return years_list
-
-    def get_tickets_today_list(self):
-        helper = Helper()
-
-        tickets_list = []
-        filtered_tickets = self.get_all_tickets().filter(created_at__gte=Helper.naive_to_datetime(date.today()))
-
-        for ticket in filtered_tickets:
-            ticket_object = {
-                'ticket_parent': ticket,
-                'order_number': ticket.order_number,
-                'cartridges': [],
-                'packages': [],
-                'total': Decimal(0.00),
-            }
-
-            for ticket_details in self.get_all_tickets_details():
-                if ticket_details.ticket == ticket:
-                    if ticket_details.cartridge:
-                        cartridge_object = {
-                            'cartridge': ticket_details.cartridge,
-                            'quantity': ticket_details.quantity
-                        }
-                        ticket_object['cartridges'].append(cartridge_object)
-                        ticket_object['total'] += ticket_details.price
-                    elif ticket_details.package_cartridge:
-                        package_cartridge_object = {
-                            'package': ticket_details.package_cartridge,
-                            'quantity': ticket_details.quantity
-                        }
-                        ticket_object['packages'].append(package_cartridge_object)
-                        ticket_object['total'] += ticket_details.price
-
-            tickets_list.append(ticket_object)
-
-        return tickets_list
 
     @staticmethod
     def get_dates_range_json():
@@ -302,8 +283,11 @@ class SalesHelper(object):
                 filter(ticket__created_at__range=[start_dt, limit_day]). \
                 aggregate(total=Sum('price'))['total']
 
+            if total_earnings is None:
+                total_earnings = 0
+
             day_object['day_name'] = Helper.get_name_day(start_dt.date())
-            day_object['earnings'] = str(total_earnings)
+            day_object['earnings'] = total_earnings
 
             week_sales_list.append(day_object)
 
@@ -314,106 +298,57 @@ class SalesHelper(object):
 
         return week_sales_list
 
-    def get_sales_actual_week(self):
-        """
-        Gets the following properties for each week's day: Name, Date and Earnings
-        """
-        helper = Helper()
-        week_sales_list = []
-        total_earnings = 0
-        days_to_count = helper.get_number_day(datetime.now())
-        day_limit = days_to_count
-        start_date_number = 0
-
-        while start_date_number <= day_limit:
-            day_object = {
-                'date': str(helper.start_datetime(days_to_count).date().strftime('%d-%m-%Y')),
-                'day_name': None,
-                'earnings': None,
-                'number_day': helper.get_number_day(helper.start_datetime(days_to_count).date()),
-            }
-
-            day_tickets = self.get_all_tickets().filter(
-                created_at__range=[helper.start_datetime(days_to_count), helper.end_datetime(days_to_count)])
-
-            for ticket_item in day_tickets:
-                for ticket_detail_item in self.get_all_tickets_details():
-                    if ticket_detail_item.ticket == ticket_item:
-                        total_earnings += ticket_detail_item.price
-
-            day_object['earnings'] = str(total_earnings)
-            day_object['day_name'] = helper.get_name_day(helper.start_datetime(days_to_count).date())
-
-            week_sales_list.append(day_object)
-
-            # restarting counters
-            days_to_count -= 1
-            total_earnings = 0
-            start_date_number += 1
-
-        return json.dumps(week_sales_list)
-
     @staticmethod
-    def get_tickets(initial_date=None, final_date=None):
-
-        if initial_date is not None and final_date is not None:
-            all_tickets = Ticket.objects.all().\
-                select_related('seller'). \
-                filter(created_at__range=[initial_date, final_date]).\
-                order_by('-created_at')
-        else:
-            all_tickets = Ticket.objects.all().\
-                select_related('seller'). \
-                order_by('-created_at')
-
-        all_tickets_details = TicketDetail.objects. \
+    def get_tickets_dict(initial_date=None, final_date=None):
+        tickets_details = TicketDetail.objects.all(). \
             select_related('ticket'). \
             select_related('cartridge'). \
             select_related('ticket__seller'). \
-            select_related('package_cartridge')
+            select_related('package_cartridge'). \
+            filter(ticket__created_at__range=[initial_date, final_date]). \
+            order_by('-ticket__created_at'). \
+            values('ticket__id', 'ticket__order_number', 'ticket__seller__username', 'cartridge', 'cartridge__name',
+                   'cartridge__price', 'package_cartridge', 'package_cartridge__name', 'price', 'quantity',
+                   'ticket__created_at')
 
-        tickets_list = []
+        tickets_details_dict = {}
 
-        for ticket in all_tickets:
-            ticket_object = {
-                'id': ticket.id,
-                'order_number': ticket.order_number,
-                'created_at': datetime.strftime(ticket.created_at, "%B %d, %Y, %H:%M:%S %p"),
-                'seller': ticket.seller.username,
-                'ticket_details': {
+        for ticket_detail in tickets_details:
+            ticket_id = ticket_detail['ticket__id']
+
+            # Si no se ha agregado el ticket, lo inicializa
+            if ticket_id not in tickets_details_dict:
+                order_number = ticket_detail['ticket__order_number']
+                created_at = ticket_detail['ticket__created_at'].strftime('%B %d, %Y, %H:%M:%S %p')
+                seller = ticket_detail['ticket__seller__username']
+
+                tickets_details_dict[ticket_id] = {
+                    'order_number': order_number,
+                    'created_at': created_at,
+                    'seller': seller,
                     'cartridges': [],
                     'packages': [],
-                },
-                'total': 0,
-            }
+                    'total': 0
+                }
 
-            for ticket_detail in all_tickets_details:
-                if ticket_detail.ticket == ticket:
-                    ticket_detail_object = {}
-                    if ticket_detail.cartridge:
-                        ticket_detail_object = {
-                            'name': ticket_detail.cartridge.name,
-                            'quantity': ticket_detail.quantity,
-                            'price': float(ticket_detail.price),
-                        }
-                        ticket_object['ticket_details']['cartridges'].append(ticket_detail_object)
-                    elif ticket_detail.package_cartridge:
-                        ticket_detail_object = {
-                            'name': ticket_detail.package_cartridge.name,
-                            'quantity': ticket_detail.quantity,
-                            'price': float(ticket_detail.price),
-                        }
-                        ticket_object['ticket_details']['packages'].append(ticket_detail_object)
+            if ticket_detail['cartridge'] is not None:
+                cartridge = {
+                    'name': ticket_detail['cartridge__name'],
+                    'quantity': ticket_detail['quantity'],
+                    'price': ticket_detail['price']
+                }
+                tickets_details_dict[ticket_id]['cartridges'].append(cartridge)
+            elif ticket_detail['package_cartridge'] is not None:
+                package = {
+                    'name': ticket_detail['package_cartridge__name'],
+                    'quantity': ticket_detail['quantity'],
+                    'price': ticket_detail['price']
+                }
+                tickets_details_dict[ticket_id]['packages'].append(package)
 
-                    ticket_object['total'] += float(ticket_detail.price)
+            tickets_details_dict[ticket_id]['total'] += ticket_detail['price']
 
-                    try:
-                        ticket_object['ticket_details'].append(ticket_detail_object)
-                    except Exception as e:
-                        pass
-            ticket_object['total'] = str(ticket_object['total'])
-            tickets_list.append(ticket_object)
-        return tickets_list
+        return tickets_details_dict
 
 
 class ProductsHelper(object):
@@ -963,7 +898,7 @@ class RatesHelper(object):
 
     def set_all_satisfaction_ratings(self):
         self.__all_satisfaction_ratings = SatisfactionRating.objects \
-            .prefetch_related('elements').all()
+            .select_related('elements').all()
 
     def set_elements_to_evaluate(self):
         self.__elements_to_evaluate = ElementToEvaluate.objects.all()
