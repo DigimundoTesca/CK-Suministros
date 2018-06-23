@@ -17,7 +17,7 @@ def kitchen(request):
         'page_title': title,
         'extra_ingredients': sales_helper.get_all_extra_ingredients(),
         'products': kitchen_helper.get_processed_products(),
-        'tickets': sales_helper.get_all_tickets(),
+        'tickets': sales_helper.get_tickets(),
         'tickets_details': sales_helper.get_all_tickets_details(),
     }
 
