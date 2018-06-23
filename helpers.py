@@ -897,8 +897,9 @@ class RatesHelper(object):
         return json.dumps(week_suggestions_list)
 
     def set_all_satisfaction_ratings(self):
-        self.__all_satisfaction_ratings = SatisfactionRating.objects \
-            .select_related('elements').all()
+        self.__all_satisfaction_ratings = SatisfactionRating.objects.all(). \
+            select_related('branch_office').\
+            prefetch_related('elements')
 
     def set_elements_to_evaluate(self):
         self.__elements_to_evaluate = ElementToEvaluate.objects.all()
