@@ -31,9 +31,9 @@ class CategoryElementsAdmin(admin.ModelAdmin):
 
 @admin.register(ElementToEvaluate)
 class ElementToEvaluateAdmin(admin.ModelAdmin):
-    list_display = ('id', 'priority', 'element', 'permanent', 'category', 'publication_date')
+    list_display = ('id', 'priority', 'element', 'active', 'category', 'branch_office')
     ordering = ('priority', 'publication_date')
-    list_editable = ('priority', 'permanent', 'category', 'publication_date')
+    list_editable = ('priority', 'active', 'category', 'branch_office')
     search_fields = ['element', ]
 
 
@@ -46,4 +46,3 @@ class SatisfactionRatingAdmin(admin.ModelAdmin):
 
     def selected_elements(self, obj):
         return ",\n".join([p.element for p in obj.elements.all()])
-
