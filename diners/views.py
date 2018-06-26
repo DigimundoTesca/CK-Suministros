@@ -10,7 +10,7 @@ from django.db.models import Q, Count
 from django.utils import timezone
 from django.utils.decorators import method_decorator
 from django.http import HttpResponse, JsonResponse
-from django.shortcuts import render, redirect
+from django.shortcuts import render, redirect, get_object_or_404
 from django.utils.datastructures import MultiValueDictKeyError
 from django.utils.timezone import make_aware
 from django.views.decorators.csrf import csrf_exempt
@@ -376,7 +376,7 @@ def diners_logs(request):
 
 
 def satisfaction_rating(request, pk):
-    branch_office = BranchOffice.objects.get(id=pk)
+    branch_office = get_object_or_404(BranchOffice, pk=pk)
 
     if request.method == 'POST':
         if request.POST['type'] == 'satisfaction_rating':
@@ -412,7 +412,7 @@ def satisfaction_rating(request, pk):
     today = make_aware(today, tz)
     categories = CategoryElements.objects.all()
     elements = ElementToEvaluate.objects.order_by('element').select_related('category').filter(
-        Q(permanent=True) | Q(publication_date__gte=today))
+        Q(active=True) | Q(publication_date__gte=today), branch_office=pk)
 
     context = {
         'title': PAGE_TITLE + ' | ' + title,
@@ -431,6 +431,7 @@ def analytics_rating(request, pk):
     diners_helper = DinersHelper()
     if request.method == 'POST':
         if request.POST['type'] == 'reactions_day':
+            elements_to_evaluate = RatesHelper.get_elements_to_evaluate(pk)
             start_date = helper.naive_to_datetime(datetime.strptime(request.POST['date'], '%d-%m-%Y').date())
             end_date = helper.naive_to_datetime(start_date + timedelta(days=1))
             today_suggestions = rates_helper.get_satisfaction_ratings(start_date, end_date, pk)
@@ -449,7 +450,7 @@ def analytics_rating(request, pk):
             for suggestion in today_suggestions:
                 total_reactions['reactions'][suggestion.satisfaction_rating - 1]['quantity'] += 1
 
-            for element_to_evaluate in rates_helper.elements_to_evaluate:
+            for element_to_evaluate in elements_to_evaluate:
                 """ For every element chart """
                 element_object = {
                     'id': element_to_evaluate.id,
@@ -490,9 +491,13 @@ def analytics_rating(request, pk):
                 new_el = {'satisfaction-rating': el['satisfaction_rating'], 'total': el['total']}
                 reactions_dic.append(new_el)
             return JsonResponse({'data': reactions_dic})
-    branch_office = BranchOffice.objects.get(pk=pk)
+
+    branch_office = get_object_or_404(BranchOffice, pk=pk)
+
     template = 'analytics.html'
     title = 'Analytics - ' + branch_office.name
+    elements_to_evaluate = RatesHelper.get_elements_to_evaluate(pk)
+
     context = {
         'title': PAGE_TITLE + ' | ' + title,
         'page_title': title,
@@ -500,8 +505,8 @@ def analytics_rating(request, pk):
         'reactions_week': rates_helper.get_info_rates_actual_week(pk),
         'suggestions_week': rates_helper.get_info_suggestions_actual_week(pk),
         'diners_week': diners_helper.get_diners_actual_week(pk),
-        'elements': rates_helper.elements_to_evaluate,
-        'total_elements': rates_helper.elements_to_evaluate.count(),
+        'elements': elements_to_evaluate,
+        'total_elements': elements_to_evaluate.count(),
         'branch_id': pk
     }
     return render(request, template, context)
