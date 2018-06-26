@@ -5,6 +5,9 @@ from django.utils import timezone
 from branchoffices.models import BranchOffice
 
 
+DEFAULT_BRANCH_OFFICE_PK = 1
+
+
 class Diner(models.Model):
     created_at = models.DateTimeField(auto_now_add=True)
     name = models.CharField(max_length=160, default='')
@@ -48,10 +51,11 @@ class CategoryElements(models.Model):
 class ElementToEvaluate(models.Model):
     element = models.CharField(max_length=48, default='', unique=True)
     priority = models.IntegerField(default=1)
-    permanent = models.BooleanField(default=False)
+    active = models.BooleanField(default=False)
     created_at = models.DateTimeField(auto_now=True)
     publication_date = models.DateField(default=timezone.now)
     category = models.ForeignKey(CategoryElements, models.CASCADE, null=True, blank=True)
+    branch_office = models.ForeignKey(BranchOffice, on_delete=models.CASCADE, default=DEFAULT_BRANCH_OFFICE_PK)
 
     class Meta:
         verbose_name = "Elemento a evaluar"
@@ -63,8 +67,8 @@ class ElementToEvaluate(models.Model):
 
 class SatisfactionRating(models.Model):
     """
-    Modelo que almacena las evaluaciones de los clientes, tanto reaccicones
-    como el nivel de satisfaccion del servicio
+    Modelo que almacena las evaluaciones de los clientes, tanto reacciones
+    como el nivel de satisfacción del servicio
     """
     elements = models.ManyToManyField(ElementToEvaluate)
     satisfaction_rating = models.PositiveIntegerField(default=1, validators=[MaxValueValidator(4)])

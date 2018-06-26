@@ -5,7 +5,6 @@ import os
 import pytz
 
 from datetime import datetime, date, timedelta, time
-from decimal import Decimal
 from django.db.models import Min, Max, Sum
 from django.utils import timezone
 
@@ -29,6 +28,7 @@ DAYS_LIST = {
 class Helper(object):
     def __init__(self):
         if os.name == 'posix':
+            # Configuración locale en prod: https://askubuntu.com/questions/76013/how-do-i-add-locale-to-ubuntu-server
             locale.setlocale(locale.LC_TIME, 'es_MX.UTF-8')
         else:
             locale.setlocale(locale.LC_TIME, 'Spanish_Mexico')
@@ -699,14 +699,12 @@ class RatesHelper(object):
             self.set_all_satisfaction_ratings()
         return self.__all_satisfaction_ratings
 
-    @property
-    def elements_to_evaluate(self):
+    @staticmethod
+    def get_elements_to_evaluate(branch_office_pk):
         """
         :rtype: django.db.models.query.QuerySet
         """
-        if self.__elements_to_evaluate is None:
-            self.set_elements_to_evaluate()
-        return self.__elements_to_evaluate
+        return ElementToEvaluate.objects.all().filter(branch_office=branch_office_pk)
 
     def get_dates_range(self):
         """
