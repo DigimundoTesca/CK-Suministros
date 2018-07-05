@@ -60,19 +60,14 @@ def diners_paginator(request, queryset, num_pages):
 
 # ------------------------- Django Views ----------------------------- #
 @csrf_exempt
-def rfid(request):
+def register_rfid_diner_log(request):
     diners_helper = DinersHelper()
     diners_helper.set_all_access_logs()
 
     if request.method == 'POST':
         rfid_str = str(request.body).split('"')[3].replace(" ", "")
-        if settings.DEBUG:
-            print(rfid_str)
-
+        print(rfid_str)
         if rfid_str is None:
-
-            if settings.DEBUG:
-                print('no se recibio rfid')
             return HttpResponse('No se recibió RFID\n')
         else:
             access_logs = diners_helper.get_access_logs_today()
@@ -97,8 +92,6 @@ def rfid(request):
                         new_access_log = AccessLog(diner=None, RFID=rfid_str)
                         new_access_log.save()
                 else:
-                    if settings.DEBUG:
-                        print('RFID Inválido\n')
                     return HttpResponse('RFID Inválido\n')
 
         return HttpResponse('Acceso almacenado\n')
@@ -199,6 +192,7 @@ def diners_logs(request):
     helper = Helper()
     diners_helper = DinersHelper()
     all_diners = diners_helper.get_all_diners()
+    BRANCH_ID: int = 1
 
     if request.method == 'POST':
         if request.POST['type'] == 'diners_logs_week':
@@ -207,10 +201,9 @@ def diners_logs(request):
             initial_date = helper.parse_to_datetime(initial_date)
             final_date = helper.parse_to_datetime(final_date) + timedelta(days=1)
             diners_entries = diners_helper.get_all_diners_logs_list(initial_date, final_date)
-            entries = diners_helper.get_weeks_entries(initial_date, final_date)
+            entries = diners_helper.get_weeks_entries(BRANCH_ID, initial_date, final_date)
             data = {
                 'diners': diners_entries,
-
                 'entries': entries,
             }
             return JsonResponse(data)
@@ -426,15 +419,13 @@ def satisfaction_rating(request, pk):
 
 @login_required(login_url='users:login')
 def analytics_rating(request, pk):
-    helper = Helper()
-    rates_helper = RatesHelper()
-    diners_helper = DinersHelper()
+
     if request.method == 'POST':
         if request.POST['type'] == 'reactions_day':
             elements_to_evaluate = RatesHelper.get_elements_to_evaluate(pk)
-            start_date = helper.naive_to_datetime(datetime.strptime(request.POST['date'], '%d-%m-%Y').date())
-            end_date = helper.naive_to_datetime(start_date + timedelta(days=1))
-            today_suggestions = rates_helper.get_satisfaction_ratings(start_date, end_date, pk)
+            start_date = Helper.naive_to_datetime(datetime.strptime(request.POST['date'], '%d-%m-%Y').date())
+            end_date = Helper.naive_to_datetime(start_date + timedelta(days=1))
+            today_suggestions = RatesHelper.get_satisfaction_ratings(pk, start_date, end_date)
             reactions_list = []
 
             total_reactions = {
@@ -471,16 +462,50 @@ def analytics_rating(request, pk):
 
             return JsonResponse({'reactions_list': reactions_list, 'total_reactions': total_reactions})
 
-        elif request.POST['type'] == 'reactions_week':
-            initial_date = helper.parse_to_datetime(request.POST['dt_week'].split(',')[0])
-            final_date = helper.parse_to_datetime(request.POST['dt_week'].split(',')[1])
-            data = {
-                'week_number': helper.get_week_number(initial_date),
-                'reactions': rates_helper.get_info_rates_list(initial_date, final_date, pk),
-            }
-            return JsonResponse(data)
+        elif request.POST['type'] == 'historic_reactions_day':
+            elements_to_evaluate = RatesHelper.get_elements_to_evaluate(pk)
+            today_suggestions = RatesHelper.get_satisfaction_ratings(pk)
+            reactions_list = []
 
-        elif request.POST['type'] == 'general_ratings':
+            total_reactions = {
+                'name': 'Total de Reacciones',
+                'reactions': {
+                    0: {'reaction': 'Enojado', 'quantity': 0},
+                    1: {'reaction': 'Triste', 'quantity': 0},
+                    2: {'reaction': 'Feliz', 'quantity': 0},
+                    3: {'reaction': 'Encantado', 'quantity': 0},
+                }
+            }
+
+            for suggestion in today_suggestions:
+                total_reactions['reactions'][suggestion.satisfaction_rating - 1]['quantity'] += 1
+
+            for element_to_evaluate in elements_to_evaluate:
+                """ For every element chart """
+                element_object = {
+                    'id': element_to_evaluate.id,
+                    'name': element_to_evaluate.element,
+                    'reactions': {
+                        0: {'reaction': 'Enojado', 'quantity': 0},
+                        1: {'reaction': 'Triste', 'quantity': 0},
+                        2: {'reaction': 'Feliz', 'quantity': 0},
+                        3: {'reaction': 'Encantado', 'quantity': 0},
+                    },
+                }
+                for suggestion in today_suggestions:
+                    for element_in_suggestion in suggestion.elements.all():
+                        if element_in_suggestion == element_to_evaluate:
+                            element_object['reactions'][suggestion.satisfaction_rating - 1]['quantity'] += 1
+
+                reactions_list.append(element_object)
+
+            data = {
+                'reactions_list': reactions_list,
+                'total_reactions': total_reactions
+            }
+            return JsonResponse({'data': data})
+
+        elif request.POST['type'] == 'total_historic_reactions':
             """
             Permite obtener el total de reacciones registradas en la base de datos
             """
@@ -490,10 +515,30 @@ def analytics_rating(request, pk):
             for el in total_reactions:
                 new_el = {'satisfaction-rating': el['satisfaction_rating'], 'total': el['total']}
                 reactions_dic.append(new_el)
+
             return JsonResponse({'data': reactions_dic})
 
-    branch_office = get_object_or_404(BranchOffice, pk=pk)
+        elif request.POST['type'] == 'analytics_week':
+            initial_date = request.POST['dt_week'].split(',')[0]
+            final_date = request.POST['dt_week'].split(',')[1]
+            initial_date = Helper.parse_to_datetime(initial_date)
+            final_date = Helper.parse_to_datetime(final_date)
 
+            access_list = DinersHelper.get_weeks_entries(pk, initial_date, final_date)
+            reactions_list = RatesHelper.get_info_rates_list(pk, initial_date, final_date)
+
+            data = {
+                'diners_access': access_list,
+                'analytics': reactions_list,
+            }
+            return JsonResponse(data)
+
+        elif request.POST['type'] == 'dates_range':
+            return JsonResponse({
+                'data': RatesHelper.get_dates_range_json()
+            })
+
+    branch_office = get_object_or_404(BranchOffice, pk=pk)
     template = 'analytics.html'
     title = 'Analytics - ' + branch_office.name
     elements_to_evaluate = RatesHelper.get_elements_to_evaluate(pk)
@@ -501,10 +546,6 @@ def analytics_rating(request, pk):
     context = {
         'title': PAGE_TITLE + ' | ' + title,
         'page_title': title,
-        'dates_range': rates_helper.get_dates_range(),
-        'reactions_week': rates_helper.get_info_rates_actual_week(pk),
-        'suggestions_week': rates_helper.get_info_suggestions_actual_week(pk),
-        'diners_week': diners_helper.get_diners_actual_week(pk),
         'elements': elements_to_evaluate,
         'total_elements': elements_to_evaluate.count(),
         'branch_id': pk
