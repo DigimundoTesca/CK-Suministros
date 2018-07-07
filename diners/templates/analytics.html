@@ -27,8 +27,8 @@
             <div class="canvas-holder">
               <canvas id="canvas-week-reactions"></canvas>
             </div>
-            <div class="canvas-holder mt-3">
-              <canvas id="canvas-general-reactions"></canvas>
+            <div class="canvas-holder mt-3 pl-3 pr-3">
+              <canvas id="canvas-general-reactions" width="500" height="500"></canvas>
             </div>
           </div>
           <div class="col-xs-12 col-lg-6 col-xl-7 mb-3 elements-analytics-container">
@@ -94,14 +94,6 @@
       </div>
     </div>
   </div>
-  <!-- <div id="bounce-cont">
-    <span class="msg-bounce">Generando Gráficas</span>
-    <div class="sk-double-bounce">
-      <div class="sk-child sk-double-bounce1"></div>
-      <div class="sk-child sk-double-bounce2"></div>
-    </div>
-  </div>
-  -->
 {% endblock %}
 
 {% block javascript %}
@@ -130,7 +122,6 @@
       {% endfor %}
       /**
        * Obtiene la cookie del CSRFToken de django
-       * @author Ramses Martinez
        */
       function getCSRFToken() {
         let cookieValue = null;
@@ -149,9 +140,9 @@
 
       /**
        * Carga las fechas a consultar para los selects
-       * @author Ramses Martinez
+       * @param {String} dt: Variable opcional para inicializar las gráficas de platillos por día
        */
-      function fillDatesRangeForm() {
+      function fillDatesRangeForm(dt=null) {
         $.ajax({
           url: "{% url 'diners:analytics' branch_id %}",
           type: 'post',
@@ -166,7 +157,7 @@
             setWeeksDropDown();
 
             // Una vez completada la carga, realiza la llamada de evaluaciones de la semana
-            setAnalyticsWeek();
+            setAnalyticsWeek(dt);
           },
           error: function(result, jqXHR, textStatus) {
             console.error(result);
@@ -177,9 +168,9 @@
 
       /**
        * Función que realiza la petición para obtener los detalles de evaluaciones de la semana
-       * @author Ramses Martinez
+       * @param {String} dt: Fecha para evitar limpiar las gráficas de platillos en el día
        */
-      function setAnalyticsWeek() {
+      function setAnalyticsWeek(dt=null) {
         let yearSelect = document.getElementById('dt-year');
         let weekSelect = document.getElementById('dt-week');
 
@@ -200,12 +191,15 @@
             swal.enableLoading();
           },
           success: function(result) {
-            let today = getTodayDate();
             _dinersAccessesWeek = result['diners_access'];
             _analyticsWeek = result['analytics'];
             setEvaluationsWeekChart();
-            cleanEvaluationsDayChart();
-            setReactionsDayChart(today);
+            if (dt === undefined || dt === null) {
+              cleanEvaluationsDayChart();
+            } else {
+              setReactionsDayChart(dt);
+            }
+
             swal({
               title: "Éxito",
               text: "Datos obtenidos",
@@ -224,7 +218,7 @@
 
       /**
        * Obtiene la fecha del día en curso parseada
-       * @return {String}
+       * @return {String} dt: fecha del formato dd-mm-yyyy
        */
       function getTodayDate() {
         let today = new Date();
@@ -247,7 +241,6 @@
        *  - Asistencia
        *  - Comentarios
        *  - Reacciones
-       * @author Ramses Martinez
        */
       function setEvaluationsWeekChart() {
         _reactionsWeekChart.data.datasets[0].data = getAccessLogsWeek(_dinersAccessesWeek);
@@ -307,6 +300,9 @@
       function cleanEvaluationsDayChart() {
         for (let i = 0; i <= {{ total_elements }}; i++) {
           _elementsCharts[i].data.datasets[0].data = [0, 0, 0, 0, 1];
+          _elementsCharts[i].config.options.tooltips.callbacks.label = function () {
+            return ' Sin reacciones';
+          };
           _elementsCharts[i].update();
         }
       }
@@ -376,7 +372,7 @@
       /**
        * Obtiene el total de reacciones del día elegido en la gráfica de evaluaciones de la semana y muestra los
        * resultados en las gráficas de Evaluación por día.
-       * @param {String} date: dd-mm-yyyy Formato de fecha
+       * @param {String} date: Formato de fecha dd-mm-yyyy
        */
       function setReactionsDayChart(date) {
         $.ajax({
@@ -388,7 +384,7 @@
             'type': 'reactions_day',
           },
           success: function(result) {
-            // $('#bounce-cont').hide(1000);
+            cleanEvaluationsDayChart();
             for (let i = 0; i <= {{ total_elements }}; i++) {
               let is_empty = true;
 
@@ -415,17 +411,26 @@
                 _elementsCharts[i].config.options.tooltips.callbacks.label = function () {
                   return ' Sin reacciones';
                 };
-                _elementsCharts[i].config.data.datasets[0].data[4] = 1;
-              } else {
-                _elementsCharts[i].config.options.tooltips.callbacks.label = function (tooltipItem, data) {
-                  let dataLabel = data.labels[tooltipItem.index];
-                  dataLabel += ': ' + data.datasets[tooltipItem.datasetIndex].data[tooltipItem.index];
-                  return dataLabel;
-                };
-                _elementsCharts[i].config.data.datasets[0].data.splice(4, 1);
+                //_elementsCharts[i].config.data.datasets[0].data[4] = 1;
               }
+              else {
+                _elementsCharts[i].config.options.tooltips.callbacks.label = function (tooltipItem, data) {
+                  let dataArray = data.datasets[tooltipItem.datasetIndex].data;
+                  let totalReactions = dataArray[tooltipItem.index];
+                  let sumReactions = dataArray.reduce(function(a, b){ return a + b; });
+
+                  let percentReactions = (totalReactions * 100 / sumReactions).toFixed(2) + ' %';
+
+                  return data.labels[tooltipItem.index] + ':' + totalReactions + ' - ' + percentReactions;
+                };
+
+                _elementsCharts[i].config.data.datasets[0].data.splice(4, 1);
+
+              }
+
               _elementsCharts[i].update();
             }
+
           },
 
           error: function(result) {
@@ -436,7 +441,6 @@
 
       /**
        * Función que permite cargar la gráfica con el total de todas las reacciones registradas para los platillos
-       * @author Ramses Martinez
        */
       function setHistoricReactionsChart() {
         $.ajax({
@@ -447,8 +451,6 @@
             'type': 'total_historic_reactions',
           },
           success: function(result) {
-            //return;
-            //$('#bounce-cont').hide(1000);
             let reactionsData = result['data'];
             let resultArray = [];
             for(let i = 0; i < reactionsData.length; i++) {
@@ -465,50 +467,6 @@
 
             _reactionsHistoricGeneralChart.config.data.datasets[0].data = resultArray;
             _reactionsHistoricGeneralChart.update();
-
-            return;
-            for (let i = 0; i <= {{ total_elements }}; i++) {
-              let is_empty = true;
-
-              if ( i === {{ total_elements }}) {
-                for (let j = 0; j < 4; j++) {
-                  _elementsCharts[i].data.datasets[0].data[j] = result['total_reactions'].reactions[j].quantity;
-                }
-
-              } else {
-                /**
-                 * Sets the doughnuts with the new values
-                 */
-                for (let j = 0; j < 4; j++) {
-                  _elementsCharts[i].data.datasets[0].data[j] = result['reactions_list'][i].reactions[j].quantity;
-                }
-              }
-
-              /**
-               * Validates the charts and change them if any of these do not have doesn't have values
-               */
-              for (let j = 0; j < 4; j++) {
-                if (_elementsGeneralCharts[i].config.data.datasets[0].data[j] > 0) {
-                  is_empty = false;
-                }
-              }
-
-              if (is_empty) {
-                _elementsGeneralCharts[i].config.options.tooltips.callbacks.label = function () {
-                  return ' Sin reacciones';
-                };
-                _elementsGeneralCharts[i].config.data.datasets[0].data[4] = 1;
-              } else {
-                _elementsGeneralCharts[i].config.options.tooltips.callbacks.label = function (tooltipItem, data) {
-                  let dataLabel = data.labels[tooltipItem.index];
-                  dataLabel += ': ' + data.datasets[tooltipItem.datasetIndex].data[tooltipItem.index];
-                  return dataLabel;
-                };
-                _elementsGeneralCharts[i].config.data.datasets[0].data.splice(4, 1);
-              }
-
-              _elementsGeneralCharts[i].update();
-            }
           },
 
           error: function(result) {
@@ -530,9 +488,7 @@
           },
           success: function(result) {
             //return;
-            //$('#bounce-cont').hide(1000);
             let reactionsData = result['data'];
-            console.log(result);
 
             for (let i = 0; i < {{ total_elements }}; i++) {
               let is_empty = true;
@@ -588,7 +544,7 @@
           datasets: [
             {
               label: 'Asistencia',
-              data: [], //getDinersDay(),
+              data: [],
               backgroundColor: '#f66',
             },
             {
@@ -616,6 +572,9 @@
               console.log(error.message);
             }
           },
+          onResize: function(_reactionsWeekChart, size) {
+            _reactionsWeekChart.options.legend.display = (size.height > 200);
+          },
           scales: {
             yAxes: [{
               ticks: {
@@ -642,7 +601,7 @@
           labels: ["Enojado", "Triste", "Alegre", "Encantando"],
           datasets: [{
             label: 'Reacciones',
-            data: [], //get_suggestions_week_list(),
+            data: [],
             backgroundColor: [
               "#FF5252",
               "#FFC400",
@@ -652,13 +611,18 @@
           }],
         },
         options: {
-          responsive: true,
-          onClick: function(event, legendItem) {
-            try {}
-            catch (error) {
-              console.log(error.message);
+          onResize: function(_reactionsHistoricGeneralChart, size) {
+            _reactionsHistoricGeneralChart.options.legend.display = (size.height > 200);
+          },
+          layout: {
+            padding: {
+              left: 0,
+              right: 0,
+              top: 0,
+              bottom: 0
             }
           },
+          responsive: true,
           title: {
             display: true,
             text: 'Histórico general de reacciones',
@@ -670,7 +634,7 @@
       });
 
       /**
-       * Dibuja las gráficas de donas: Evaluación de platillos por día
+       * Dibuja las gráficas de donas: Evaluación de platillos por dia
        */
       for (let i = 0; i <= {{ total_elements }}; i++) {
         if ( i === {{ total_elements }}) {
@@ -821,7 +785,7 @@
       /**
        * Listener de cambios para el select de semanas
        */
-      $(this).on('change', '#dt-week', function(event) {
+      $(this).on('change', '#dt-week', function() {
         setAnalyticsWeek();
       });
 
@@ -829,13 +793,15 @@
        * Desencadena todos los eventos iniciales
        */
       (function() {
+        let today = getTodayDate();
         // Llena los selects de fechas
-        fillDatesRangeForm();
-
+        fillDatesRangeForm(today);
         // Carga la gráfica de dona "Histórico general de reacciones"
         setHistoricReactionsChart();
         // Carga las gráficas finales de evaluaciones generales por platillo
         setHistoricGeneralRating();
+        // Rellena la gráfica por día de hoy
+        setReactionsDayChart(today);
       })();
     });
 
